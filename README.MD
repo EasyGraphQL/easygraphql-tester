@@ -39,6 +39,48 @@ const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'),
 const tester = new EasyGraphQLTester(schemaCode)
 ```
 
+In all the cases this is the Schema used:
+```graphql
+type User {
+  email: String!
+  username: String!
+  fullName: String!
+}
+
+type Me {
+  id: ID!
+  email: String!
+  username: String!
+  fullName: String!
+  addresses: [String]!
+  scores: [Int]!
+  age: Int
+  phone: [String]!
+  apiKey: String! 
+  familyInfo: [FamilyInfo]!
+}
+
+type FamilyInfo {
+  father: User!
+  mother: User!
+}
+
+input UserInput {
+  email: String!
+  username: String!
+  fullName: String!
+  password: String!
+}
+
+type Query {
+  getMe: Me
+  getUserByUsername(username: String!, name: String!): User
+}
+
+type Mutation {
+  createUser(input: UserInput!): User
+}
+```
 ### Query
 + Define the query
 + Pass the query to `tester.test(query)`
@@ -49,7 +91,6 @@ const fs = require('fs')
 const path = require('path')
 
 const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
-
 const tester = new EasyGraphQLTester(schemaCode)
 
 const query = `
@@ -64,14 +105,29 @@ const query = `
         mother {
           username
         }
-        brothers {
-          fullName
-        }
       }
     }
   }
 `
 const test = tester.test(query)
+console.log(test)
+// { id: '93',
+//   email: 'awURSIJ@JVjL.com',
+//   familyInfo: [
+//     { 
+//       father: { email: 'YSjsYuV@wtnK.com' },
+//       mother: { username: 'fdqMyTdhvW' }
+//     },
+//     { 
+//       father: { email: 'xcZFHmJ@FCsz.com' },
+//       mother: { username: 'PoBpauUhibduc' }
+//     },
+//     { 
+//       father: { email: 'ogrOjPH@qyJu.com' },
+//       mother: { username: 'ByxujdLYrAVIiDV' }
+//     }
+//   ]
+// }
 ```
 `tester.test(query)` will return a mock of the query, if a field is invalid it will return a error.
 
@@ -83,7 +139,6 @@ const fs = require('fs')
 const path = require('path')
 
 const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
-
 const tester = new EasyGraphQLTester(schemaCode)
 
 const query = `
@@ -97,9 +152,6 @@ const query = `
         }
         mother {
           username
-        }
-        brothers {
-          fullName
         }
       }
     }
@@ -115,6 +167,27 @@ const getUserByUsername = `
 `
 const getMe = tester.test(query)
 const userByUsername = tester.test(getUserByUsername)
+
+console.log(getMe)
+// { id: '93',
+//   email: 'awURSIJ@JVjL.com',
+//   familyInfo: [
+//     { 
+//       father: { email: 'YSjsYuV@wtnK.com' },
+//       mother: { username: 'fdqMyTdhvW' }
+//     },
+//     { 
+//       father: { email: 'xcZFHmJ@FCsz.com' },
+//       mother: { username: 'PoBpauUhibduc' }
+//     },
+//     { 
+//       father: { email: 'ogrOjPH@qyJu.com' },
+//       mother: { username: 'ByxujdLYrAVIiDV' }
+//     }
+//   ]
+// }
+console.log(userByUsername)
+// { email: 'evmFGyw@UOSX.com' }
 ```
 
 ### Mutation
@@ -125,7 +198,6 @@ const fs = require('fs')
 const path = require('path')
 
 const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
-
 const tester = new EasyGraphQLTester(schemaCode)
 
 const mutation = `
@@ -141,6 +213,82 @@ const test = tester.test(mutation, {
   fullName: 'test',
   password: 'test'
 })
+console.log(test)
+// { email: 'SaomYyn@JyEb.com' }
+```
+
+### Errors
+If there is an error on the query or mutation `EasyGraphQLTester` will let you know what
+is happening.
+
+#### Trying to access an invalid field id on getMe -> father
+```js
+const EasyGraphQLTester = require('easygraphql-tester')
+const fs = require('fs')
+const path = require('path')
+
+const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
+const tester = new EasyGraphQLTester(schemaCode)
+
+const query = `
+  {
+    getMe {
+      id
+      email
+      familyInfo {
+        father {
+          id
+          email
+        }
+      }
+    }
+  }
+`
+tester.test(query) // Error: Invalid field id on getMe
+```
+
+#### Invalid arguments on query
+```js
+const EasyGraphQLTester = require('easygraphql-tester')
+const fs = require('fs')
+const path = require('path')
+
+const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
+const tester = new EasyGraphQLTester(schemaCode)
+
+const getUserByUsername = `
+  {
+    getUserByUsername(username: 1, name: test) {
+      email
+    }
+  }
+`
+
+tester.test(getUserByUsername) // Error: username argument is not type String
+```
+
+#### Missing field on input
+```js
+const EasyGraphQLTester = require('easygraphql-tester')
+const fs = require('fs')
+const path = require('path')
+
+const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
+const tester = new EasyGraphQLTester(schemaCode)
+
+const mutation = `
+  mutation CreateUser{
+    createUser {
+      email
+    }
+  }
+`
+const test = tester.test(mutation, {
+  email: 'test@test.com',
+  fullName: 'test',
+  password: 'test'
+})
+// Error: username argument is missing on createUser
 ```
 
 ### EasyGraphQL Tester with Mocha & Chai
