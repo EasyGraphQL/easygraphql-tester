@@ -354,8 +354,8 @@ describe('Mutation', () => {
 ```
 
 
-## Example
-Here is a [Example](https://github.com/EasyGraphQL/easygraphql-tester/tree/master/test) that can be useful!
+## Demo
+Here is a [Demo](https://repl.it/@alejandroestrada/EasyGraphQLTester) that can be useful!
 
 # License
 ### The MIT License
