@@ -39,7 +39,7 @@ const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'),
 const tester = new EasyGraphQLTester(schemaCode)
 ```
 
-In all the cases this is the Schema used:
+In all the next examples this is the Schema used:
 ```graphql
 type User {
   email: String!
