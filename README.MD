@@ -355,7 +355,7 @@ describe('Mutation', () => {
 
 
 ## Demo
-Here is a [Demo](https://repl.it/@alejandroestrada/EasyGraphQLTester) that can be useful!
+Here is a [Demo](https://repl.it/@alejandroestrada/easygraphql-tester) that can be useful!
 
 # License
 ### The MIT License
