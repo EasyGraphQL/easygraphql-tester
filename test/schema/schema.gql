@@ -14,8 +14,9 @@ type Me {
   addresses: [String]!
   scores: [Int]!
   age: Int
+  testResult: Float!
   phone: [String]!
-  apiKey: String! # This is going to be the id of the user on the front-end
+  apiKey: String!
   familyInfo: [FamilyInfo]!
 }
 
@@ -23,35 +24,49 @@ type FamilyInfo {
   father: User!
   mother: User!
   brothers: [User]!
+  isLocal: Boolean!
 }
 
 # MUTATIONS
-
-# Create a new User
 input UserInput {
   email: String!
   username: String!
   fullName: String!
   password: String!
 }
-# Login
-input LoginInput {
-  email: String!
-  password: String!
+
+input IsAdminInput {
+  isAdmin: Boolean!
 }
-# Update password
+
 input UpdatePasswordInput {
   oldPassword: String!
   newPassword: String!
 }
 
+input UpdateUserAgeInput {
+  id: ID!
+  age: Int!
+}
+
+input UpdateUserScoresInput {
+  scores: [Int]!
+}
+
 type Query {
   getMe: Me
   getUserByUsername(username: String!, name: String!): User
+  getFamilyInfo: FamilyInfo
+  getFamilyInfoByIsLocal(isLocal: Boolean!): FamilyInfo
+  getMeByAge(age: Int!): Me
+  getMeByTestResult(result: Float!): Me
+  getMeByResults(results: [Int]!): Me
 }
 
 type Mutation {
   createUser(input: UserInput!): User
-  login(input: LoginInput!): Me
+  isAdmin(input: IsAdminInput!): User
   updatePassword(input: UpdatePasswordInput!): Me
+  updateUserAge(input: UpdateUserAgeInput!): Me
+  updateUserScores(input: UpdateUserScoresInput!): Me
 }

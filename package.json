@@ -4,7 +4,7 @@
   "description": "Test GraphQL schema, queries and mutations",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
+    "test": "nyc mocha",
     "standard": "standard",
     "standard-fix": "standard --fix"
   },
@@ -22,7 +22,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "easygraphql-mock": "^0.0.7",
+    "easygraphql-mock": "^0.0.9",
     "graphql": "^0.13.2",
     "graphql-tag": "^2.9.2",
     "lodash": "^4.17.10"
@@ -30,6 +30,7 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "mocha": "^5.2.0",
+    "nyc": "^13.0.1",
     "standard": "^12.0.0"
   }
 }
