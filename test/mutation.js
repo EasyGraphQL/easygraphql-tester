@@ -125,8 +125,123 @@ describe('Mutation', () => {
     })
   })
 
+  describe('Should throw an error if a input field is different', () => {
+    it('Should throw an error if the input is number and it must be a string', () => {
+      let error
+      try {
+        const mutation = `
+          mutation CreateUser{
+            createUser {
+              email
+            }
+          }
+        `
+        tester.test(mutation, {
+          email: 'test@test.com',
+          username: 1,
+          fullName: 'test',
+          password: 'test'
+        })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.be.an.instanceOf(Error)
+      expect(error.message).to.be.eq('username argument is not type String')
+    })
+
+    it('Should throw an error if the input is boolean and it must be a string', () => {
+      let error
+      try {
+        const mutation = `
+          mutation CreateUser{
+            createUser {
+              email
+            }
+          }
+        `
+        tester.test(mutation, {
+          email: 'test@test.com',
+          username: true,
+          fullName: 'test',
+          password: 'test'
+        })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.be.an.instanceOf(Error)
+      expect(error.message).to.be.eq('username argument is not type String')
+    })
+
+    it('Should throw an error if the input is string and it must be a number', () => {
+      let error
+      try {
+        const mutation = `
+          mutation UpdateUserAge{
+            updateUserAge {
+              email
+            }
+          }
+        `
+        tester.test(mutation, {
+          id: '123',
+          age: '10'
+        })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.be.an.instanceOf(Error)
+      expect(error.message).to.be.eq('age argument is not type Int')
+    })
+
+    it('Should throw an error if the input is boolean and it must be a number', () => {
+      let error
+      try {
+        const mutation = `
+          mutation UpdateUserAge{
+            updateUserAge {
+              email
+            }
+          }
+        `
+        tester.test(mutation, {
+          id: '123',
+          age: true
+        })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.be.an.instanceOf(Error)
+      expect(error.message).to.be.eq('age argument is not type Int')
+    })
+
+    it('Should throw an error if the input is an array and it must be an array', () => {
+      let error
+      try {
+        const mutation = `
+          mutation UpdateUserScores{
+            updateUserScores {
+              scores
+            }
+          }
+        `
+        tester.test(mutation, {
+          scores: 1
+        })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.be.an.instanceOf(Error)
+      expect(error.message).to.be.eq('scores must be an Array on updateUserScores')
+    })
+  })
+
   describe('Should return selected fields', () => {
-    it('Should return selected fields', () => {
+    it('Should return selected fields on CreateUser', () => {
       const mutation = `
         mutation CreateUser{
           createUser {
@@ -139,6 +254,56 @@ describe('Mutation', () => {
         username: 'test',
         fullName: 'test',
         password: 'test'
+      })
+
+      expect(test).to.exist
+      expect(test.email).to.be.a('string')
+    })
+
+    it('Should return selected fields on UpdateUserAge', () => {
+      const mutation = `
+        mutation UpdateUserAge{
+          updateUserAge {
+            email
+          }
+        }
+      `
+      const test = tester.test(mutation, {
+        id: '123',
+        age: 10
+      })
+
+      expect(test).to.exist
+      expect(test.email).to.be.a('string')
+    })
+
+    it('Should return selected fields on IsAdmin', () => {
+      const mutation = `
+        mutation IsAdmin{
+          isAdmin {
+            email
+          }
+        }
+      `
+      const test = tester.test(mutation, {
+        isAdmin: true
+      })
+
+      expect(test).to.exist
+      expect(test.email).to.be.a('string')
+    })
+
+    it('Should return selected fields on IsAdmin', () => {
+      const mutation = `
+          mutation UpdateUserScores{
+            updateUserScores {
+              email
+              scores
+            }
+          }
+        `
+      const test = tester.test(mutation, {
+        scores: [1]
       })
 
       expect(test).to.exist

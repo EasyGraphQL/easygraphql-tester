@@ -39,4 +39,17 @@ describe('Constructor', () => {
 
     expect(tester).to.exist
   })
+
+  it('Should fail if the there is no query to test', () => {
+    const tester = new EasyGraphQLTester(schemaCode)
+    let error
+    try {
+      tester.test()
+    } catch (err) {
+      error = err
+    }
+
+    expect(error).to.be.an.instanceOf(Error)
+    expect(error.message).to.be.eq('The Query/Mutation to test is require')
+  })
 })
