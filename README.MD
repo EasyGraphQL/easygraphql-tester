@@ -18,7 +18,7 @@ The tester will check:
 
 ## Installation
 ```bash
-$ npm install easygraphql-tester --save
+$ npm install easygraphql-tester --save-dev
 ```
 
 ## Usage
@@ -72,18 +72,130 @@ input UserInput {
   password: String!
 }
 
+input UpdateUserScoresInput {
+  scores: [Int]!
+}
+
 type Query {
   getMe: Me
   getUserByUsername(username: String!, name: String!): User
+  getMeByResults(results: [Int]!): Me
 }
 
 type Mutation {
   createUser(input: UserInput!): User
+  updateUserScores(input: UpdateUserScoresInput!): Me
 }
 ```
+## Testing GraphQL Schema, Queries and Mutations
+`easygraphql-tester` works as an assertion library used to make tests with your favorite
+test runner.
+
+To use it as an assertion library, you must follow the next steps:
++ Define a Query or Mutation
++ Pass as first argument a boolean to `tester.test(true)` or `tester.test(true)` if the query/mutation to test is valid
+  + `true`: it is fine, everything should work fine
+  + `false`: it should fail, there is an error in the query/mutation or arguments/input
++ Pass as second argument the query/mutation to test
++ The third argument is required if it is a mutation, it must be an object with the fields of the input
+
+### E.g using Mocha
+```js
+'use strict'
+
+const fs = require('fs')
+const path = require('path')
+const { expect } = require('chai')
+const EasyGraphQLTester = require('easygraphql-tester')
+
+const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
+
+describe('Test my queries and mutations', () => {
+  let tester
+
+  before(() => {
+    tester = new EasyGraphQLTester(schemaCode)
+  })
+
+  describe('Queries', () => {
+    it('Invalid query getUser', () => {
+      const invalidQuery = `
+        {
+          getUser {
+            id
+            invalidField
+            familyInfo {
+              father {
+                email
+                username
+              }
+            }
+          }
+        }
+      `
+      // First arg: false because the query is not valid (There is no query called getUser on the Schema)
+      // Second arg: query to test
+      tester.test(false, invalidQuery)
+    })
+
+    it('Should pass with a valid query', () => {
+      const validQuery = `
+        {
+          getMeByTestResult(result: 4.9) {
+            email
+          }
+        }
+      `
+      // First arg: true because the query is valid
+      // Second arg: query to test
+      tester.test(true, validQuery)
+    })
+  })
+
+  describe('Mutations', () => {
+    it('Invalid input type', () => {
+      const mutation = `
+        mutation UpdateUserScores{
+          updateUserScores {
+            email
+            scores
+          }
+        }
+      `
+      // First arg: false because the input value is not valid
+      // Second arg: mutation to test
+      // Third arg: input value
+      tester.test(false, mutation, {
+        scores: ['1']
+      })
+    })
+
+    it('Should pass if the input type is valid', () => {
+      const mutation = `
+        mutation UpdateUserScores{
+          updateUserScores {
+            email
+            scores
+          }
+        }
+      `
+      // First arg: true because the input value is valid
+      // Second arg: mutation to test
+      // Third arg: input value
+      tester.test(true, mutation, {
+        scores: [1]
+      })
+    })
+  })
+})
+```
+
+#### You can use it with your favorite test runner.
+
+## Mocking Queries and Mutations
 ### Query
 + Define the query
-+ Pass the query to `tester.test(query)`
++ Pass the query to `tester.mock(query)`
 
 ```js
 const EasyGraphQLTester = require('easygraphql-tester')
@@ -109,7 +221,7 @@ const query = `
     }
   }
 `
-const test = tester.test(query)
+const test = tester.mock(query)
 console.log(test)
 // { id: '93',
 //   email: 'awURSIJ@JVjL.com',
@@ -129,7 +241,7 @@ console.log(test)
 //   ]
 // }
 ```
-`tester.test(query)` will return a mock of the query, if a field is invalid it will return a error.
+`tester.mock(query)` will return a mock of the query, if a field is invalid it will return a error.
 
 #### Arguments
 The query can receive arguments, those arguments are going to be validated with the schema
@@ -165,8 +277,8 @@ const getUserByUsername = `
     }
   }
 `
-const getMe = tester.test(query)
-const userByUsername = tester.test(getUserByUsername)
+const getMe = tester.mock(query)
+const userByUsername = tester.mock(getUserByUsername)
 
 console.log(getMe)
 // { id: '93',
@@ -207,7 +319,7 @@ const mutation = `
     }
   }
 `
-const test = tester.test(mutation, {
+const test = tester.mock(mutation, {
   email: 'test@test.com',
   username: 'test',
   fullName: 'test',
@@ -244,7 +356,7 @@ const query = `
     }
   }
 `
-tester.test(query) // Error: Invalid field id on getMe
+tester.mock(query) // Error: Invalid field id on getMe
 ```
 
 #### Invalid arguments on query
@@ -264,7 +376,7 @@ const getUserByUsername = `
   }
 `
 
-tester.test(getUserByUsername) // Error: username argument is not type String
+tester.mock(getUserByUsername) // Error: username argument is not type String
 ```
 
 #### Missing field on input
@@ -283,7 +395,7 @@ const mutation = `
     }
   }
 `
-const test = tester.test(mutation, {
+const test = tester.mock(mutation, {
   email: 'test@test.com',
   fullName: 'test',
   password: 'test'
@@ -298,7 +410,7 @@ const test = tester.test(mutation, {
 const fs = require('fs')
 const path = require('path')
 const { expect } = require('chai')
-const EasyGraphQLTester = require('../lib')
+const EasyGraphQLTester = require('easygraphql-tester')
 
 const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
 
@@ -320,7 +432,7 @@ describe('Mutation', () => {
             }
           }
         `
-        tester.test(mutation)
+        tester.mock(mutation)
       } catch (err) {
         error = err
       }
@@ -339,7 +451,7 @@ describe('Mutation', () => {
           }
         }
       `
-      const test = tester.test(mutation, {
+      const test = tester.mock(mutation, {
         email: 'test@test.com',
         username: 'test',
         fullName: 'test',

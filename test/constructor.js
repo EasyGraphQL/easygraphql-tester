@@ -44,7 +44,7 @@ describe('Constructor', () => {
     const tester = new EasyGraphQLTester(schemaCode)
     let error
     try {
-      tester.test()
+      tester.mock()
     } catch (err) {
       error = err
     }
