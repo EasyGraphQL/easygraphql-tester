@@ -83,7 +83,7 @@ type Mutation {
 ```
 ### Query
 + Define the query
-+ Pass the query to `tester.test(query)`
++ Pass the query to `tester.mock(query)`
 
 ```js
 const EasyGraphQLTester = require('easygraphql-tester')
@@ -109,7 +109,7 @@ const query = `
     }
   }
 `
-const test = tester.test(query)
+const test = tester.mock(query)
 console.log(test)
 // { id: '93',
 //   email: 'awURSIJ@JVjL.com',
@@ -129,7 +129,7 @@ console.log(test)
 //   ]
 // }
 ```
-`tester.test(query)` will return a mock of the query, if a field is invalid it will return a error.
+`tester.mock(query)` will return a mock of the query, if a field is invalid it will return a error.
 
 #### Arguments
 The query can receive arguments, those arguments are going to be validated with the schema
@@ -165,8 +165,8 @@ const getUserByUsername = `
     }
   }
 `
-const getMe = tester.test(query)
-const userByUsername = tester.test(getUserByUsername)
+const getMe = tester.mock(query)
+const userByUsername = tester.mock(getUserByUsername)
 
 console.log(getMe)
 // { id: '93',
@@ -207,7 +207,7 @@ const mutation = `
     }
   }
 `
-const test = tester.test(mutation, {
+const test = tester.mock(mutation, {
   email: 'test@test.com',
   username: 'test',
   fullName: 'test',
@@ -244,7 +244,7 @@ const query = `
     }
   }
 `
-tester.test(query) // Error: Invalid field id on getMe
+tester.mock(query) // Error: Invalid field id on getMe
 ```
 
 #### Invalid arguments on query
@@ -264,7 +264,7 @@ const getUserByUsername = `
   }
 `
 
-tester.test(getUserByUsername) // Error: username argument is not type String
+tester.mock(getUserByUsername) // Error: username argument is not type String
 ```
 
 #### Missing field on input
@@ -283,7 +283,7 @@ const mutation = `
     }
   }
 `
-const test = tester.test(mutation, {
+const test = tester.mock(mutation, {
   email: 'test@test.com',
   fullName: 'test',
   password: 'test'
@@ -298,7 +298,7 @@ const test = tester.test(mutation, {
 const fs = require('fs')
 const path = require('path')
 const { expect } = require('chai')
-const EasyGraphQLTester = require('../lib')
+const EasyGraphQLTester = require('easygraphql-tester')
 
 const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
 
@@ -320,7 +320,7 @@ describe('Mutation', () => {
             }
           }
         `
-        tester.test(mutation)
+        tester.mock(mutation)
       } catch (err) {
         error = err
       }
@@ -339,7 +339,7 @@ describe('Mutation', () => {
           }
         }
       `
-      const test = tester.test(mutation, {
+      const test = tester.mock(mutation, {
         email: 'test@test.com',
         username: 'test',
         fullName: 'test',

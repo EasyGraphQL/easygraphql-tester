@@ -34,7 +34,7 @@ describe('Query', () => {
             }
           }
         `
-        tester.test(query)
+        tester.mock(query)
       } catch (err) {
         error = err
       }
@@ -60,7 +60,7 @@ describe('Query', () => {
             }
           }
         `
-        tester.test(query)
+        tester.mock(query)
       } catch (err) {
         error = err
       }
@@ -86,7 +86,7 @@ describe('Query', () => {
             }
           }
         `
-        tester.test(query)
+        tester.mock(query)
       } catch (err) {
         error = err
       }
@@ -106,7 +106,7 @@ describe('Query', () => {
             }
           }
         `
-        tester.test(query)
+        tester.mock(query)
       } catch (err) {
         error = err
       }
@@ -125,7 +125,7 @@ describe('Query', () => {
             }
           }
         `
-        tester.test(query)
+        tester.mock(query)
       } catch (err) {
         error = err
       }
@@ -146,7 +146,7 @@ describe('Query', () => {
             }
           }
         `
-        tester.test(query)
+        tester.mock(query)
       } catch (err) {
         error = err
       }
@@ -165,7 +165,7 @@ describe('Query', () => {
             }
           }
         `
-        tester.test(query)
+        tester.mock(query)
       } catch (err) {
         error = err
       }
@@ -184,7 +184,7 @@ describe('Query', () => {
             }
           }
         `
-        tester.test(query)
+        tester.mock(query)
       } catch (err) {
         error = err
       }
@@ -203,7 +203,7 @@ describe('Query', () => {
             }
           }
         `
-        tester.test(query)
+        tester.mock(query)
       } catch (err) {
         error = err
       }
@@ -222,7 +222,7 @@ describe('Query', () => {
             }
           }
         `
-        tester.test(query)
+        tester.mock(query)
       } catch (err) {
         error = err
       }
@@ -241,7 +241,7 @@ describe('Query', () => {
             }
           }
         `
-        tester.test(query)
+        tester.mock(query)
       } catch (err) {
         error = err
       }
@@ -262,7 +262,7 @@ describe('Query', () => {
             }
           }
         `
-        tester.test(query)
+        tester.mock(query)
       } catch (err) {
         error = err
       }
@@ -281,7 +281,7 @@ describe('Query', () => {
             }
           }
         `
-        tester.test(query)
+        tester.mock(query)
       } catch (err) {
         error = err
       }
@@ -298,7 +298,7 @@ describe('Query', () => {
           }
         }
       `
-      const test = tester.test(query)
+      const test = tester.mock(query)
       expect(test).to.exist
       expect(test.email).to.be.a('string')
     })
@@ -327,7 +327,7 @@ describe('Query', () => {
         }
       `
 
-      const test = tester.test(query)
+      const test = tester.mock(query)
       expect(test).to.exist
       expect(test.id).to.exist
       expect(test.id).to.be.a('string')
@@ -358,7 +358,7 @@ describe('Query', () => {
           }
         }
       `
-      const test = tester.test(query)
+      const test = tester.mock(query)
 
       expect(test.father.email).to.be.a('string')
     })
@@ -371,7 +371,7 @@ describe('Query', () => {
           }
         }
       `
-      const test = tester.test(query)
+      const test = tester.mock(query)
 
       expect(test.email).to.be.a('string')
     })
@@ -384,8 +384,7 @@ describe('Query', () => {
           }
         }
       `
-      const test = tester.test(query)
-
+      const test = tester.mock(query)
       expect(test.email).to.be.a('string')
     })
   })

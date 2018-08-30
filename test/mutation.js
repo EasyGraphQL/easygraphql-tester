@@ -27,7 +27,7 @@ describe('Mutation', () => {
             }
           }
         `
-        tester.test(mutation)
+        tester.mock(mutation)
       } catch (err) {
         error = err
       }
@@ -46,7 +46,7 @@ describe('Mutation', () => {
             }
           }
         `
-        tester.test(mutation, null)
+        tester.mock(mutation, null)
       } catch (err) {
         error = err
       }
@@ -65,7 +65,7 @@ describe('Mutation', () => {
             }
           }
         `
-        tester.test(mutation, {})
+        tester.mock(mutation, {})
       } catch (err) {
         error = err
       }
@@ -84,7 +84,7 @@ describe('Mutation', () => {
             }
           }
         `
-        tester.test(mutation, {
+        tester.mock(mutation, {
           email: 'test@test.com',
           fullName: 'test',
           password: 'test'
@@ -110,7 +110,7 @@ describe('Mutation', () => {
             }
           }
         `
-        tester.test(mutation, {
+        tester.mock(mutation, {
           email: 'test@test.com',
           username: 'test',
           fullName: 'test',
@@ -136,7 +136,7 @@ describe('Mutation', () => {
             }
           }
         `
-        tester.test(mutation, {
+        tester.mock(mutation, {
           email: 'test@test.com',
           username: 1,
           fullName: 'test',
@@ -160,7 +160,7 @@ describe('Mutation', () => {
             }
           }
         `
-        tester.test(mutation, {
+        tester.mock(mutation, {
           email: 'test@test.com',
           username: true,
           fullName: 'test',
@@ -184,7 +184,7 @@ describe('Mutation', () => {
             }
           }
         `
-        tester.test(mutation, {
+        tester.mock(mutation, {
           id: '123',
           age: '10'
         })
@@ -206,7 +206,7 @@ describe('Mutation', () => {
             }
           }
         `
-        tester.test(mutation, {
+        tester.mock(mutation, {
           id: '123',
           age: true
         })
@@ -228,7 +228,7 @@ describe('Mutation', () => {
             }
           }
         `
-        tester.test(mutation, {
+        tester.mock(mutation, {
           scores: 1
         })
       } catch (err) {
@@ -249,7 +249,7 @@ describe('Mutation', () => {
           }
         }
       `
-      const test = tester.test(mutation, {
+      const test = tester.mock(mutation, {
         email: 'test@test.com',
         username: 'test',
         fullName: 'test',
@@ -268,7 +268,7 @@ describe('Mutation', () => {
           }
         }
       `
-      const test = tester.test(mutation, {
+      const test = tester.mock(mutation, {
         id: '123',
         age: 10
       })
@@ -285,7 +285,7 @@ describe('Mutation', () => {
           }
         }
       `
-      const test = tester.test(mutation, {
+      const test = tester.mock(mutation, {
         isAdmin: true
       })
 
@@ -302,7 +302,7 @@ describe('Mutation', () => {
             }
           }
         `
-      const test = tester.test(mutation, {
+      const test = tester.mock(mutation, {
         scores: [1]
       })
 
