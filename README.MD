@@ -18,7 +18,7 @@ The tester will check:
 
 ## Installation
 ```bash
-$ npm install easygraphql-tester --save
+$ npm install easygraphql-tester --save-dev
 ```
 
 ## Usage
@@ -72,15 +72,127 @@ input UserInput {
   password: String!
 }
 
+input UpdateUserScoresInput {
+  scores: [Int]!
+}
+
 type Query {
   getMe: Me
   getUserByUsername(username: String!, name: String!): User
+  getMeByResults(results: [Int]!): Me
 }
 
 type Mutation {
   createUser(input: UserInput!): User
+  updateUserScores(input: UpdateUserScoresInput!): Me
 }
 ```
+## Testing GraphQL Schema, Queries and Mutations
+`easygraphql-tester` works as an assertion library used to make tests with your favorite
+test runner.
+
+To use it as an assertion library, you must follow the next steps:
++ Define a Query or Mutation
++ Pass as first argument a boolean to `tester.test(true)` or `tester.test(true)` if the query/mutation to test is valid
+  + `true`: it is fine, everything should work fine
+  + `false`: it should fail, there is an error in the query/mutation or arguments/input
++ Pass as second argument the query/mutation to test
++ The third argument is required if it is a mutation, it must be an object with the fields of the input
+
+### E.g using Mocha
+```js
+'use strict'
+
+const fs = require('fs')
+const path = require('path')
+const { expect } = require('chai')
+const EasyGraphQLTester = require('easygraphql-tester')
+
+const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
+
+describe('Test my queries and mutations', () => {
+  let tester
+
+  before(() => {
+    tester = new EasyGraphQLTester(schemaCode)
+  })
+
+  describe('Queries', () => {
+    it('Invalid query getUser', () => {
+      const invalidQuery = `
+        {
+          getUser {
+            id
+            invalidField
+            familyInfo {
+              father {
+                email
+                username
+              }
+            }
+          }
+        }
+      `
+      // First arg: false because the query is not valid (There is no query called getUser on the Schema)
+      // Second arg: query to test
+      tester.test(false, invalidQuery)
+    })
+
+    it('Should pass with a valid query', () => {
+      const validQuery = `
+        {
+          getMeByTestResult(result: 4.9) {
+            email
+          }
+        }
+      `
+      // First arg: true because the query is valid
+      // Second arg: query to test
+      tester.test(true, validQuery)
+    })
+  })
+
+  describe('Mutations', () => {
+    it('Invalid input type', () => {
+      const mutation = `
+        mutation UpdateUserScores{
+          updateUserScores {
+            email
+            scores
+          }
+        }
+      `
+      // First arg: false because the input value is not valid
+      // Second arg: mutation to test
+      // Third arg: input value
+      tester.test(false, mutation, {
+        scores: ['1']
+      })
+    })
+
+    it('Should pass if the input type is valid', () => {
+      const mutation = `
+        mutation UpdateUserScores{
+          updateUserScores {
+            email
+            scores
+          }
+        }
+      `
+      // First arg: true because the input value is valid
+      // Second arg: mutation to test
+      // Third arg: input value
+      tester.test(true, mutation, {
+        scores: [1]
+      })
+    })
+  })
+})
+```
+
+#### You can use it with your favorite test runner.
+
+## Mocking Queries and Mutations
 ### Query
 + Define the query
 + Pass the query to `tester.mock(query)`
