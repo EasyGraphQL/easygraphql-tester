@@ -105,7 +105,6 @@ To use it as an assertion library, you must follow the next steps:
 
 const fs = require('fs')
 const path = require('path')
-const { expect } = require('chai')
 const EasyGraphQLTester = require('easygraphql-tester')
 
 const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
