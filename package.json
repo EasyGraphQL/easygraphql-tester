@@ -8,6 +8,11 @@
     "standard": "standard",
     "standard-fix": "standard --fix"
   },
+  "standard": {
+    "ignore": [
+      "examples"
+    ]
+  },
   "homepage": "https://github.com/EasyGraphQL/easygraphql-tester",
   "author": {
     "name": "EasyGraphQL",

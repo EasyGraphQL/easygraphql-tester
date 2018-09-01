@@ -1,0 +1,72 @@
+scalar JSON
+
+type User {
+  email: String!
+  username: String!
+  fullName: String!
+}
+
+type Me {
+  id: ID!
+  email: String!
+  username: String!
+  fullName: String!
+  addresses: [String]!
+  scores: [Int]!
+  age: Int
+  testResult: Float!
+  phone: [String]!
+  apiKey: String!
+  familyInfo: [FamilyInfo]!
+}
+
+type FamilyInfo {
+  father: User!
+  mother: User!
+  brothers: [User]!
+  isLocal: Boolean!
+}
+
+# MUTATIONS
+input UserInput {
+  email: String!
+  username: String!
+  fullName: String!
+  password: String!
+}
+
+input IsAdminInput {
+  isAdmin: Boolean!
+}
+
+input UpdatePasswordInput {
+  oldPassword: String!
+  newPassword: String!
+}
+
+input UpdateUserAgeInput {
+  id: ID!
+  age: Int!
+}
+
+input UpdateUserScoresInput {
+  scores: [Int]!
+}
+
+type Query {
+  getMe: Me
+  getUserByUsername(username: String!, name: String!): User
+  getFamilyInfo: FamilyInfo
+  getFamilyInfoByIsLocal(isLocal: Boolean!): FamilyInfo
+  getMeByAge(age: Int!): Me
+  getMeByTestResult(result: Float!): Me
+  getMeByResults(results: [Int]!): Me
+}
+
+type Mutation {
+  createUser(input: UserInput!): User
+  isAdmin(input: IsAdminInput!): User
+  updatePassword(input: UpdatePasswordInput!): Me
+  updateUserAge(input: UpdateUserAgeInput!): Me
+  updateUserScores(input: UpdateUserScoresInput!): Me
+}
