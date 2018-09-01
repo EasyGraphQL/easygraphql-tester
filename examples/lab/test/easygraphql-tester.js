@@ -35,7 +35,7 @@ describe('Test my schema, queries and mutations', () => {
       tester.test(false, invalidQuery)
     })
 
-    it('Should pass wtesth a valid query', () => {
+    it('Should pass with a valid query', () => {
       const validQuery = `
         {
           getMeByTestResult(result: 4.9) {

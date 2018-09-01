@@ -5,9 +5,9 @@ const path = require('path')
 const EasyGraphQLTester = require('../../../lib')
 
 const schemaCode = fs.readFileSync(path.join(__dirname, '..', 'schema', 'schema.gql'), 'utf8')
-let tester
 
 describe('Test my schema, queries and mutations', () => {
+  let tester
   beforeAll(() => {
     tester = new EasyGraphQLTester(schemaCode)
   })
@@ -33,7 +33,7 @@ describe('Test my schema, queries and mutations', () => {
       tester.test(false, invalidQuery)
     })
 
-    test('Should pass wtesth a valid query', () => {
+    test('Should pass with a valid query', () => {
       const validQuery = `
         {
           getMeByTestResult(result: 4.9) {
