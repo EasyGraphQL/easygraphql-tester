@@ -2,7 +2,6 @@
   "name": "easygraphql-tester-jest-demo",
   "version": "0.0.1",
   "description": "This is an example of easygraphql-tester using jest",
-  "main": "index.js",
   "scripts": {
     "test": "jest"
   },
