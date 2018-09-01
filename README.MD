@@ -79,7 +79,7 @@ input UpdateUserScoresInput {
 type Query {
   getMe: Me
   getUserByUsername(username: String!, name: String!): User
-  getMeByResults(results: [Int]!): Me
+  getMeByTestResult(result: Float!): Me
 }
 
 type Mutation {
@@ -189,7 +189,9 @@ describe('Test my queries and mutations', () => {
 })
 ```
 
-#### You can use it with your favorite test runner.
+**You can use it with your favorite test runner.**
+#### [Here are more examples](https://github.com/EasyGraphQL/easygraphql-tester/tree/master/examples)
+**Clone the repo an try it! also, send a PR with your example!**
 
 ## Mocking Queries and Mutations
 ### Query
