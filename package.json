@@ -4,7 +4,7 @@
   "description": "Test GraphQL schema, queries and mutations",
   "main": "index.js",
   "scripts": {
-    "test": "nyc mocha",
+    "test": "nyc --check-coverage --lines 85 mocha",
     "standard": "standard",
     "standard-fix": "standard --fix"
   },
