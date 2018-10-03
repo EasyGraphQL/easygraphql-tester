@@ -1,0 +1,22 @@
+{
+  "name": "easygraphql-tester-jasmine-demo",
+  "version": "0.0.1",
+  "description": "This is an example of easygraphql-tester using jasmine",
+  "dependencies": {},
+  "devDependencies": {
+    "jasmine": "^3.2.0"
+  },
+  "scripts": {
+    "test": "jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EasyGraphQL/easygraphql-tester.git"
+  },
+  "author": "Gustavo F. Silva",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/EasyGraphQL/easygraphql-tester/issues"
+  },
+  "homepage": "https://github.com/EasyGraphQL/easygraphql-tester#readme"
+}
