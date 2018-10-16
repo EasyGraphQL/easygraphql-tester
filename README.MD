@@ -93,7 +93,7 @@ test runner.
 
 To use it as an assertion library, you must follow the next steps:
 + Define a Query or Mutation
-+ Pass as first argument a boolean to `tester.test(true)` or `tester.test(true)` if the query/mutation to test is valid
++ Pass as first argument a boolean to `tester.test(true)` or `tester.test(false)` if the query/mutation to test is valid
   + `true`: it is fine, everything should work fine
   + `false`: it should fail, there is an error in the query/mutation or arguments/input
 + Pass as second argument the query/mutation to test
