@@ -1,6 +1,6 @@
 {
   "name": "easygraphql-tester",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Test GraphQL schema, queries and mutations",
   "main": "index.js",
   "scripts": {
