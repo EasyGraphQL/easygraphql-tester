@@ -66,6 +66,10 @@ function inputValidator (variables, schemaArgs, schema, name, arrCalled) {
   if (schemaArgs[0].isArray && !Array.isArray(variables) && !arrCalled) {
     throw new Error(`The input value on ${name} must be an array`)
   }
+
+  if (Array.isArray(variables) && !schemaArgs[0].isArray) {
+    throw new Error(`The input value on ${name} is an array and it must be an object`)
+  }
   // If there is an array on the input, we should loop it to access each value on it.
   if (Array.isArray(variables)) {
     return variables.forEach(inputVar => inputValidator(inputVar, schemaArgs, schema, name, true))
