@@ -217,6 +217,30 @@ describe('Mutation', () => {
       expect(error.message).to.be.eq('The input value on createUsers must be an array')
     })
 
+    it('Should throw an error if the input is an array and it must be an obj', () => {
+      let error
+      try {
+        const mutation = `
+          mutation CreateUser {
+            createUser {
+              email
+            }
+          }
+        `
+        tester.mock(mutation, [{
+          email: 'test@test.com',
+          username: 'test',
+          fullName: 'test',
+          password: 'test'
+        }])
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.be.an.instanceOf(Error)
+      expect(error.message).to.be.eq('The input value on createUser is an array and it must be an object')
+    })
+
     it('Should throw an error if the input is string and it must be a number', () => {
       let error
       try {
