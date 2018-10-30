@@ -61,10 +61,12 @@ type Query {
   getMeByAge(age: Int!): Me
   getMeByTestResult(result: Float!): Me
   getMeByResults(results: [Int]!): Me
+  getUsers: [User]!
 }
 
 type Mutation {
   createUser(input: UserInput!): User
+  createUsers(input: [UserInput]!): [User]!
   isAdmin(input: IsAdminInput!): User
   updatePassword(input: UpdatePasswordInput!): Me
   updateUserAge(input: UpdateUserAgeInput!): Me

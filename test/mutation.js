@@ -36,6 +36,25 @@ describe('Mutation', () => {
       expect(error.message).to.be.eq('Variables are missing')
     })
 
+    it('Should throw an error if the variables are missing', () => {
+      let error
+      try {
+        const mutation = `
+          mutation CreateUsers {
+            createUsers {
+              email
+            }
+          }
+        `
+        tester.mock(mutation, [])
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.be.an.instanceOf(Error)
+      expect(error.message).to.be.eq('Variables are missing')
+    })
+
     it('Should throw an error if the variables are null', () => {
       let error
       try {
@@ -174,6 +193,30 @@ describe('Mutation', () => {
       expect(error.message).to.be.eq('username argument is not type String')
     })
 
+    it('Should throw an error if the input is not an array of values', () => {
+      let error
+      try {
+        const mutation = `
+          mutation CreateUsers {
+            createUsers {
+              email
+            }
+          }
+        `
+        tester.mock(mutation, {
+          email: 'test@test.com',
+          username: 'test',
+          fullName: 'test',
+          password: 'test'
+        })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.be.an.instanceOf(Error)
+      expect(error.message).to.be.eq('The input value on createUsers must be an array')
+    })
+
     it('Should throw an error if the input is string and it must be a number', () => {
       let error
       try {
@@ -258,6 +301,31 @@ describe('Mutation', () => {
 
       expect(test).to.exist
       expect(test.email).to.be.a('string')
+    })
+
+    it('Should return selected fields on CreateUsers', () => {
+      const mutation = `
+        mutation CreateUsers{
+          createUsers {
+            email
+            username
+            fullName
+          }
+        }
+      `
+      const test = tester.mock(mutation, [{
+        email: 'test@test.com',
+        username: 'test',
+        fullName: 'test',
+        password: 'test'
+      }])
+
+      expect(test).to.exist
+      expect(test).to.be.a('array')
+      expect(test.length).to.be.gt(0)
+      expect(test[0].email).to.be.a('string')
+      expect(test[0].username).to.be.a('string')
+      expect(test[0].fullName).to.be.a('string')
     })
 
     it('Should return selected fields on UpdateUserAge', () => {

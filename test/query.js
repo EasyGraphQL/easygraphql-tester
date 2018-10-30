@@ -133,6 +133,27 @@ describe('Query', () => {
       expect(error).to.be.an.instanceOf(Error)
       expect(error.message).to.be.eq('getFamilyInfo: Must select field on father')
     })
+
+    it('Should fail if there is an invalid field on the query', () => {
+      let error
+      try {
+        const query = `
+          {
+            getUsers {
+              email
+              username
+              invalidName
+            }
+          }
+        `
+        tester.mock(query)
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.be.an.instanceOf(Error)
+      expect(error.message).to.be.eq('Invalid field invalidName on getUsers')
+    })
   })
 
   describe('Should throw an error with invalid arguments', () => {
@@ -386,6 +407,26 @@ describe('Query', () => {
       `
       const test = tester.mock(query)
       expect(test.email).to.be.a('string')
+    })
+
+    it('Should return selected fields on GetUsers', () => {
+      const query = `
+        {
+          getUsers {
+            email
+            username
+            fullName
+          }
+        }
+      `
+
+      const test = tester.mock(query)
+      expect(test).to.exist
+      expect(test).to.be.a('array')
+      expect(test.length).to.be.gt(0)
+      expect(test[0].email).to.be.a('string')
+      expect(test[0].username).to.be.a('string')
+      expect(test[0].fullName).to.be.a('string')
     })
   })
 })
