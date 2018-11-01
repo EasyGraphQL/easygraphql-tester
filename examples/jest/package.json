@@ -18,7 +18,8 @@
     "url": "https://github.com/EasyGraphQL/easygraphql-tester"
   },
   "license": "MIT",
-  "devDependencies": {
-    "jest": "^23.5.0"
+  "devDependencies": {},
+  "dependencies": {
+    "jest": "^23.6.0"
   }
 }
