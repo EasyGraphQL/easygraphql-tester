@@ -17,6 +17,9 @@ The tester will check:
 + And more....
 
 ## Installation
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/EasyGraphQL/easygraphql-tester.svg)](https://greenkeeper.io/)
+
 ```bash
 $ npm install easygraphql-tester --save-dev
 ```
