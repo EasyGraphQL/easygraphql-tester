@@ -6,6 +6,5 @@ node_js:
 install:
   - npm install
 script:
-  - npm standard
+  - npm run standard
   - npm test
-  
