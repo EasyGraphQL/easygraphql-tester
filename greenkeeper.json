@@ -1,0 +1,13 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "examples/jasmine/package.json",
+        "examples/jest/package.json",
+        "examples/lab/package.json",
+        "examples/mocha/package.json",
+        "package.json"
+      ]
+    }
+  }
+}
