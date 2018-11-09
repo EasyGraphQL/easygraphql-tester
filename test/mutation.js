@@ -306,6 +306,27 @@ describe('Mutation', () => {
       expect(error).to.be.an.instanceOf(Error)
       expect(error.message).to.be.eq('scores must be an Array on updateUserScores')
     })
+
+    it('Should throw an error if the input value is invalid', () => {
+      let error
+      try {
+        const mutation = `
+          mutation UpdateUserScores{
+            updateUserScores {
+              scores
+            }
+          }
+        `
+        tester.mock(mutation, {
+          invalidField: 1
+        })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.be.an.instanceOf(Error)
+      expect(error.message).to.be.eq('invalidField argument is not defined on updateUserScores')
+    })
   })
 
   describe('Should return selected fields', () => {

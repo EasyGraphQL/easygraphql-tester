@@ -182,7 +182,7 @@ describe('Query', () => {
       try {
         const query = `
           {
-            getUserByUsername(email: test) {
+            getUserByUsername(name: test) {
               email
             }
           }
@@ -194,6 +194,25 @@ describe('Query', () => {
 
       expect(error).to.be.an.instanceOf(Error)
       expect(error.message).to.be.eq('username argument is missing on getUserByUsername')
+    })
+
+    it('Should throw an error if argument is invalid', () => {
+      let error
+      try {
+        const query = `
+          {
+            getUserByUsername(invalidArg: test) {
+              email
+            }
+          }
+        `
+        tester.mock(query)
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.be.an.instanceOf(Error)
+      expect(error.message).to.be.eq('invalidArg argument is not defined on getUserByUsername')
     })
 
     it('Should throw an error if argument type is invalid. Int', () => {
