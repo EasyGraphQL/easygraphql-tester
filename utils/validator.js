@@ -16,7 +16,7 @@ function argumentsValidator (args, schemaArgs, name) {
     const filteredArg = schemaArgs.filter(schemaArg => schemaArg.name === arg.name)
 
     if (filteredArg.length === 0) {
-      throw new Error(`${arg.name} argument is not defined on ${name}`)
+      throw new Error(`${arg.name} argument is not defined on ${name} arguments`)
     }
   })
 
@@ -93,7 +93,7 @@ function inputValidator (variables, schemaArgs, schema, name, arrCalled) {
     const filteredArg = inputFields.fields.filter(schemaVar => schemaVar.name === arg)
 
     if (filteredArg.length === 0) {
-      throw new Error(`${arg} argument is not defined on ${name}`)
+      throw new Error(`${arg} argument is not defined on ${name} Input`)
     }
   }
 

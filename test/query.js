@@ -212,7 +212,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('invalidArg argument is not defined on getUserByUsername')
+      expect(error.message).to.be.eq('invalidArg argument is not defined on getUserByUsername arguments')
     })
 
     it('Should throw an error if argument type is invalid. Int', () => {
