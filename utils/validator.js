@@ -10,6 +10,16 @@ const _ = require('lodash')
  * @returns {}
  */
 function argumentsValidator (args, schemaArgs, name) {
+  // Check if one of the passed argument is not defined on the schema and
+  // throw an error
+  args.forEach(arg => {
+    const filteredArg = schemaArgs.filter(schemaArg => schemaArg.name === arg.name)
+
+    if (filteredArg.length === 0) {
+      throw new Error(`${arg.name} argument is not defined on ${name}`)
+    }
+  })
+
   // Loop all the arguments defined on the schema
   schemaArgs.forEach(arg => {
     // If arg can't be null; make multiples validations.
@@ -76,6 +86,17 @@ function inputValidator (variables, schemaArgs, schema, name, arrCalled) {
   }
   // The input type is a nested type, so must search it on the schema
   const inputFields = schema[schemaArgs[0].type]
+
+  // Check if one of the passed variables is not defined on the schema and
+  // throw an error
+  for (const arg of Object.keys(variables)) {
+    const filteredArg = inputFields.fields.filter(schemaVar => schemaVar.name === arg)
+
+    if (filteredArg.length === 0) {
+      throw new Error(`${arg} argument is not defined on ${name}`)
+    }
+  }
+
   // Loop to get all the required fields
   inputFields.fields.forEach(arg => {
     if (arg.noNull) {

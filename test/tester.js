@@ -47,6 +47,17 @@ describe('Assert test', () => {
       tester.test(true, validQuery)
     })
 
+    it('Should not pass if the query arg is invalid', () => {
+      const validQuery = `
+        {
+          getMeByTestResult(invalidField: 4.9) {
+            email
+          }
+        }
+      `
+      tester.test(false, validQuery)
+    })
+
     it('Should pass if the mutation is invalid', () => {
       const mutation = `
         mutation UpdateUserScores{
@@ -72,6 +83,21 @@ describe('Assert test', () => {
       `
       tester.test(true, mutation, {
         scores: [1]
+      })
+    })
+
+    it('Should not pass if one value on the mutation input is invalid', () => {
+      const mutation = `
+        mutation UpdateUserScores{
+          updateUserScores {
+            email
+            scores
+          }
+        }
+      `
+      tester.test(false, mutation, {
+        scores: [1],
+        invalidField: true
       })
     })
 
