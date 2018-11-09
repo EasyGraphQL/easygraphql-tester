@@ -325,7 +325,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('invalidField argument is not defined on updateUserScores')
+      expect(error.message).to.be.eq('invalidField argument is not defined on updateUserScores Input')
     })
   })
 
