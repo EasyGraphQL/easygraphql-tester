@@ -7,13 +7,14 @@ const path = require('path')
 const { expect } = require('chai')
 const EasyGraphQLTester = require('../lib')
 
-const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
+const userSchema = fs.readFileSync(path.join(__dirname, 'schema', 'user.gql'), 'utf8')
+const familySchema = fs.readFileSync(path.join(__dirname, 'schema', 'family.gql'), 'utf8')
 
 describe('Mutation', () => {
   let tester
 
   before(() => {
-    tester = new EasyGraphQLTester(schemaCode)
+    tester = new EasyGraphQLTester([userSchema, familySchema])
   })
 
   describe('Should throw an error if variables are missing', () => {

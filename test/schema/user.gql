@@ -1,5 +1,3 @@
-scalar JSON
-
 type User {
   email: String!
   username: String!
@@ -20,14 +18,6 @@ type Me {
   familyInfo: [FamilyInfo]!
 }
 
-type FamilyInfo {
-  father: User!
-  mother: User!
-  brothers: [User]!
-  isLocal: Boolean!
-}
-
-# MUTATIONS
 input UserInput {
   email: String!
   username: String!
@@ -56,8 +46,6 @@ input UpdateUserScoresInput {
 type Query {
   getMe: Me
   getUserByUsername(username: String!, name: String!): User
-  getFamilyInfo: FamilyInfo
-  getFamilyInfoByIsLocal(isLocal: Boolean!): FamilyInfo
   getMeByAge(age: Int!): Me
   getMeByTestResult(result: Float!): Me
   getMeByResults(results: [Int]!): Me
