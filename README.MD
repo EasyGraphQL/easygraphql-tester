@@ -192,6 +192,33 @@ describe('Test my queries and mutations', () => {
 })
 ```
 
+### Multiple Schema files
+Also, this package works if you have multiple schema files where, just import all your files
+and pass the constructor as an array... be sure to extend the query and mutation
+
+```js
+'use strict'
+
+const fs = require('fs')
+const path = require('path')
+const { expect } = require('chai')
+const EasyGraphQLTester = require('../lib')
+
+const userSchema = fs.readFileSync(path.join(__dirname, 'schema', 'user.gql'), 'utf8')
+const familySchema = fs.readFileSync(path.join(__dirname, 'schema', 'family.gql'), 'utf8')
+
+describe('Test my queries and mutations', () => {
+  let tester
+
+  before(() => {
+    tester = new EasyGraphQLTester([userSchema, familySchema])
+  })
+
+  // All your tests .... 
+
+})
+```
+
 **You can use it with your favorite test runner.**
 #### [Here are more examples](https://github.com/EasyGraphQL/easygraphql-tester/tree/master/examples)
 **Clone the repo an try it! also, send a PR with your example!**

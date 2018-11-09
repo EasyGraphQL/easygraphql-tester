@@ -7,7 +7,8 @@ const path = require('path')
 const { expect } = require('chai')
 const EasyGraphQLTester = require('../lib')
 
-const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
+const userSchema = fs.readFileSync(path.join(__dirname, 'schema', 'user.gql'), 'utf8')
+const familySchema = fs.readFileSync(path.join(__dirname, 'schema', 'family.gql'), 'utf8')
 
 describe('Constructor', () => {
   it('Should fail if the schema is missing', () => {
@@ -35,13 +36,13 @@ describe('Constructor', () => {
   })
 
   it('Should initialize constructor', () => {
-    const tester = new EasyGraphQLTester(schemaCode)
+    const tester = new EasyGraphQLTester([userSchema, familySchema])
 
     expect(tester).to.exist
   })
 
   it('Should fail if the there is no query to test', () => {
-    const tester = new EasyGraphQLTester(schemaCode)
+    const tester = new EasyGraphQLTester([userSchema, familySchema])
     let error
     try {
       tester.mock()

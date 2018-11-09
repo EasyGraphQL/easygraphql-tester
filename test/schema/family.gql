@@ -1,0 +1,11 @@
+type FamilyInfo {
+  father: User!
+  mother: User!
+  brothers: [User]!
+  isLocal: Boolean!
+}
+
+extend type Query {
+  getFamilyInfo: FamilyInfo
+  getFamilyInfoByIsLocal(isLocal: Boolean!): FamilyInfo
+}
