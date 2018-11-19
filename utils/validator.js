@@ -1,6 +1,6 @@
 'use strict'
 
-const _ = require('lodash')
+const isObject = require('lodash.isobject')
 
 /**
  * Find if the required arguments are passed
@@ -190,8 +190,8 @@ function validator (query, mock) {
 // types.
 function mockBuilder (field, mock, name, mockResult) {
   if (field.fields.length === 0) {
-    if (_.isObject(mock[field.name])) {
-      if (Array.isArray(mock[field.name]) && _.isObject(mock[field.name][0])) {
+    if (isObject(mock[field.name])) {
+      if (Array.isArray(mock[field.name]) && isObject(mock[field.name][0])) {
         throw new Error(`${name}: Must select field on ${field.name}`)
       } else if (!Array.isArray(mock[field.name])) {
         throw new Error(`${name}: Must select field on ${field.name}`)
