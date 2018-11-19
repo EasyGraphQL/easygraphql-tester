@@ -19,6 +19,6 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "lab": "^17.3.0"
+    "lab": "^18.0.0"
   }
 }
