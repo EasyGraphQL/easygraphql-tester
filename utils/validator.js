@@ -1,7 +1,7 @@
 'use strict'
 
 const isObject = require('lodash.isobject')
-const isEmpty = require('lodash.isEmpty')
+const isEmpty = require('lodash.isempty')
 
 /**
  * Find if the required arguments are passed
