@@ -1,4 +1,7 @@
+union SearchResult = User | FamilyInfo
+
 type User {
+  id: ID!
   email: String!
   username: String!
   fullName: String!
@@ -50,6 +53,7 @@ type Query {
   getMeByTestResult(result: Float!): Me
   getMeByResults(results: [Int]!): Me
   getUsers: [User]!
+  search(id: ID!): [SearchResult]!
 }
 
 type Mutation {

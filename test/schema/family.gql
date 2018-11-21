@@ -1,4 +1,5 @@
 type FamilyInfo {
+  id: ID!
   father: User!
   mother: User!
   brothers: [User]!

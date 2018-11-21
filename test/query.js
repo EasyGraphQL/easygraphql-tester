@@ -67,7 +67,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('Invalid field invalidField on getMe')
+      expect(error.message).to.be.eq(`Query getMe: The selected field invalidField doesn't exists`)
     })
 
     it('Should throw an error with the invalid field on getMe -> father', () => {
@@ -79,7 +79,7 @@ describe('Query', () => {
               id
               familyInfo {
                 father {
-                  id
+                  invalidField
                   email
                   username
                 }
@@ -93,7 +93,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('Invalid field id on getMe')
+      expect(error.message).to.be.eq(`Query getMe: The selected field invalidField doesn't exists`)
     })
 
     it('Should throw an error with the invalid field on getMe', () => {
@@ -113,7 +113,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('getMe: Must select field on familyInfo')
+      expect(error.message).to.be.eq('Query getMe: There should be a selected field on familyInfo')
     })
 
     it('Should throw an error with the invalid field on getFamilyInfo', () => {
@@ -132,7 +132,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('getFamilyInfo: Must select field on father')
+      expect(error.message).to.be.eq('Query getFamilyInfo: There should be a selected field on father')
     })
 
     it('Should fail if there is an invalid field on the query', () => {
@@ -153,7 +153,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('Invalid field invalidName on getUsers')
+      expect(error.message).to.be.eq(`Query getUsers: The selected field invalidName doesn't exists`)
     })
   })
 
@@ -447,6 +447,93 @@ describe('Query', () => {
       expect(test[0].email).to.be.a('string')
       expect(test[0].username).to.be.a('string')
       expect(test[0].fullName).to.be.a('string')
+    })
+  })
+
+  describe('Should support unions', () => {
+    it('Should throw an error with the invalid field on father', () => {
+      let error
+      try {
+        const query = `
+          {
+            search(id: "1") {
+              ... on User {
+                id
+              }
+              ... on FamilyInfo {
+                id
+                father 
+                brothers {
+                  username
+                }
+              }
+            }
+          }
+        `
+        tester.mock(query)
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.be.an.instanceOf(Error)
+      expect(error.message).to.be.eq('Query search: There should be a selected field on father')
+    })
+
+    it('Should throw an error with there is an invalid type', () => {
+      let error
+      try {
+        const query = `
+          {
+            search(id: "1") {
+              ... on User {
+                id
+              }
+              ... on InvalidType {
+                name
+              }
+              ... on FamilyInfo {
+                id
+                father 
+                brothers {
+                  username
+                }
+              }
+            }
+          }
+        `
+        tester.mock(query)
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.be.an.instanceOf(Error)
+      expect(error.message).to.be.eq('There is no type InvalidType on the Schema')
+    })
+
+    it('Should return selected fields on search with union', () => {
+      const query = `
+        {
+          search(id: "1") {
+            ... on User {
+              id
+            }
+            ... on FamilyInfo {
+              id
+              father {
+                username
+              }
+              brothers {
+                username
+              }
+            }
+          }
+        }
+      `
+
+      const test = tester.mock(query)
+      expect(test).to.exist
+      expect(test).to.be.a('array')
+      expect(test[0].id).to.be.a('string')
     })
   })
 })
