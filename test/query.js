@@ -364,6 +364,7 @@ describe('Query', () => {
                 fullName
               }
             }
+            familyRelation
           }
         }
       `
@@ -387,6 +388,7 @@ describe('Query', () => {
       expect(test.familyInfo[0].brothers).to.exist
       expect(test.familyInfo[0].brothers).to.be.a('array')
       expect(test.familyInfo[0].brothers[0].fullName).to.be.a('string')
+      expect(['Father', 'Mother', 'Brother']).to.include(test.familyRelation)
     })
 
     it('Should return selected fields on getFamilyInfoByIsLocal', () => {

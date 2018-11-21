@@ -1,5 +1,11 @@
 union SearchResult = User | FamilyInfo
 
+enum FamilyRelation {
+  Father
+  Mother
+  Brother
+}
+
 type User {
   id: ID!
   email: String!
@@ -19,6 +25,7 @@ type Me {
   phone: [String]!
   apiKey: String!
   familyInfo: [FamilyInfo]!
+  familyRelation: FamilyRelation!
 }
 
 input UserInput {
