@@ -125,7 +125,7 @@ describe('Mutation', () => {
         const mutation = `
           mutation CreateUser{
             createUser {
-              id
+              invalidField
               email
             }
           }
@@ -141,7 +141,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('Invalid field id on createUser')
+      expect(error.message).to.be.eq(`Mutation createUser: The selected field invalidField doesn't exists`)
     })
   })
 

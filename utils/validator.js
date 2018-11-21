@@ -1,6 +1,7 @@
 'use strict'
 
 const isObject = require('lodash.isobject')
+const isEmpty = require('lodash.isempty')
 
 /**
  * Find if the required arguments are passed
@@ -158,50 +159,83 @@ function validateInputType (arg, filteredArg) {
   }
 }
 
-function validator (query, mock) {
+function validator (query, mock, schema, type) {
   // If the query name is missing on the mock, there should be an error because
   // it is not defined on the schema
   if (!mock) {
     throw new Error(`There is no ${query.operationType} called ${query.name} on the Schema`)
   }
 
+  let schemaType
+  if (type === 'Query') {
+    schemaType = schema.Query.fields.filter(el => el.name === query.name)[0]
+  } else {
+    schemaType = schema.Mutation.fields.filter(el => el.name === query.name)[0]
+  }
   // If the mock is array, it will loop each value, so the query can access
   // each value requested on the Query/Mutation
   if (Array.isArray(mock)) {
     return mock.map(mockVal => {
-      const result = {}
-      query.fields.forEach(field => {
-        result[field.name] = mockBuilder(field, mockVal, query.name)
-      })
-
-      return result
+      return getResult(query, mockVal, schema, schemaType, type)
     })
   }
   // Create object to return, with all the fields mocked, and nested
-  const result = {}
+  return getResult(query, mock, schema, schemaType, type)
+}
+
+function getResult (query, mock, schema, schemaType, type) {
+  let result = {}
   query.fields.forEach(field => {
-    result[field.name] = mockBuilder(field, mock, query.name)
+    if (field.inlineFragment && !schema[field.name]) {
+      throw new Error(`There is no type ${field.name} on the Schema`)
+    }
+
+    if (field.inlineFragment) {
+      const mockResult = {}
+      field.fields.forEach(element => {
+        validateSelectedFields(element, schema[field.name], schema, query.name, type)
+        const result = mockBuilder(element, mock, query.name, schema)
+
+        if (!isEmpty(result)) {
+          mockResult[element.name] = result
+        }
+      })
+
+      result = mockResult
+    } else {
+      validateSelectedFields(field, schema[schemaType.type], schema, query.name, type)
+      result[field.name] = mockBuilder(field, mock, query.name, schema)
+    }
   })
 
   return result
 }
 
+function validateSelectedFields (field, selectedSchema, schema, name, type) {
+  const schemaFields = selectedSchema.fields.filter(schemaField => schemaField.name === field.name)[0]
+  if (!schemaFields) {
+    throw new Error(`${type} ${name}: The selected field ${field.name} doesn't exists`)
+  }
+
+  if (schema[schemaFields.type]) {
+    if (isObject(schema[schemaFields.type]) && field.fields.length === 0) {
+      throw new Error(`${type} ${name}: There should be a selected field on ${field.name}`)
+    }
+
+    field.fields.forEach(el => {
+      return validateSelectedFields(el, schema[schemaFields.type], schema, name, type)
+    })
+  }
+}
+
 // This is going to be a recursive method that will search nested values on nested
 // types.
-function mockBuilder (field, mock, name, mockResult) {
+function mockBuilder (field, mock, name) {
+  if (!mock) {
+    return
+  }
+
   if (field.fields.length === 0) {
-    if (isObject(mock[field.name])) {
-      if (Array.isArray(mock[field.name]) && isObject(mock[field.name][0])) {
-        throw new Error(`${name}: Must select field on ${field.name}`)
-      } else if (!Array.isArray(mock[field.name])) {
-        throw new Error(`${name}: Must select field on ${field.name}`)
-      }
-    }
-
-    if (!mock[field.name] && mock[field.name] !== null && typeof mock[field.name] !== 'boolean') {
-      throw new Error(`Invalid field ${field.name} on ${name}`)
-    }
-
     return mock[field.name]
   }
 
@@ -210,17 +244,27 @@ function mockBuilder (field, mock, name, mockResult) {
   if (mock[field.name] && Array.isArray(mock[field.name])) {
     const arrField = []
     mock[field.name].forEach(el => {
-      mockResult = {}
+      const mockResult = {}
       field.fields.forEach(element => {
-        mockResult[element.name] = mockBuilder(element, el, name, mockResult)
+        const result = mockBuilder(element, el, name)
+        if (result) {
+          mockResult[element.name] = result
+        }
       })
-      arrField.push(mockResult)
+
+      if (!isEmpty(mockResult)) {
+        arrField.push(mockResult)
+      }
     })
     return arrField
   } else {
-    mockResult = {}
+    const mockResult = {}
     field.fields.forEach(element => {
-      mockResult[element.name] = mockBuilder(element, mock[field.name], name, mockResult)
+      const result = mockBuilder(element, mock[field.name], name)
+
+      if (result) {
+        mockResult[element.name] = result
+      }
     })
     return mockResult
   }
