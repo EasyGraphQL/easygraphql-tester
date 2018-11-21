@@ -217,8 +217,9 @@ function validateSelectedFields (field, selectedSchema, schema, name, type) {
     throw new Error(`${type} ${name}: The selected field ${field.name} doesn't exists`)
   }
 
-  if (schema[schemaFields.type]) {
-    if (isObject(schema[schemaFields.type]) && field.fields.length === 0) {
+  const selectedType = schema[schemaFields.type]
+  if (selectedType) {
+    if (isObject(selectedType) && field.fields.length === 0 && selectedType.values.length === 0) {
       throw new Error(`${type} ${name}: There should be a selected field on ${field.name}`)
     }
 

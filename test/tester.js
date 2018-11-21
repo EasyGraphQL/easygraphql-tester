@@ -162,5 +162,28 @@ describe('Assert test', () => {
       expect(error).to.be.an.instanceOf(Error)
       expect(error.message).to.be.eq('Failed, there should be an error and the passed query/mutation is valid')
     })
+
+    it('Should pass query with union', () => {
+      const query = `
+        {
+          search(id: "1") {
+            ... on User {
+              id
+            }
+            ... on FamilyInfo {
+              id
+              father {
+                username
+              }
+              brothers {
+                username
+              }
+            }
+          }
+        }
+      `
+
+      tester.test(true, query)
+    })
   })
 })
