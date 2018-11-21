@@ -186,11 +186,11 @@ function validator (query, mock, schema, type) {
 function getResult (query, mock, schema, schemaType, type) {
   let result = {}
   query.fields.forEach(field => {
-    if (field.InlineFragment && !schema[field.name]) {
+    if (field.inlineFragment && !schema[field.name]) {
       throw new Error(`There is no type ${field.name} on the Schema`)
     }
 
-    if (field.InlineFragment) {
+    if (field.inlineFragment) {
       const mockResult = {}
       field.fields.forEach(element => {
         validateSelectedFields(element, schema[field.name], schema, query.name, type)
