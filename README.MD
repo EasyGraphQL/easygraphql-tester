@@ -1,7 +1,7 @@
 <h1 align="center">
-  <img src="https://cdn.rawgit.com/EasyGraphQL/easygraphql-mock/baab331c/EasyGraphQL.png" alt="EasyGraphQL Mock " width="350">
+  <img src="https://raw.githubusercontent.com/EasyGraphQL/easygraphql-now/master/logo.png" alt="EasyGraphQL Mock " width="350">
   <br>
-  EasyGraphQL Tester
+    easygraphql-tester
   <br>
   <br>
 </h1>
@@ -28,7 +28,7 @@ $ npm install easygraphql-tester --save-dev
 To get started with the tester, you might need to follow the next steps:
 
 ### First step
-+ Import `EasyGraphQLTester` package.
++ Import `easygraphql-tester` package.
 + Read the schema.
 + Initialize the tester, and pass the schema as an argument.
   
