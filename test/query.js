@@ -331,6 +331,44 @@ describe('Query', () => {
       expect(error.message).to.be.eq('results must be an Array on getMeByResults')
     })
 
+    it('Should throw an error if the input variable is not used', () => {
+      let error
+      try {
+        const query = `
+          query GetMeByResults($results: Int!) {
+            getMeByResults(results: $invalidVar){
+              email
+            }
+          }
+        `
+        tester.mock(query)
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.be.an.instanceOf(Error)
+      expect(error.message).to.be.eq('results variable is not defined on getMeByResults arguments')
+    })
+
+    it('Should throw an error if there is an extra input variable', () => {
+      let error
+      try {
+        const query = `
+          query GetMeByResults($results: Int!, $names: [String]!) {
+            getMeByResults(results: $results){
+              email
+            }
+          }
+        `
+        tester.mock(query)
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.be.an.instanceOf(Error)
+      expect(error.message).to.be.eq('names variable is not defined on getMeByResults arguments')
+    })
+
     it('Should ignore extra arguments', () => {
       const query = `
         {
@@ -536,6 +574,34 @@ describe('Query', () => {
       expect(test).to.exist
       expect(test).to.be.a('array')
       expect(test[0].id).to.be.a('string')
+    })
+
+    it('Should return selected data', () => {
+      const query = `
+        query GetMeByResults($results: Int!) {
+          getMeByResults(results: $results){
+            email
+          }
+        }
+      `
+
+      const test = tester.mock(query)
+      expect(test).to.exist
+      expect(test.email).to.be.a('string')
+    })
+
+    it('Should return selected data with query variables', () => {
+      const query = `
+        query getUserByUsername($username: String!, $name: String!) {
+          getUserByUsername(username: $username, name: $name){
+            email
+          }
+        }
+      `
+
+      const test = tester.mock(query)
+      expect(test).to.exist
+      expect(test.email).to.be.a('string')
     })
   })
 })

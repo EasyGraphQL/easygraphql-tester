@@ -10,7 +10,7 @@ const isEmpty = require('lodash.isempty')
  * @param name - The name of the query, used to return an error
  * @returns {}
  */
-function argumentsValidator (args, schemaArgs, name) {
+function argumentsValidator (args, schemaArgs, name, queryVariables) {
   // Check if one of the passed argument is not defined on the schema and
   // throw an error
   args.forEach(arg => {
@@ -18,6 +18,14 @@ function argumentsValidator (args, schemaArgs, name) {
 
     if (filteredArg.length === 0) {
       throw new Error(`${arg.name} argument is not defined on ${name} arguments`)
+    }
+  })
+
+  queryVariables.forEach(queryVariable => {
+    const filteredArg = args.filter(arg => arg.value === queryVariable.name)
+
+    if (filteredArg.length === 0) {
+      throw new Error(`${queryVariable.name} variable is not defined on ${name} arguments`)
     }
   })
 
@@ -31,6 +39,10 @@ function argumentsValidator (args, schemaArgs, name) {
       // If the argument is missing, there should be an error
       if (filteredArg.length === 0) {
         throw new Error(`${arg.name} argument is missing on ${name}`)
+      }
+
+      if (filteredArg[0].type === 'Variable') {
+        return
       }
 
       // If the argument must be an array and it is different, there should be an error
