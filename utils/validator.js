@@ -187,9 +187,15 @@ function validator (query, mock, schema, type) {
   // If the mock is array, it will loop each value, so the query can access
   // each value requested on the Query/Mutation
   if (Array.isArray(mock)) {
-    return mock.map(mockVal => {
-      return getResult(query, mockVal, schema, schemaType, type)
+    const result = []
+
+    mock.forEach(mockVal => {
+      const mockResult = getResult(query, mockVal, schema, schemaType, type)
+      if (mockResult && !isEmpty(mockResult)) {
+        result.push(mockResult)
+      }
     })
+    return result
   }
   // Create object to return, with all the fields mocked, and nested
   return getResult(query, mock, schema, schemaType, type)
@@ -208,12 +214,13 @@ function getResult (query, mock, schema, schemaType, type) {
         validateSelectedFields(element, schema[field.name], schema, query.name, type)
         const result = mockBuilder(element, mock, query.name, schema)
 
-        if (!isEmpty(result)) {
+        if (isObject(result) && !isEmpty(result)) {
+          mockResult[element.name] = result
+        } else if ((result === null || result || typeof result === 'boolean') && !isObject(result)) {
           mockResult[element.name] = result
         }
       })
-
-      result = mockResult
+      result = Object.assign(result, mockResult)
     } else {
       validateSelectedFields(field, schema[schemaType.type], schema, query.name, type)
       result[field.name] = mockBuilder(field, mock, query.name, schema)
