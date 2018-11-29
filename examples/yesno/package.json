@@ -1,0 +1,33 @@
+{
+  "name": "yesno-easygraphql",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [],
+  "homepage": "https://github.com/EasyGraphQL/easygraphql-tester",
+  "author": {
+    "name": "EasyGraphQL",
+    "url": "https://github.com/EasyGraphQL"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EasyGraphQL/easygraphql-tester"
+  },
+  "bugs": {
+    "url": "https://github.com/EasyGraphQL/easygraphql-tester"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "easygraphql-tester": "^1.0.15",
+    "mocha": "^5.2.0",
+    "yesno": "0.0.1",
+    "yesno-http": "0.0.5"
+  },
+  "dependencies": {
+    "axios": "^0.18.0"
+  }
+}

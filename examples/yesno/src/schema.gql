@@ -1,0 +1,16 @@
+type Me {
+  email: String!
+  username: String!
+  fullName: String!
+  apiKey: String!
+}
+
+type User {
+  fullName: String!
+  age: Int!
+}
+
+type Query {
+  getMe: Me!
+  getUsers: [User]!
+}
