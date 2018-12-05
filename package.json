@@ -33,7 +33,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "easygraphql-mock": "^0.1.2",
+    "easygraphql-mock": "^0.1.3",
     "easygraphql-parser": "^0.0.2",
     "graphql-tag": "^2.9.2",
     "lodash.isempty": "^4.4.0",
