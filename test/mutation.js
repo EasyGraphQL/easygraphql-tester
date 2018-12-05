@@ -332,96 +332,96 @@ describe('Mutation', () => {
   describe('Should return selected fields', () => {
     it('Should return selected fields on CreateUser', () => {
       const mutation = `
-        mutation CreateUser{
-          createUser {
+        mutation CreateUser($input: UserInput!){
+          createUser(input: $input) {
             email
           }
         }
       `
-      const test = tester.mock(mutation, {
+      const { createUser } = tester.mock(mutation, {
         email: 'test@test.com',
         username: 'test',
         fullName: 'test',
         password: 'test'
       })
 
-      expect(test).to.exist
-      expect(test.email).to.be.a('string')
+      expect(createUser).to.exist
+      expect(createUser.email).to.be.a('string')
     })
 
     it('Should return selected fields on CreateUsers', () => {
       const mutation = `
-        mutation CreateUsers{
-          createUsers {
+        mutation CreateUsers($input: [UserInput]!){
+          createUsers(input: $input) {
             email
             username
             fullName
           }
         }
       `
-      const test = tester.mock(mutation, [{
+      const { createUsers } = tester.mock(mutation, [{
         email: 'test@test.com',
         username: 'test',
         fullName: 'test',
         password: 'test'
       }])
 
-      expect(test).to.exist
-      expect(test).to.be.a('array')
-      expect(test.length).to.be.gt(0)
-      expect(test[0].email).to.be.a('string')
-      expect(test[0].username).to.be.a('string')
-      expect(test[0].fullName).to.be.a('string')
+      expect(createUsers).to.exist
+      expect(createUsers).to.be.a('array')
+      expect(createUsers.length).to.be.gt(0)
+      expect(createUsers[0].email).to.be.a('string')
+      expect(createUsers[0].username).to.be.a('string')
+      expect(createUsers[0].fullName).to.be.a('string')
     })
 
     it('Should return selected fields on UpdateUserAge', () => {
       const mutation = `
-        mutation UpdateUserAge{
-          updateUserAge {
+        mutation UpdateUserAge($input: UpdateUserAgeInput!){
+          updateUserAge(input: $input) {
             email
           }
         }
       `
-      const test = tester.mock(mutation, {
+      const { updateUserAge } = tester.mock(mutation, {
         id: '123',
         age: 10
       })
 
-      expect(test).to.exist
-      expect(test.email).to.be.a('string')
+      expect(updateUserAge).to.exist
+      expect(updateUserAge.email).to.be.a('string')
     })
 
     it('Should return selected fields on IsAdmin', () => {
       const mutation = `
-        mutation IsAdmin{
-          isAdmin {
+        mutation IsAdmin($input: IsAdminInput!){
+          isAdmin(input: $input) {
             email
           }
         }
       `
-      const test = tester.mock(mutation, {
+      const { isAdmin } = tester.mock(mutation, {
         isAdmin: true
       })
 
-      expect(test).to.exist
-      expect(test.email).to.be.a('string')
+      expect(isAdmin).to.exist
+      expect(isAdmin.email).to.be.a('string')
     })
 
     it('Should return selected fields on IsAdmin', () => {
       const mutation = `
-          mutation UpdateUserScores{
-            updateUserScores {
+          mutation UpdateUserScores($input: UpdateUserScoresInput!){
+            updateUserScores(input: $input) {
               email
               scores
             }
           }
         `
-      const test = tester.mock(mutation, {
+      const { updateUserScores } = tester.mock(mutation, {
         scores: [1]
       })
 
-      expect(test).to.exist
-      expect(test.email).to.be.a('string')
+      expect(updateUserScores).to.exist
+      expect(updateUserScores.email).to.be.a('string')
     })
   })
 })
