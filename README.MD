@@ -252,8 +252,8 @@ const query = `
     }
   }
 `
-const test = tester.mock(query)
-console.log(test)
+const { getMe } = tester.mock(query)
+console.log(getMe)
 // { id: '93',
 //   email: 'awURSIJ@JVjL.com',
 //   familyInfo: [
@@ -303,13 +303,13 @@ const query = `
 
 const getUserByUsername = `
   {
-    getUserByUsername(username: test, name: test) {
+    userByUsername: getUserByUsername(username: test, name: test) {
       email
     }
   }
 `
-const getMe = tester.mock(query)
-const userByUsername = tester.mock(getUserByUsername)
+const { getMe } = tester.mock(query)
+const { userByUsername } = tester.mock(getUserByUsername)
 
 console.log(getMe)
 // { id: '93',
@@ -344,19 +344,19 @@ const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'),
 const tester = new EasyGraphQLTester(schemaCode)
 
 const mutation = `
-  mutation CreateUser{
-    createUser {
+  mutation CreateUser($input: UserInput!) {
+    createUser(input: $input) {
       email
     }
   }
 `
-const test = tester.mock(mutation, {
+const { createUser } = tester.mock(mutation, {
   email: 'test@test.com',
   username: 'test',
   fullName: 'test',
   password: 'test'
 })
-console.log(test)
+console.log(createUser)
 // { email: 'SaomYyn@JyEb.com' }
 ```
 
@@ -476,21 +476,21 @@ describe('Mutation', () => {
   describe('Should return selected fields', () => {
     it('Should return selected fields', () => {
       const mutation = `
-        mutation CreateUser{
-          createUser {
+        mutation CreateUser($input: UserInput!) {
+          createUser(input: $input) {
             email
           }
         }
       `
-      const test = tester.mock(mutation, {
+      const { createUser } = tester.mock(mutation, {
         email: 'test@test.com',
         username: 'test',
         fullName: 'test',
         password: 'test'
       })
 
-      expect(test).to.exist
-      expect(test.email).to.be.a('string')
+      expect(createUser).to.exist
+      expect(createUser.email).to.be.a('string')
     })
   })
 })

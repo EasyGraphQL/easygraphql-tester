@@ -369,7 +369,7 @@ describe('Query', () => {
       expect(error.message).to.be.eq('names variable is not defined on getMeByResults arguments')
     })
 
-    it('Should ignore extra arguments', () => {
+    it('Should return selected fields on getUserByUsername', () => {
       const query = `
         {
           getUserByUsername(username: test, name: test) {
@@ -377,9 +377,9 @@ describe('Query', () => {
           }
         }
       `
-      const test = tester.mock(query)
-      expect(test).to.exist
-      expect(test.email).to.be.a('string')
+      const { getUserByUsername } = tester.mock(query)
+      expect(getUserByUsername).to.exist
+      expect(getUserByUsername.email).to.be.a('string')
     })
   })
 
@@ -407,26 +407,26 @@ describe('Query', () => {
         }
       `
 
-      const test = tester.mock(query)
-      expect(test).to.exist
-      expect(test.id).to.exist
-      expect(test.id).to.be.a('string')
-      expect(test.email).to.exist
-      expect(test.email).to.be.a('string')
-      expect(test.scores).to.be.a('array')
-      expect(test.scores[0]).to.be.a('number')
-      expect(test.familyInfo).to.exist
-      expect(test.familyInfo).to.be.a('array')
-      expect(test.familyInfo[0].father).to.exist
-      expect(test.familyInfo[0].father.email).to.exist
-      expect(test.familyInfo[0].father.email).to.be.a('string')
-      expect(test.familyInfo[0].mother).to.exist
-      expect(test.familyInfo[0].mother.username).to.exist
-      expect(test.familyInfo[0].mother.username).to.be.a('string')
-      expect(test.familyInfo[0].brothers).to.exist
-      expect(test.familyInfo[0].brothers).to.be.a('array')
-      expect(test.familyInfo[0].brothers[0].fullName).to.be.a('string')
-      expect(['Father', 'Mother', 'Brother']).to.include(test.familyRelation)
+      const { getMe } = tester.mock(query)
+      expect(getMe).to.exist
+      expect(getMe.id).to.exist
+      expect(getMe.id).to.be.a('string')
+      expect(getMe.email).to.exist
+      expect(getMe.email).to.be.a('string')
+      expect(getMe.scores).to.be.a('array')
+      expect(getMe.scores[0]).to.be.a('number')
+      expect(getMe.familyInfo).to.exist
+      expect(getMe.familyInfo).to.be.a('array')
+      expect(getMe.familyInfo[0].father).to.exist
+      expect(getMe.familyInfo[0].father.email).to.exist
+      expect(getMe.familyInfo[0].father.email).to.be.a('string')
+      expect(getMe.familyInfo[0].mother).to.exist
+      expect(getMe.familyInfo[0].mother.username).to.exist
+      expect(getMe.familyInfo[0].mother.username).to.be.a('string')
+      expect(getMe.familyInfo[0].brothers).to.exist
+      expect(getMe.familyInfo[0].brothers).to.be.a('array')
+      expect(getMe.familyInfo[0].brothers[0].fullName).to.be.a('string')
+      expect(['Father', 'Mother', 'Brother']).to.include(getMe.familyRelation)
     })
 
     it('Should return selected fields on getFamilyInfoByIsLocal', () => {
@@ -439,9 +439,9 @@ describe('Query', () => {
           }
         }
       `
-      const test = tester.mock(query)
+      const { getFamilyInfoByIsLocal } = tester.mock(query)
 
-      expect(test.father.email).to.be.a('string')
+      expect(getFamilyInfoByIsLocal.father.email).to.be.a('string')
     })
 
     it('Should return selected fields on getMeByAge', () => {
@@ -452,9 +452,9 @@ describe('Query', () => {
           }
         }
       `
-      const test = tester.mock(query)
+      const { getMeByAge } = tester.mock(query)
 
-      expect(test.email).to.be.a('string')
+      expect(getMeByAge.email).to.be.a('string')
     })
 
     it('Should return selected fields on getMeByTestResult', () => {
@@ -465,8 +465,8 @@ describe('Query', () => {
           }
         }
       `
-      const test = tester.mock(query)
-      expect(test.email).to.be.a('string')
+      const { getMeByTestResult } = tester.mock(query)
+      expect(getMeByTestResult.email).to.be.a('string')
     })
 
     it('Should return selected fields on GetUsers', () => {
@@ -480,13 +480,13 @@ describe('Query', () => {
         }
       `
 
-      const test = tester.mock(query)
-      expect(test).to.exist
-      expect(test).to.be.a('array')
-      expect(test.length).to.be.gt(0)
-      expect(test[0].email).to.be.a('string')
-      expect(test[0].username).to.be.a('string')
-      expect(test[0].fullName).to.be.a('string')
+      const { getUsers } = tester.mock(query)
+      expect(getUsers).to.exist
+      expect(getUsers).to.be.a('array')
+      expect(getUsers.length).to.be.gt(0)
+      expect(getUsers[0].email).to.be.a('string')
+      expect(getUsers[0].username).to.be.a('string')
+      expect(getUsers[0].fullName).to.be.a('string')
     })
   })
 
@@ -570,10 +570,10 @@ describe('Query', () => {
         }
       `
 
-      const test = tester.mock(query)
-      expect(test).to.exist
-      expect(test).to.be.a('array')
-      expect(test[0].id).to.be.a('string')
+      const { search } = tester.mock(query)
+      expect(search).to.exist
+      expect(search).to.be.a('array')
+      expect(search[0].id).to.be.a('string')
     })
 
     it('Should return selected data', () => {
@@ -585,9 +585,9 @@ describe('Query', () => {
         }
       `
 
-      const test = tester.mock(query)
-      expect(test).to.exist
-      expect(test.email).to.be.a('string')
+      const { getMeByResults } = tester.mock(query)
+      expect(getMeByResults).to.exist
+      expect(getMeByResults.email).to.be.a('string')
     })
 
     it('Should return selected data with query variables', () => {
@@ -599,9 +599,23 @@ describe('Query', () => {
         }
       `
 
-      const test = tester.mock(query)
-      expect(test).to.exist
-      expect(test.email).to.be.a('string')
+      const { getUserByUsername } = tester.mock(query)
+      expect(getUserByUsername).to.exist
+      expect(getUserByUsername.email).to.be.a('string')
+    })
+
+    it('Should set the queryName as the alias', () => {
+      const query = `
+        query getUserByUsername($username: String!, $name: String!) {
+          aliasTest: getUserByUsername(username: $username, name: $name){
+            email
+          }
+        }
+      `
+
+      const { aliasTest } = tester.mock(query)
+      expect(aliasTest).to.exist
+      expect(aliasTest.email).to.be.a('string')
     })
   })
 })

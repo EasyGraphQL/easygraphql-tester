@@ -4,14 +4,14 @@ const fs = require('fs')
 const path = require('path')
 const { yesno } = require('yesno-http');
 const { expect } = require('chai');
-const EasygraphqlTester = require('easygraphql-tester')
+const EasyGraphQLTester = require('../../../lib')
 
 const { getMe, getUsers } = require('../src/api-client');
 const { getMeQuery, getUsersQuery } = require('../src/queries')
 
 
 const schema = fs.readFileSync(path.join(__dirname, '..', 'src', 'schema.gql'), 'utf8')
-const easygraphqlTester = new EasygraphqlTester(schema)
+const easyGraphQLTester = new EasyGraphQLTester(schema)
 
 describe('User', () => {
   before(() => {
@@ -34,9 +34,7 @@ describe('User', () => {
         },
         response: {
           body: {
-            data: {
-              getMe: easygraphqlTester.mock(getMeQuery)
-            } 
+            data: easyGraphQLTester.mock(getMeQuery)
           },
           statusCode: 200,
         },
@@ -62,9 +60,7 @@ describe('User', () => {
         },
         response: {
           body: {
-            data: {
-              getUsers: easygraphqlTester.mock(getUsersQuery)
-            } 
+            data: easyGraphQLTester.mock(getUsersQuery)
           },
           statusCode: 200,
         },

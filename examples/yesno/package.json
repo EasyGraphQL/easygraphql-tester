@@ -22,7 +22,6 @@
   "license": "MIT",
   "devDependencies": {
     "chai": "^4.2.0",
-    "easygraphql-tester": "^1.0.15",
     "mocha": "^5.2.0",
     "yesno": "0.0.1",
     "yesno-http": "0.0.5"
