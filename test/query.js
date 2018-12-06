@@ -9,6 +9,7 @@ const EasyGraphQLTester = require('../lib')
 
 const userSchema = fs.readFileSync(path.join(__dirname, 'schema', 'user.gql'), 'utf8')
 const familySchema = fs.readFileSync(path.join(__dirname, 'schema', 'family.gql'), 'utf8')
+const customRootTypeNamesSchema = fs.readFileSync(path.join(__dirname, 'schema', 'customRootTypeNames.gql'), 'utf8')
 
 describe('Query', () => {
   let tester
@@ -616,6 +617,44 @@ describe('Query', () => {
       const { aliasTest } = tester.mock(query)
       expect(aliasTest).to.exist
       expect(aliasTest.email).to.be.a('string')
+    })
+  })
+
+  describe('Should support custom names for root types', () => {
+    let tester
+
+    before(() => {
+      tester = new EasyGraphQLTester(customRootTypeNamesSchema)
+    })
+
+    it('Should support a custom name for the root query type', () => {
+      const query = `
+        query getPosts {
+          posts {
+            content
+          }
+        }
+      `
+
+      const { posts } = tester.mock(query)
+      expect(posts).to.exist
+      expect(posts).to.be.a('array')
+      expect(posts.length).to.be.gt(0)
+      expect(posts[0].content).to.be.a('string')
+    })
+
+    it('Should support a custom name for the root mutation type', () => {
+      const mutation = `
+        mutation addPost($content: String!) {
+          appendPost(content: $content) {
+            content
+          }
+        }
+      `
+
+      const { appendPost } = tester.mock(mutation, { content: 'Hello, world!' })
+      expect(appendPost).to.exist
+      expect(appendPost.content).to.be.a('string')
     })
   })
 })

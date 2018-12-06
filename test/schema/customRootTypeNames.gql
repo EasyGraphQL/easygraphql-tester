@@ -1,0 +1,16 @@
+schema {
+  query: RootQuery
+  mutation: RootMutation
+}
+
+type Post {
+  content: String!
+}
+
+type RootQuery {
+  posts: [Post!]!
+}
+
+type RootMutation {
+  appendPost(post: Post!): Post!
+}
