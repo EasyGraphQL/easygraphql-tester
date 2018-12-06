@@ -489,6 +489,24 @@ describe('Query', () => {
       expect(getUsers[0].username).to.be.a('string')
       expect(getUsers[0].fullName).to.be.a('string')
     })
+
+    it('Should return falsy field values in nested positions', () => {
+      const query = `
+        {
+          getMe {
+            familyInfo {
+              id
+              isLocal
+            }
+          }
+        }
+      `
+
+      const { getMe } = tester.mock(query)
+      for (const familyInfo of getMe.familyInfo) {
+        expect(familyInfo.isLocal).to.be.a('boolean')
+      }
+    })
   })
 
   describe('Should support unions', () => {

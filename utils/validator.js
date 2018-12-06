@@ -268,7 +268,7 @@ function mockBuilder (field, mock, name) {
       const mockResult = {}
       field.fields.forEach(element => {
         const result = mockBuilder(element, el, name)
-        if (result) {
+        if (typeof result !== 'undefined') {
           mockResult[element.name] = result
         }
       })
@@ -283,7 +283,7 @@ function mockBuilder (field, mock, name) {
     field.fields.forEach(element => {
       const result = mockBuilder(element, mock[field.name], name)
 
-      if (result) {
+      if (typeof result !== 'undefined') {
         mockResult[element.name] = result
       }
     })
