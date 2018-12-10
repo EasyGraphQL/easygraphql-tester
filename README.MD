@@ -6,120 +6,99 @@
   <br>
 </h1>
 
-EasyGraphQL tester is a node library used to test on an easy way the queries, mutations, and schema on
-using GraphQL.
+[![Greenkeeper badge](https://badges.greenkeeper.io/EasyGraphQL/easygraphql-tester.svg)](https://greenkeeper.io/)
 
-The tester will check:
-+ If the operation name is defined on the schema
-+ If the requested fields are defined
-+ If the arguments are valid
-+ If the input on a mutation is valid
-+ And more....
+[`easygraphql-tester`](https://github.com/EasyGraphQL/easygraphql-tester) is node library created to make GraphQL tests based on the schema; it's used
+to test the queries, mutations and schema on the easiest way possible.
+
+It will check:
++ If the operation name is defined on the schema.
++ If the requested fields are defined.
++ If the arguments are valid.
++ If the input on a mutation is valid.
++ If the union is valid.
++ And much more....
 
 ## Installation
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/EasyGraphQL/easygraphql-tester.svg)](https://greenkeeper.io/)
-
-```bash
+To install the package on your project just run on the root of your project
+```shell
 $ npm install easygraphql-tester --save-dev
 ```
 
-## Usage
-To get started with the tester, you might need to follow the next steps:
 
-### First step
-+ Import `easygraphql-tester` package.
+[`easygraphql-tester`](https://github.com/EasyGraphQL/easygraphql-tester) can be used in two ways; the first one is using `.tester` as an assertion of the query/mutation, and the second one is using `.mock` to return the mocked query/mutation.
+
+## How to use it?
+
++ Import [`easygraphql-tester`](https://github.com/EasyGraphQL/easygraphql-tester) package.
 + Read the schema.
 + Initialize the tester, and pass the schema as an argument.
-  
+  + If there are multiples schemas pass an array with the schemas an argument.
+  + **Note**: In order to use multiples schema files, the queries and mutations must be extended.
+
+
+### One schema file
 ```js
+'use strict' 
+
 const EasyGraphQLTester = require('easygraphql-tester')
 const fs = require('fs')
 const path = require('path')
 
-const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
+const userSchema = fs.readFileSync(path.join(__dirname, 'schema', 'user.gql'), 'utf8')
 
-const tester = new EasyGraphQLTester(schemaCode)
+const tester = new EasyGraphQLTester(userSchema)
 ```
 
-In all the next examples this is the Schema used:
-```graphql
-type User {
-  email: String!
-  username: String!
-  fullName: String!
-}
+### Multiples schemas files
+```js
+'use strict' 
 
-type Me {
-  id: ID!
-  email: String!
-  username: String!
-  fullName: String!
-  addresses: [String]!
-  scores: [Int]!
-  age: Int
-  phone: [String]!
-  apiKey: String! 
-  familyInfo: [FamilyInfo]!
-}
+const EasyGraphQLTester = require('easygraphql-tester')
+const fs = require('fs')
+const path = require('path')
 
-type FamilyInfo {
-  father: User!
-  mother: User!
-}
+const userSchema = fs.readFileSync(path.join(__dirname, 'schema', 'user.gql'), 'utf8')
+const familySchema = fs.readFileSync(path.join(__dirname, 'schema', 'family.gql'), 'utf8')
 
-input UserInput {
-  email: String!
-  username: String!
-  fullName: String!
-  password: String!
-}
-
-input UpdateUserScoresInput {
-  scores: [Int]!
-}
-
-type Query {
-  getMe: Me
-  getUserByUsername(username: String!, name: String!): User
-  getMeByTestResult(result: Float!): Me
-}
-
-type Mutation {
-  createUser(input: UserInput!): User
-  updateUserScores(input: UpdateUserScoresInput!): Me
-}
+const tester = new EasyGraphQLTester([userSchema, familySchema])
 ```
-## Testing GraphQL Schema, Queries and Mutations
-`easygraphql-tester` works as an assertion library used to make tests with your favorite
-test runner.
+
+## Assertion
+
+[`easygraphql-tester`](https://github.com/EasyGraphQL/easygraphql-tester) works as an assertion library used to make tests **with your favorite test runner**.
 
 To use it as an assertion library, you must follow the next steps:
-+ Define a Query or Mutation
-+ Pass as first argument a boolean to `tester.test(true)` or `tester.test(false)` if the query/mutation to test is valid
-  + `true`: it is fine, everything should work fine
-  + `false`: it should fail, there is an error in the query/mutation or arguments/input
-+ Pass as second argument the query/mutation to test
-+ The third argument is required if it is a mutation, it must be an object with the fields of the input
 
-### E.g using Mocha
++ Define a Query or Mutation to test.
++ Pass as first argument, a boolean to `.test(true)` or `.test(false)`.
+  + true: if it is fine, everything should work fine.
+  + false: if it should fail, there is an error or invalid field on the query/mutation or arguments/input.
++ Pass as second argument, the query/mutation to test.
++ The third argument is required **if it is a mutation**, it must be an object with the fields of the input
+
+The next example is going to be made with mocha, but it can be done **with your favorite test runner**. 
+
+### Mocha example
 ```js
 'use strict'
 
 const fs = require('fs')
 const path = require('path')
-const EasyGraphQLTester = require('easygraphql-tester')
+const EasyGraphQLTester = require('../lib')
 
-const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
+const userSchema = fs.readFileSync(path.join(__dirname, 'schema', 'user.gql'), 'utf8')
+const familySchema = fs.readFileSync(path.join(__dirname, 'schema', 'family.gql'), 'utf8')
 
 describe('Test my queries and mutations', () => {
   let tester
 
   before(() => {
-    tester = new EasyGraphQLTester(schemaCode)
+    tester = new EasyGraphQLTester([userSchema, familySchema])
   })
 
-  describe('Queries', () => {
+  describe('Should pass if the query is invalid', () => {
     it('Invalid query getUser', () => {
       const invalidQuery = `
         {
@@ -135,12 +114,11 @@ describe('Test my queries and mutations', () => {
           }
         }
       `
-      // First arg: false because the query is not valid (There is no query called getUser on the Schema)
-      // Second arg: query to test
+      // First arg: false, there is no invalidField on the schema.
       tester.test(false, invalidQuery)
     })
 
-    it('Should pass with a valid query', () => {
+    it('Should pass if the query is valid', () => {
       const validQuery = `
         {
           getMeByTestResult(result: 4.9) {
@@ -148,357 +126,282 @@ describe('Test my queries and mutations', () => {
           }
         }
       `
-      // First arg: true because the query is valid
-      // Second arg: query to test
       tester.test(true, validQuery)
     })
-  })
 
-  describe('Mutations', () => {
-    it('Invalid input type', () => {
+    it('Should pass if the mutation is valid', () => {
       const mutation = `
-        mutation UpdateUserScores{
+        mutation UpdateUserScores {
           updateUserScores {
             email
             scores
           }
         }
       `
-      // First arg: false because the input value is not valid
-      // Second arg: mutation to test
-      // Third arg: input value
-      tester.test(false, mutation, {
-        scores: ['1']
+      tester.test(true, mutation, {
+        scores: [1, 2, 3]
       })
     })
 
-    it('Should pass if the input type is valid', () => {
+    it('Should not pass if one value on the mutation input is invalid', () => {
       const mutation = `
-        mutation UpdateUserScores{
+        mutation UpdateUserScores {
           updateUserScores {
             email
             scores
           }
         }
       `
-      // First arg: true because the input value is valid
-      // Second arg: mutation to test
-      // Third arg: input value
-      tester.test(true, mutation, {
-        scores: [1]
+      // First arg: false, there is no invalidField on the schema.
+      tester.test(false, mutation, {
+        scores: [1],
+        invalidField: true
       })
+    })
+
+    it('Should search', () => {
+      const query = `
+        {
+          search(id: "1") {
+            ... on User {
+              id
+            }
+            ... on FamilyInfo {
+              id
+              father {
+                username
+              }
+              brothers {
+                username
+              }
+            }
+          }
+        }
+      `
+
+      tester.test(true, query)
     })
   })
 })
 ```
 
-### Multiple Schema files
-Also, this package works if you have multiple schema files where, just import all your files
-and pass the constructor as an array... be sure to extend the query and mutation
+## Mocking Queries and Mutations
 
+[`easygraphql-tester`](https://github.com/EasyGraphQL/easygraphql-tester) can works as a mocker of your query or mutation, using it is simple.
+
+Call the method `.mock()` and pass an object with this options:
+
++ query: It'll be the query/mutation to test.
++ variables: This is required **if it is a mutation**, it must be an object with the fields of the input.
++ fixture: This is optional and it is if you want to pass your custom fixtures.
++ saveFixture: By default is `false`, if you pass fixtures, and set it to `true` when you make the same query again,
+  it will return the fixture value.
+
+The result will have top level fields, it means that the result will be an object
+with a property that is going to be the name (top level field) of the query or alias with the mocked
+result.
+
+### Mock example
 ```js
 'use strict'
 
+const EasyGraphQLTester = require('easygraphql-tester')
 const fs = require('fs')
 const path = require('path')
-const { expect } = require('chai')
-const EasyGraphQLTester = require('../lib')
 
 const userSchema = fs.readFileSync(path.join(__dirname, 'schema', 'user.gql'), 'utf8')
 const familySchema = fs.readFileSync(path.join(__dirname, 'schema', 'family.gql'), 'utf8')
 
-describe('Test my queries and mutations', () => {
-  let tester
-
-  before(() => {
-    tester = new EasyGraphQLTester([userSchema, familySchema])
-  })
-
-  // All your tests .... 
-
-})
-```
-
-**You can use it with your favorite test runner.**
-#### [Here are more examples](https://github.com/EasyGraphQL/easygraphql-tester/tree/master/examples)
-**Clone the repo an try it! also, send a PR with your example!**
-
-## Mocking Queries and Mutations
-### Query
-+ Define the query
-+ Pass the query to `tester.mock(query)`
-
-```js
-const EasyGraphQLTester = require('easygraphql-tester')
-const fs = require('fs')
-const path = require('path')
-
-const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
-const tester = new EasyGraphQLTester(schemaCode)
+const tester = new EasyGraphQLTester([userSchema, familySchema])
 
 const query = `
   {
-    getMe {
+    getUser(id: "1") {
       id
-      email
+      name
       familyInfo {
-        father {
-          email
-        }
-        mother {
-          username
-        }
-      }
-    }
-  }
-`
-const { getMe } = tester.mock(query)
-console.log(getMe)
-// { id: '93',
-//   email: 'awURSIJ@JVjL.com',
-//   familyInfo: [
-//     { 
-//       father: { email: 'YSjsYuV@wtnK.com' },
-//       mother: { username: 'fdqMyTdhvW' }
-//     },
-//     { 
-//       father: { email: 'xcZFHmJ@FCsz.com' },
-//       mother: { username: 'PoBpauUhibduc' }
-//     },
-//     { 
-//       father: { email: 'ogrOjPH@qyJu.com' },
-//       mother: { username: 'ByxujdLYrAVIiDV' }
-//     }
-//   ]
-// }
-```
-`tester.mock(query)` will return a mock of the query, if a field is invalid it will return a error.
-
-#### Arguments
-The query can receive arguments, those arguments are going to be validated with the schema
-```js
-const EasyGraphQLTester = require('easygraphql-tester')
-const fs = require('fs')
-const path = require('path')
-
-const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
-const tester = new EasyGraphQLTester(schemaCode)
-
-const query = `
-  {
-    getMe {
-      id
-      email
-      familyInfo {
-        father {
-          email
-        }
-        mother {
-          username
-        }
+        lastName
+        email
       }
     }
   }
 `
 
-const getUserByUsername = `
+const fixture = {
+  id: '1',
+  name: 'EasyGraphQL'
+}
+
+const { getUser } = tester.mock({ query, fixture })
+
+const queryWithAlias = `
   {
-    userByUsername: getUserByUsername(username: test, name: test) {
-      email
+    firstUser: getUser(id: "1") {
+      id
     }
   }
 `
-const { getMe } = tester.mock(query)
-const { userByUsername } = tester.mock(getUserByUsername)
+const { firstUser } = tester.mock({ query: queryWithAlias })
 
-console.log(getMe)
-// { id: '93',
-//   email: 'awURSIJ@JVjL.com',
-//   familyInfo: [
-//     { 
-//       father: { email: 'YSjsYuV@wtnK.com' },
-//       mother: { username: 'fdqMyTdhvW' }
-//     },
-//     { 
-//       father: { email: 'xcZFHmJ@FCsz.com' },
-//       mother: { username: 'PoBpauUhibduc' }
-//     },
-//     { 
-//       father: { email: 'ogrOjPH@qyJu.com' },
-//       mother: { username: 'ByxujdLYrAVIiDV' }
-//     }
-//   ]
-// }
-console.log(userByUsername)
-// { email: 'evmFGyw@UOSX.com' }
-```
-
-### Mutation
-The mutation needs the schema and also the variables.
-```js
-const EasyGraphQLTester = require('easygraphql-tester')
-const fs = require('fs')
-const path = require('path')
-
-const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
-const tester = new EasyGraphQLTester(schemaCode)
 
 const mutation = `
-  mutation CreateUser($input: UserInput!) {
+  mutation CreateUser($input: CreateUserInput!) {
     createUser(input: $input) {
-      email
+      id
+      name
     }
   }
 `
-const { createUser } = tester.mock(mutation, {
-  email: 'test@test.com',
-  username: 'test',
-  fullName: 'test',
-  password: 'test'
-})
-console.log(createUser)
-// { email: 'SaomYyn@JyEb.com' }
+const input = {
+  name: 'test'
+}
+
+const { createUser } = tester.mock({ query: mutation, variables: input })
 ```
 
-### Errors
-If there is an error on the query or mutation `EasyGraphQLTester` will let you know what
+### Mock result
+```js
+// getUser
+{ 
+  id: '1',
+  name: 'EasyGraphQL',
+  familyInfo: [
+    { 
+      lastName: 'Bartoletti',
+      email: 'YSjsYuV@wtnK.com'
+    },
+    { 
+      lastName: 'Bartoletti',
+      email: 'YSjsYuV@wtnK.com'
+    },
+    { 
+      lastName: 'Bartoletti',
+      email: 'YSjsYuV@wtnK.com'
+    }
+  ]
+}
+
+//firstUser
+{
+  id: '93'
+}
+
+
+// createUser
+{
+  id: '93',
+  name: 'Tony Patrick'
+}
+```
+
+
+If there is an error on the query or mutation [`easygraphql-tester`](https://github.com/EasyGraphQL/easygraphql-tester) will let you know what
 is happening.
 
-#### Trying to access an invalid field id on getMe -> father
+### Invalid field on query
 ```js
+'use strict'
+
 const EasyGraphQLTester = require('easygraphql-tester')
 const fs = require('fs')
 const path = require('path')
 
-const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
-const tester = new EasyGraphQLTester(schemaCode)
+const userSchema = fs.readFileSync(path.join(__dirname, 'schema', 'user.gql'), 'utf8')
+const familySchema = fs.readFileSync(path.join(__dirname, 'schema', 'family.gql'), 'utf8')
+
+const tester = new EasyGraphQLTester([userSchema, familySchema])
 
 const query = `
   {
-    getMe {
-      id
+    getUsers {
       email
-      familyInfo {
-        father {
-          id
-          email
-        }
-      }
+      username
+      invalidName
     }
   }
 `
-tester.mock(query) // Error: Invalid field id on getMe
+
+tester.mock(query) // Error: Query getUsers: The selected field invalidName doesn't exists
 ```
 
-#### Invalid arguments on query
+### Invalid arguments on query
 ```js
+'use strict'
+
 const EasyGraphQLTester = require('easygraphql-tester')
 const fs = require('fs')
 const path = require('path')
 
-const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
-const tester = new EasyGraphQLTester(schemaCode)
+const userSchema = fs.readFileSync(path.join(__dirname, 'schema', 'user.gql'), 'utf8')
+const familySchema = fs.readFileSync(path.join(__dirname, 'schema', 'family.gql'), 'utf8')
+
+const tester = new EasyGraphQLTester([userSchema, familySchema])
 
 const getUserByUsername = `
   {
-    getUserByUsername(username: 1, name: test) {
+    getUserByUsername(invalidArg: test) {
       email
     }
   }
 `
 
-tester.mock(getUserByUsername) // Error: username argument is not type String
+tester.mock(getUserByUsername) // Error: invalidArg argument is not defined on getUserByUsername arguments
 ```
 
-#### Missing field on input
+### Not defined argument on query
 ```js
+'use strict'
+
 const EasyGraphQLTester = require('easygraphql-tester')
 const fs = require('fs')
 const path = require('path')
 
-const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
-const tester = new EasyGraphQLTester(schemaCode)
+const userSchema = fs.readFileSync(path.join(__dirname, 'schema', 'user.gql'), 'utf8')
+const familySchema = fs.readFileSync(path.join(__dirname, 'schema', 'family.gql'), 'utf8')
+
+const tester = new EasyGraphQLTester([userSchema, familySchema])
+
+const getUserByUsername = `
+  {
+    getUserByUsername(username: test, name: "name test") {
+      email
+    }
+  }
+`
+
+tester.mock(getUserByUsername) // Error: name argument is not defined on getUserByUsername arguments
+```
+
+### Missing field on input
+```js
+'use strict'
+
+const EasyGraphQLTester = require('easygraphql-tester')
+const fs = require('fs')
+const path = require('path')
+
+const userSchema = fs.readFileSync(path.join(__dirname, 'schema', 'user.gql'), 'utf8')
+const familySchema = fs.readFileSync(path.join(__dirname, 'schema', 'family.gql'), 'utf8')
+
+const tester = new EasyGraphQLTester([userSchema, familySchema])
 
 const mutation = `
-  mutation CreateUser{
-    createUser {
-      email
+  mutation CreateFamily {
+    createFamily {
+      lastName
     }
   }
 `
 const test = tester.mock(mutation, {
-  email: 'test@test.com',
-  fullName: 'test',
-  password: 'test'
+  lastName: 'test'
 })
-// Error: username argument is missing on createUser
+// Error: email argument is missing on createFamily
 ```
 
-### EasyGraphQL Tester with Mocha & Chai
-```js
-'use strict'
-
-const fs = require('fs')
-const path = require('path')
-const { expect } = require('chai')
-const EasyGraphQLTester = require('easygraphql-tester')
-
-const schemaCode = fs.readFileSync(path.join(__dirname, 'schema', 'schema.gql'), 'utf8')
-
-describe('Mutation', () => {
-  let tester
-
-  before(() => {
-    tester = new EasyGraphQLTester(schemaCode)
-  })
-
-  describe('Should throw an error if variables are missing', () => {
-    it('Should throw an error if the variables are missing', () => {
-      let error
-      try {
-        const mutation = `
-          mutation CreateUser{
-            createUser {
-              email
-            }
-          }
-        `
-        tester.mock(mutation)
-      } catch (err) {
-        error = err
-      }
-
-      expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('Variables are missing')
-    })
-  })
-
-  describe('Should return selected fields', () => {
-    it('Should return selected fields', () => {
-      const mutation = `
-        mutation CreateUser($input: UserInput!) {
-          createUser(input: $input) {
-            email
-          }
-        }
-      `
-      const { createUser } = tester.mock(mutation, {
-        email: 'test@test.com',
-        username: 'test',
-        fullName: 'test',
-        password: 'test'
-      })
-
-      expect(createUser).to.exist
-      expect(createUser.email).to.be.a('string')
-    })
-  })
-})
-```
-
+There are more errors, these ones are just some of the validations that are made.
 
 ## Demo
-Here is a [Demo](https://repl.it/@alejandroestrada/easygraphql-tester) that can be useful!
+Here is a [Demo](https://codesandbox.io/embed/42m2rx71j4?previewwindow=tests&view=preview) that can be useful!
 
 # License
 ### The MIT License

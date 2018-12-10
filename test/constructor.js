@@ -53,4 +53,17 @@ describe('Constructor', () => {
     expect(error).to.be.an.instanceOf(Error)
     expect(error.message).to.be.eq('The Query/Mutation to test is require')
   })
+
+  it('Should fail if the there is no query to test on the opts', () => {
+    const tester = new EasyGraphQLTester([userSchema, familySchema])
+    let error
+    try {
+      tester.mock({})
+    } catch (err) {
+      error = err
+    }
+
+    expect(error).to.be.an.instanceOf(Error)
+    expect(error.message).to.be.eq('The Query/Mutation to test is require')
+  })
 })
