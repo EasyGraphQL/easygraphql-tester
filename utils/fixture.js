@@ -2,7 +2,7 @@ const isObject = require('lodash.isobject')
 
 function setFixture (mock, fixture) {
   for (const val of Object.keys(fixture)) {
-    if (!mock[val]) {
+    if (typeof mock[val] === 'undefined') {
       throw new Error(`${val} is not called on the query, and it's on the fixture.`)
     }
 
@@ -10,7 +10,7 @@ function setFixture (mock, fixture) {
       throw new Error(`${val} is not an array and it should be one.`)
     }
 
-    if (typeof mock[val] !== typeof fixture[val]) {
+    if (mock[val] !== null && typeof mock[val] !== typeof fixture[val]) {
       throw new Error(`${val} is not the same type as the document.`)
     }
 
