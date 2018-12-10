@@ -26,6 +26,7 @@ type Me {
   apiKey: String!
   familyInfo: [FamilyInfo]!
   familyRelation: FamilyRelation!
+  user: User!
 }
 
 input UserInput {

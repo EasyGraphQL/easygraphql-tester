@@ -423,5 +423,132 @@ describe('Mutation', () => {
       expect(updateUserScores).to.exist
       expect(updateUserScores.email).to.be.a('string')
     })
+
+    it('Should set fixtures and save it', () => {
+      const mutation = `
+        mutation UpdateUserScores($input: UpdateUserScoresInput!){
+          updateUserScores(input: $input) {
+            email
+            scores
+          }
+        }
+      `
+
+      const fixture = {
+        email: 'demo@demo.com',
+        scores: [1]
+      }
+
+      const { updateUserScores } = tester.mock({
+        query: mutation,
+        variables: { scores: [1] },
+        fixture,
+        saveFixture: true
+      })
+
+      expect(updateUserScores).to.exist
+      expect(updateUserScores.email).to.be.a('string')
+      expect(updateUserScores.email).to.be.eq('demo@demo.com')
+
+      const mock = tester.mock({
+        query: mutation,
+        variables: { scores: [1] }
+      })
+
+      expect(mock.updateUserScores).to.exist
+      expect(mock.updateUserScores.email).to.be.a('string')
+      expect(mock.updateUserScores.email).to.be.eq('demo@demo.com')
+      expect(mock.updateUserScores.scores[0]).to.be.eq(1)
+    })
+
+    it('Should fail if the fixture has extra data', () => {
+      let error
+      try {
+        const mutation = `
+          mutation UpdateUserScores($input: UpdateUserScoresInput!){
+            updateUserScores(input: $input) {
+              email
+              scores
+            }
+          }
+        `
+
+        const fixture = {
+          email: 'demo@demo.com',
+          name: 'easygraphql'
+        }
+
+        tester.mock({
+          query: mutation,
+          variables: { scores: [1] },
+          fixture,
+          saveFixture: true
+        })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq(`name is not called on the query, and it's on the fixture.`)
+    })
+
+    it('Should fail if the fixture has to be an array', () => {
+      let error
+      try {
+        const mutation = `
+          mutation UpdateUserScores($input: UpdateUserScoresInput!){
+            updateUserScores(input: $input) {
+              email
+              scores
+            }
+          }
+        `
+
+        const fixture = {
+          email: 'demo@demo.com',
+          scores: 1
+        }
+
+        tester.mock({
+          query: mutation,
+          variables: { scores: [1] },
+          fixture
+        })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq('scores is not an array and it should be one.')
+    })
+
+    it('Should fail if the fixture has a different data type', () => {
+      let error
+      try {
+        const mutation = `
+          mutation UpdateUserScores($input: UpdateUserScoresInput!){
+            updateUserScores(input: $input) {
+              email
+              scores
+            }
+          }
+        `
+
+        const fixture = {
+          email: true
+        }
+
+        tester.mock({
+          query: mutation,
+          variables: { scores: [1] },
+          fixture
+        })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq('email is not the same type as the document.')
+    })
   })
 })

@@ -636,6 +636,102 @@ describe('Query', () => {
       expect(aliasTest).to.exist
       expect(aliasTest.email).to.be.a('string')
     })
+
+    it('Should set fixtures but not save it', () => {
+      const query = `
+        query getUserByUsername($username: String!, $name: String!) {
+          aliasTest: getUserByUsername(username: $username, name: $name){
+            email
+          }
+        }
+      `
+      const fixture = {
+        email: 'demo@demo.com'
+      }
+
+      const { aliasTest } = tester.mock({
+        query: query,
+        fixture
+      })
+      expect(aliasTest).to.exist
+      expect(aliasTest.email).to.be.a('string')
+      expect(aliasTest.email).to.be.eq(fixture.email)
+
+      const mock = tester.mock({
+        query: query
+      })
+      expect(mock.aliasTest).to.exist
+      expect(mock.aliasTest.email).to.be.a('string')
+      expect(mock.aliasTest.email).not.to.be.eq(fixture.email)
+    })
+
+    it('Should set fixtures on nested objects', () => {
+      const query = `
+        {
+          getMe {
+            email
+            user {
+              email
+            }
+            familyInfo {
+              id
+              isLocal
+              father {
+                id
+                email
+                username
+              }
+            }
+          }
+        }
+      `
+      const fixture = {
+        email: 'demo@demo.com',
+        user: {
+          email: 'newemail@demo.com'
+        },
+        familyInfo: [{
+          isLocal: true,
+          father: {
+            email: 'father@demo.com'
+          }
+        },
+        {
+          id: '1',
+          isLocal: false,
+          father: {
+            id: '100'
+          }
+        }]
+      }
+
+      const { getMe } = tester.mock({
+        query: query,
+        fixture
+      })
+      expect(getMe).to.exist
+      expect(getMe.email).to.be.a('string')
+      expect(getMe.email).to.be.eq(fixture.email)
+      expect(getMe.user.email).to.be.eq(fixture.user.email)
+      expect(getMe.familyInfo).to.be.a('array')
+      expect(getMe.familyInfo).to.have.length(2)
+
+      expect(getMe.familyInfo[0].isLocal).to.be.true
+      expect(getMe.familyInfo[0].id).to.be.a('string')
+      expect(getMe.familyInfo[0].id).not.to.be.eq('1')
+      expect(getMe.familyInfo[0].father.email).to.be.eq('father@demo.com')
+      expect(getMe.familyInfo[0].father.username).to.be.a('string')
+      expect(getMe.familyInfo[0].father.id).to.be.a('string')
+      expect(getMe.familyInfo[0].father.id).not.to.be.eq('100')
+
+      expect(getMe.familyInfo[1].isLocal).to.be.false
+      expect(getMe.familyInfo[1].id).to.be.a('string')
+      expect(getMe.familyInfo[1].id).to.be.eq('1')
+      expect(getMe.familyInfo[1].father.email).not.to.be.eq('father@demo.com')
+      expect(getMe.familyInfo[1].father.username).to.be.a('string')
+      expect(getMe.familyInfo[1].father.id).to.be.a('string')
+      expect(getMe.familyInfo[1].father.id).to.be.eq('100')
+    })
   })
 
   describe('Should support custom names for root types', () => {
