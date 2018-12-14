@@ -217,5 +217,43 @@ describe('Assert test', () => {
         isAdmin: true
       })
     })
+
+    it('Should receive scalar as argument', () => {
+      const mutation = `
+        mutation {
+          createTest(name: "Test", age: 20)
+        }
+      `
+
+      tester.test(true, mutation)
+    })
+
+    it('Should receive scalar arr as argument', () => {
+      const mutation = `
+        mutation {
+          createNames(names: ["Test", "Test 2"])
+        }
+      `
+
+      tester.test(true, mutation)
+    })
+
+    it('Should fail if scalar expect scalar and get arr', () => {
+      let error
+      try {
+        const mutation = `
+          mutation {
+            createTest(name: ["Test"], age: 20)
+          }
+        `
+
+        tester.test(true, mutation)
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq("name is an Array and it shouldn't be one createTest")
+    })
   })
 })

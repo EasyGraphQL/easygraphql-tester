@@ -74,4 +74,6 @@ type Mutation {
   updateUserAge(input: UpdateUserAgeInput!): Me
   updateUserScores(input: UpdateUserScoresInput!): Me
   createBoolean(input: IsAdminInput!): Boolean!
+  createTest(name: String!, age: Int!): Boolean!
+  createNames(names: [String!]!): String!
 }
