@@ -62,6 +62,8 @@ type Query {
   getMeByResults(results: [Int]!): Me
   getUsers: [User]!
   search(id: ID!): [SearchResult]!
+  getString: String!
+  getInt: Int!
 }
 
 type Mutation {
@@ -71,4 +73,5 @@ type Mutation {
   updatePassword(input: UpdatePasswordInput!): Me
   updateUserAge(input: UpdateUserAgeInput!): Me
   updateUserScores(input: UpdateUserScoresInput!): Me
+  createBoolean(input: IsAdminInput!): Boolean!
 }

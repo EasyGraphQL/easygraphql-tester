@@ -175,7 +175,7 @@ function validateInputType (arg, filteredArg) {
 function validator (query, mock, schema, type) {
   // If the query name is missing on the mock, there should be an error because
   // it is not defined on the schema
-  if (!mock) {
+  if (typeof mock === 'undefined') {
     throw new Error(`There is no ${query.operationType} called ${query.name} on the Schema`)
   }
 
@@ -204,6 +204,11 @@ function validator (query, mock, schema, type) {
 
 function getResult (query, mock, schema, schemaType, type) {
   let result = {}
+
+  if (!Array.isArray(query.fields)) {
+    return mock
+  }
+
   query.fields.forEach(field => {
     if (field.inlineFragment && !schema[field.name]) {
       throw new Error(`There is no type ${field.name} on the Schema`)

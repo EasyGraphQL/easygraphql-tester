@@ -391,6 +391,21 @@ describe('Mutation', () => {
       expect(updateUserAge.email).to.be.a('string')
     })
 
+    it('Should return a Boolean', () => {
+      const mutation = `
+        mutation CreateBoolean($input: IsAdminInput!) {
+          createBoolean(input: $input)
+        }
+      `
+
+      const { createBoolean } = tester.mock(mutation, {
+        isAdmin: true
+      })
+
+      expect(createBoolean).to.exist
+      expect(createBoolean).to.be.a('boolean')
+    })
+
     it('Should return selected fields on IsAdmin', () => {
       const mutation = `
         mutation IsAdmin($input: IsAdminInput!){

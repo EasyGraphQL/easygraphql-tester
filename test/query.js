@@ -609,6 +609,30 @@ describe('Query', () => {
       expect(getMeByResults.email).to.be.a('string')
     })
 
+    it('Should return a string', () => {
+      const query = `
+        {
+          getString
+        }
+      `
+
+      const { getString } = tester.mock(query)
+      expect(getString).to.exist
+      expect(getString).to.be.a('string')
+    })
+
+    it('Should pass if it returns a Int', () => {
+      const query = `
+        {
+          getInt
+        }
+      `
+
+      const { getInt } = tester.mock(query)
+      expect(getInt).to.exist
+      expect(getInt).to.be.a('number')
+    })
+
     it('Should return selected data with query variables', () => {
       const query = `
         query getUserByUsername($username: String!, $name: String!) {
