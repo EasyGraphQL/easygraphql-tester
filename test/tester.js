@@ -185,5 +185,37 @@ describe('Assert test', () => {
 
       tester.test(true, query)
     })
+
+    it('Should pass if it returns a string', () => {
+      const query = `
+        {
+          getString
+        }
+      `
+
+      tester.test(true, query)
+    })
+
+    it('Should pass if it returns a Int', () => {
+      const query = `
+        {
+          getInt
+        }
+      `
+
+      tester.test(true, query)
+    })
+
+    it('Should pass if it returns a Boolean', () => {
+      const mutation = `
+        mutation CreateBoolean($input: IsAdminInput!) {
+          createBoolean(input: $input)
+        }
+      `
+
+      tester.test(true, mutation, {
+        isAdmin: true
+      })
+    })
   })
 })
