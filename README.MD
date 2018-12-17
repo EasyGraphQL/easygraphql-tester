@@ -65,6 +65,30 @@ const familySchema = fs.readFileSync(path.join(__dirname, 'schema', 'family.gql'
 const tester = new EasyGraphQLTester([userSchema, familySchema])
 ```
 
+### Using GraphQL.js
+```js
+'use strict'
+
+const { GraphQLSchema, GraphQLObjectType, GraphQLString } = require('graphql')
+const EasyGraphQLTester = require('easygraphql-tester')
+
+const schema = new GraphQLSchema({
+  query: new GraphQLObjectType({
+    name: 'RootQueryType',
+    fields: {
+      hello: {
+        type: GraphQLString,
+        resolve() {
+          return 'world';
+        }
+      }
+    }
+  })
+});
+
+const tester = new EasyGraphQLTester(schema)
+```
+
 ## Assertion
 
 [`easygraphql-tester`](https://github.com/EasyGraphQL/easygraphql-tester) works as an assertion library used to make tests **with your favorite test runner**.
