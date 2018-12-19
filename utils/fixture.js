@@ -1,6 +1,27 @@
 const isObject = require('lodash.isobject')
 
 function setFixture (mock, fixture) {
+  if (typeof fixture === 'undefined') {
+    return mock
+  }
+
+  if (Array.isArray(fixture)) {
+    const fixtureArr = []
+    fixture.forEach(val => {
+      if (mock[0] === null) {
+        return val
+      }
+
+      const result = handleObjectFixture(mock[0], val)
+      fixtureArr.push(Object.assign({}, result))
+    })
+    return fixtureArr
+  } else {
+    return handleObjectFixture(mock, fixture)
+  }
+}
+
+function handleObjectFixture (mock, fixture) {
   for (const val of Object.keys(fixture)) {
     if (typeof mock[val] === 'undefined') {
       throw new Error(`${val} is not called on the query, and it's on the fixture.`)
