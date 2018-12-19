@@ -125,7 +125,7 @@ function inputValidator (variables, schemaArgs, schema, name, arrCalled) {
       const filteredArg = variables[arg.name]
 
       // If the argument is missing, there should be an error
-      if (!filteredArg) {
+      if (typeof filteredArg === 'undefined') {
         throw new Error(`${arg.name} argument is missing on ${name}`)
       }
 

@@ -76,4 +76,5 @@ type Mutation {
   createBoolean(input: IsAdminInput!): Boolean!
   createTest(name: String!, age: Int!): Boolean!
   createNames(names: [String!]!): String!
+  createTodo(completed: Boolean!): Boolean!
 }

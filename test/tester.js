@@ -255,5 +255,15 @@ describe('Assert test', () => {
       expect(error).to.exist
       expect(error.message).to.be.eq("name is an Array and it shouldn't be one createTest")
     })
+
+    it('Should receive scalar boolean (false) argument', () => {
+      const mutation = `
+        mutation {
+          createTodo(completed: false)
+        }
+      `
+
+      tester.test(true, mutation)
+    })
   })
 })
