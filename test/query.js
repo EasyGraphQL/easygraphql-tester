@@ -490,6 +490,48 @@ describe('Query', () => {
       expect(getUsers[0].fullName).to.be.a('string')
     })
 
+    it('Should return selected fields on GetUsers with fixtures', () => {
+      const query = `
+        {
+          getUsers {
+            email
+            username
+          }
+        }
+      `
+
+      const fixture = [
+        {
+          email: 'demo@demo.com',
+          username: 'demo'
+        },
+        {
+          email: 'demo1@demo.com',
+          username: 'demo1'
+        },
+        {
+          email: 'demo2@demo.com',
+          username: 'demo2'
+        }
+      ]
+
+      const { getUsers } = tester.mock({
+        query,
+        fixture
+      })
+
+      expect(getUsers).to.exist
+      expect(getUsers).to.be.a('array')
+      expect(getUsers.length).to.be.gt(0)
+      expect(getUsers.length).to.be.eq(3)
+      expect(getUsers[0].email).to.be.eq('demo@demo.com')
+      expect(getUsers[0].username).to.be.eq('demo')
+      expect(getUsers[1].email).to.be.eq('demo1@demo.com')
+      expect(getUsers[1].username).to.be.eq('demo1')
+      expect(getUsers[2].email).to.be.eq('demo2@demo.com')
+      expect(getUsers[2].username).to.be.eq('demo2')
+    })
+
     it('Should return falsy field values in nested positions', () => {
       const query = `
         {
