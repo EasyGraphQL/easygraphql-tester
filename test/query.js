@@ -536,6 +536,7 @@ describe('Query', () => {
       const query = `
         {
           getMe {
+            createdAt
             familyInfo {
               id
               isLocal
@@ -544,7 +545,16 @@ describe('Query', () => {
         }
       `
 
-      const { getMe } = tester.mock(query)
+      const { getMe } = tester.mock({
+        query,
+        fixture: {
+          createdAt: '2018-12-27'
+        }
+      })
+
+      expect(getMe.createdAt).to.exist
+      expect(getMe.createdAt).to.be.a('string')
+      expect(getMe.createdAt).to.be.eq('2018-12-27')
       for (const familyInfo of getMe.familyInfo) {
         expect(familyInfo.isLocal).to.be.a('boolean')
       }

@@ -255,7 +255,7 @@ function validateSelectedFields (field, selectedSchema, schema, name, type) {
   }
 
   const selectedType = schema[schemaFields.type]
-  if (selectedType) {
+  if (selectedType && selectedType.type !== 'ScalarTypeDefinition') {
     if (isObject(selectedType) && field.fields.length === 0 && selectedType.values.length === 0) {
       throw new Error(`${type} ${name}: There should be a selected field on ${field.name}`)
     }

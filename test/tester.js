@@ -41,6 +41,7 @@ describe('Assert test', () => {
         {
           getMeByTestResult(result: 4.9) {
             email
+            createdAt
           }
         }
       `

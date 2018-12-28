@@ -1,4 +1,5 @@
 const isObject = require('lodash.isobject')
+const isEmpty = require('lodash.isempty')
 
 function setFixture (mock, fixture) {
   if (typeof fixture === 'undefined') {
@@ -31,7 +32,9 @@ function handleObjectFixture (mock, fixture) {
       throw new Error(`${val} is not an array and it should be one.`)
     }
 
-    if (mock[val] !== null && typeof mock[val] !== typeof fixture[val]) {
+    // if the mock[val] is empty it is because it's a custom scalar, in this case
+    // it should not be validated
+    if (mock[val] !== null && typeof mock[val] !== typeof fixture[val] && !isEmpty(mock[val])) {
       throw new Error(`${val} is not the same type as the document.`)
     }
 
