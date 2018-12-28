@@ -5,6 +5,7 @@
 const fs = require('fs')
 const path = require('path')
 const { expect } = require('chai')
+const gql = require('graphql-tag')
 const EasyGraphQLTester = require('../lib')
 
 const userSchema = fs.readFileSync(path.join(__dirname, 'schema', 'user.gql'), 'utf8')
@@ -259,6 +260,16 @@ describe('Assert test', () => {
 
     it('Should receive scalar boolean (false) argument', () => {
       const mutation = `
+        mutation {
+          createTodo(completed: false)
+        }
+      `
+
+      tester.test(true, mutation)
+    })
+
+    it('Should receive mutation with graphql-tag', () => {
+      const mutation = gql`
         mutation {
           createTodo(completed: false)
         }

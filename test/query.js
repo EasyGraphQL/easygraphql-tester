@@ -5,6 +5,7 @@
 const fs = require('fs')
 const path = require('path')
 const { expect } = require('chai')
+const gql = require('graphql-tag')
 const EasyGraphQLTester = require('../lib')
 
 const userSchema = fs.readFileSync(path.join(__dirname, 'schema', 'user.gql'), 'utf8')
@@ -843,6 +844,25 @@ describe('Query', () => {
       `
 
       const { appendPost } = tester.mock(mutation, { content: 'Hello, world!' })
+      expect(appendPost).to.exist
+      expect(appendPost.content).to.be.a('string')
+    })
+
+    it('Should support mock with graphql-tag', () => {
+      const mutation = gql`
+        mutation addPost($content: String!) {
+          appendPost(content: $content) {
+            content
+          }
+        }
+      `
+
+      const { appendPost } = tester.mock({
+        query: mutation,
+        variables: {
+          content: 'Hello, world!'
+        }
+      })
       expect(appendPost).to.exist
       expect(appendPost.content).to.be.a('string')
     })
