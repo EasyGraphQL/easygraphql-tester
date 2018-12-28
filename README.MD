@@ -6,7 +6,7 @@
   <br>
 </h1>
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/EasyGraphQL/easygraphql-tester.svg)](https://greenkeeper.io/)
+[![Coverage Status](https://coveralls.io/repos/github/EasyGraphQL/easygraphql-tester/badge.svg?branch=master)](https://coveralls.io/github/EasyGraphQL/easygraphql-tester?branch=master) [![Greenkeeper badge](https://badges.greenkeeper.io/EasyGraphQL/easygraphql-tester.svg)](https://greenkeeper.io/)
 
 [`easygraphql-tester`](https://github.com/EasyGraphQL/easygraphql-tester) is node library created to make GraphQL tests based on the schema; it's used
 to test the queries, mutations and schema on the easiest way possible.
@@ -224,6 +224,8 @@ Call the method `.mock()` and pass an object with this options:
 The result will have top level fields, it means that the result will be an object
 with a property that is going to be the name (top level field) of the query or alias with the mocked
 result.
+
+*In case you have a custom scalar, set the value on the fixture, if it's not set it will be `{}`*
 
 ### Mock example
 ```js

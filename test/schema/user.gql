@@ -1,3 +1,5 @@
+scalar DateTime
+
 union SearchResult = User | FamilyInfo
 
 enum FamilyRelation {
@@ -27,6 +29,7 @@ type Me {
   familyInfo: [FamilyInfo]!
   familyRelation: FamilyRelation!
   user: User!
+  createdAt: DateTime!
 }
 
 input UserInput {
