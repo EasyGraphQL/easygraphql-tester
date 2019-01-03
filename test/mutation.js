@@ -5,10 +5,12 @@
 const fs = require('fs')
 const path = require('path')
 const { expect } = require('chai')
+const gql = require('graphql-tag')
 const EasyGraphQLTester = require('../lib')
 
 const userSchema = fs.readFileSync(path.join(__dirname, 'schema', 'user.gql'), 'utf8')
 const familySchema = fs.readFileSync(path.join(__dirname, 'schema', 'family.gql'), 'utf8')
+const customRootTypeNamesSchema = fs.readFileSync(path.join(__dirname, 'schema', 'customRootTypeNames.gql'), 'utf8')
 
 describe('Mutation', () => {
   let tester
@@ -667,6 +669,49 @@ describe('Mutation', () => {
 
       expect(error).to.exist
       expect(error.message).to.be.eq("isAdmin is an Array and it shouldn't be one isAdmin")
+    })
+  })
+
+  describe('Should support custom names for root types', () => {
+    let tester
+
+    before(() => {
+      tester = new EasyGraphQLTester(customRootTypeNamesSchema)
+    })
+
+    it('Should support a custom name for the root mutation type', () => {
+      const mutation = `
+        mutation addPost($content: String!) {
+          appendPost(post: $content) {
+            content
+          }
+        }
+      `
+
+      const { appendPost } = tester.mock(mutation, { post: { content: 'Hello, world!' } })
+      expect(appendPost).to.exist
+      expect(appendPost.content).to.be.a('string')
+    })
+
+    it('Should support mock with graphql-tag', () => {
+      const mutation = gql`
+        mutation addPost($content: String!) {
+          appendPost(post: $content) {
+            content
+          }
+        }
+      `
+
+      const { appendPost } = tester.mock({
+        query: mutation,
+        variables: {
+          post: {
+            content: 'Hello, world!'
+          }
+        }
+      })
+      expect(appendPost).to.exist
+      expect(appendPost.content).to.be.a('string')
     })
   })
 })

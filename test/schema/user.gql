@@ -92,3 +92,8 @@ type Mutation {
   createTodo(completed: Boolean!): Boolean!
   insert_user(objects: [user_insert_input!]!): user_mutation_response
 }
+
+type Subscription {
+  newUsers(limit: Int!): [User!]!
+  newUser: User!
+}

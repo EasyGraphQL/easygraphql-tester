@@ -2,7 +2,7 @@
 
 const isObject = require('lodash.isobject')
 const isEmpty = require('lodash.isempty')
-const { queryField, mutationField } = require('./schemaDefinition')
+const { queryField, mutationField, subscriptionField } = require('./schemaDefinition')
 
 /**
  * Find if the required arguments are passed
@@ -229,8 +229,10 @@ function validator (query, mock, schema, type) {
   let schemaType
   if (type === 'Query') {
     schemaType = schema[queryField(schema)].fields.filter(el => el.name === query.name)[0]
-  } else {
+  } else if (type === 'Mutation') {
     schemaType = schema[mutationField(schema)].fields.filter(el => el.name === query.name)[0]
+  } else {
+    schemaType = schema[subscriptionField(schema)].fields.filter(el => el.name === query.name)[0]
   }
   // If the mock is array, it will loop each value, so the query can access
   // each value requested on the Query/Mutation

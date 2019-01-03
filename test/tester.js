@@ -302,5 +302,19 @@ describe('Assert test', () => {
 
       tester.test(true, mutation)
     })
+
+    it('Should test a subscription', () => {
+      const subscription = `
+        subscription {
+          newUsers(limit: 1) {
+            id
+            username
+            email
+          } 
+        }
+      `
+
+      tester.test(true, subscription)
+    })
   })
 })
