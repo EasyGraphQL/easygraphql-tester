@@ -518,7 +518,34 @@ describe('Query', () => {
 
       const { getUsers } = tester.mock({
         query,
-        fixture
+        fixture,
+        saveFixture: true
+      })
+
+      expect(getUsers).to.exist
+      expect(getUsers).to.be.a('array')
+      expect(getUsers.length).to.be.gt(0)
+      expect(getUsers.length).to.be.eq(3)
+      expect(getUsers[0].email).to.be.eq('demo@demo.com')
+      expect(getUsers[0].username).to.be.eq('demo')
+      expect(getUsers[1].email).to.be.eq('demo1@demo.com')
+      expect(getUsers[1].username).to.be.eq('demo1')
+      expect(getUsers[2].email).to.be.eq('demo2@demo.com')
+      expect(getUsers[2].username).to.be.eq('demo2')
+    })
+
+    it('Should have saved fixtures', () => {
+      const query = `
+        {
+          getUsers {
+            email
+            username
+          }
+        }
+      `
+
+      const { getUsers } = tester.mock({
+        query
       })
 
       expect(getUsers).to.exist
@@ -837,13 +864,13 @@ describe('Query', () => {
     it('Should support a custom name for the root mutation type', () => {
       const mutation = `
         mutation addPost($content: String!) {
-          appendPost(content: $content) {
+          appendPost(post: $content) {
             content
           }
         }
       `
 
-      const { appendPost } = tester.mock(mutation, { content: 'Hello, world!' })
+      const { appendPost } = tester.mock(mutation, { post: { content: 'Hello, world!' } })
       expect(appendPost).to.exist
       expect(appendPost.content).to.be.a('string')
     })
@@ -851,7 +878,7 @@ describe('Query', () => {
     it('Should support mock with graphql-tag', () => {
       const mutation = gql`
         mutation addPost($content: String!) {
-          appendPost(content: $content) {
+          appendPost(post: $content) {
             content
           }
         }
@@ -860,7 +887,9 @@ describe('Query', () => {
       const { appendPost } = tester.mock({
         query: mutation,
         variables: {
-          content: 'Hello, world!'
+          post: {
+            content: 'Hello, world!'
+          }
         }
       })
       expect(appendPost).to.exist

@@ -98,16 +98,18 @@ describe('Mutation', () => {
       let error
       try {
         const mutation = `
-          mutation CreateUser{
-            createUser {
+          mutation CreateUser($input: UserInput!) {
+            createUser(input: $input) {
               email
             }
           }
         `
         tester.mock(mutation, {
-          email: 'test@test.com',
-          fullName: 'test',
-          password: 'test'
+          input: {
+            email: 'test@test.com',
+            fullName: 'test',
+            password: 'test'
+          }
         })
       } catch (err) {
         error = err
@@ -123,18 +125,20 @@ describe('Mutation', () => {
       let error
       try {
         const mutation = `
-          mutation CreateUser{
-            createUser {
+          mutation CreateUser($input: UserInput!) {
+            createUser(input: $input) {
               invalidField
               email
             }
           }
         `
         tester.mock(mutation, {
-          email: 'test@test.com',
-          username: 'test',
-          fullName: 'test',
-          password: 'test'
+          input: {
+            email: 'test@test.com',
+            username: 'test',
+            fullName: 'test',
+            password: 'test'
+          }
         })
       } catch (err) {
         error = err
@@ -150,17 +154,19 @@ describe('Mutation', () => {
       let error
       try {
         const mutation = `
-          mutation CreateUser{
-            createUser {
+          mutation CreateUser($input: UserInput!) {
+            createUser(input: $input) {
               email
             }
           }
         `
         tester.mock(mutation, {
-          email: 'test@test.com',
-          username: 1,
-          fullName: 'test',
-          password: 'test'
+          input: {
+            email: 'test@test.com',
+            username: 1,
+            fullName: 'test',
+            password: 'test'
+          }
         })
       } catch (err) {
         error = err
@@ -174,17 +180,19 @@ describe('Mutation', () => {
       let error
       try {
         const mutation = `
-          mutation CreateUser{
-            createUser {
+          mutation CreateUser($input: UserInput!) {
+            createUser(input: $input) {
               email
             }
           }
         `
         tester.mock(mutation, {
-          email: 'test@test.com',
-          username: true,
-          fullName: 'test',
-          password: 'test'
+          input: {
+            email: 'test@test.com',
+            username: true,
+            fullName: 'test',
+            password: 'test'
+          }
         })
       } catch (err) {
         error = err
@@ -198,17 +206,19 @@ describe('Mutation', () => {
       let error
       try {
         const mutation = `
-          mutation CreateUsers {
-            createUsers {
+          mutation CreateUsers($input: UserInput!) {
+            createUsers(input: $input) {
               email
             }
           }
         `
         tester.mock(mutation, {
-          email: 'test@test.com',
-          username: 'test',
-          fullName: 'test',
-          password: 'test'
+          input: {
+            email: 'test@test.com',
+            username: 'test',
+            fullName: 'test',
+            password: 'test'
+          }
         })
       } catch (err) {
         error = err
@@ -222,18 +232,20 @@ describe('Mutation', () => {
       let error
       try {
         const mutation = `
-          mutation CreateUser {
-            createUser {
+          mutation CreateUser($input: UserInput!) {
+            createUser(input: $input) {
               email
             }
           }
         `
-        tester.mock(mutation, [{
-          email: 'test@test.com',
-          username: 'test',
-          fullName: 'test',
-          password: 'test'
-        }])
+        tester.mock(mutation, {
+          input: [{
+            email: 'test@test.com',
+            username: 'test',
+            fullName: 'test',
+            password: 'test'
+          }]
+        })
       } catch (err) {
         error = err
       }
@@ -246,15 +258,17 @@ describe('Mutation', () => {
       let error
       try {
         const mutation = `
-          mutation UpdateUserAge{
-            updateUserAge {
+          mutation UpdateUserAge($input: UpdateUserAgeInput!) {
+            updateUserAge(input: $input) {
               email
             }
           }
         `
         tester.mock(mutation, {
-          id: '123',
-          age: '10'
+          input: {
+            id: '123',
+            age: '10'
+          }
         })
       } catch (err) {
         error = err
@@ -268,15 +282,17 @@ describe('Mutation', () => {
       let error
       try {
         const mutation = `
-          mutation UpdateUserAge{
-            updateUserAge {
+          mutation UpdateUserAge($input: UpdateUserAgeInput!) {
+            updateUserAge(input: $input) {
               email
             }
           }
         `
         tester.mock(mutation, {
-          id: '123',
-          age: true
+          input: {
+            id: '123',
+            age: true
+          }
         })
       } catch (err) {
         error = err
@@ -286,18 +302,20 @@ describe('Mutation', () => {
       expect(error.message).to.be.eq('age argument is not type Int')
     })
 
-    it('Should throw an error if the input is an array and it must be an array', () => {
+    it('Should throw an error if the input is not an array and it must be an array', () => {
       let error
       try {
         const mutation = `
-          mutation UpdateUserScores{
-            updateUserScores {
+          mutation UpdateUserScores($scores: UpdateUserScoresInput!){
+            updateUserScores(scores: $scores) {
               scores
             }
           }
         `
         tester.mock(mutation, {
-          scores: 1
+          scores: {
+            scores: 1
+          }
         })
       } catch (err) {
         error = err
@@ -311,14 +329,16 @@ describe('Mutation', () => {
       let error
       try {
         const mutation = `
-          mutation UpdateUserScores{
-            updateUserScores {
+          mutation UpdateUserScores($scores: UpdateUserScoresInput!){
+            updateUserScores(scores: $scores) {
               scores
             }
           }
         `
         tester.mock(mutation, {
-          invalidField: 1
+          scores: {
+            invalidField: 1
+          }
         })
       } catch (err) {
         error = err
@@ -339,10 +359,12 @@ describe('Mutation', () => {
         }
       `
       const { createUser } = tester.mock(mutation, {
-        email: 'test@test.com',
-        username: 'test',
-        fullName: 'test',
-        password: 'test'
+        input: {
+          email: 'test@test.com',
+          username: 'test',
+          fullName: 'test',
+          password: 'test'
+        }
       })
 
       expect(createUser).to.exist
@@ -359,12 +381,14 @@ describe('Mutation', () => {
           }
         }
       `
-      const { createUsers } = tester.mock(mutation, [{
-        email: 'test@test.com',
-        username: 'test',
-        fullName: 'test',
-        password: 'test'
-      }])
+      const { createUsers } = tester.mock(mutation, {
+        input: [{
+          email: 'test@test.com',
+          username: 'test',
+          fullName: 'test',
+          password: 'test'
+        }]
+      })
 
       expect(createUsers).to.exist
       expect(createUsers).to.be.a('array')
@@ -383,8 +407,10 @@ describe('Mutation', () => {
         }
       `
       const { updateUserAge } = tester.mock(mutation, {
-        id: '123',
-        age: 10
+        input: {
+          id: '123',
+          age: 10
+        }
       })
 
       expect(updateUserAge).to.exist
@@ -399,7 +425,9 @@ describe('Mutation', () => {
       `
 
       const { createBoolean } = tester.mock(mutation, {
-        isAdmin: true
+        input: {
+          isAdmin: true
+        }
       })
 
       expect(createBoolean).to.exist
@@ -415,7 +443,9 @@ describe('Mutation', () => {
         }
       `
       const { isAdmin } = tester.mock(mutation, {
-        isAdmin: true
+        input: {
+          isAdmin: true
+        }
       })
 
       expect(isAdmin).to.exist
@@ -424,15 +454,17 @@ describe('Mutation', () => {
 
     it('Should return selected fields on IsAdmin', () => {
       const mutation = `
-          mutation UpdateUserScores($input: UpdateUserScoresInput!){
-            updateUserScores(input: $input) {
+          mutation UpdateUserScores($scores: UpdateUserScoresInput!){
+            updateUserScores(scores: $scores) {
               email
               scores
             }
           }
         `
       const { updateUserScores } = tester.mock(mutation, {
-        scores: [1]
+        scores: {
+          scores: [1]
+        }
       })
 
       expect(updateUserScores).to.exist
@@ -441,8 +473,8 @@ describe('Mutation', () => {
 
     it('Should set fixtures and save it', () => {
       const mutation = `
-        mutation UpdateUserScores($input: UpdateUserScoresInput!){
-          updateUserScores(input: $input) {
+        mutation UpdateUserScores($scores: UpdateUserScoresInput!){
+          updateUserScores(scores: $scores) {
             email
             scores
           }
@@ -456,7 +488,7 @@ describe('Mutation', () => {
 
       const { updateUserScores } = tester.mock({
         query: mutation,
-        variables: { scores: [1] },
+        variables: { scores: { scores: [1] } },
         fixture,
         saveFixture: true
       })
@@ -467,7 +499,7 @@ describe('Mutation', () => {
 
       const mock = tester.mock({
         query: mutation,
-        variables: { scores: [1] }
+        variables: { scores: { scores: [1] } }
       })
 
       expect(mock.updateUserScores).to.exist
@@ -481,7 +513,7 @@ describe('Mutation', () => {
       try {
         const mutation = `
           mutation UpdateUserScores($input: UpdateUserScoresInput!){
-            updateUserScores(input: $input) {
+            updateUserScores(scores: $input) {
               email
               scores
             }
@@ -495,7 +527,7 @@ describe('Mutation', () => {
 
         tester.mock({
           query: mutation,
-          variables: { scores: [1] },
+          variables: { scores: { scores: [1] } },
           fixture,
           saveFixture: true
         })
@@ -512,7 +544,7 @@ describe('Mutation', () => {
       try {
         const mutation = `
           mutation UpdateUserScores($input: UpdateUserScoresInput!){
-            updateUserScores(input: $input) {
+            updateUserScores(scores: $input) {
               email
               scores
             }
@@ -526,7 +558,7 @@ describe('Mutation', () => {
 
         tester.mock({
           query: mutation,
-          variables: { scores: [1] },
+          variables: { scores: { scores: [1] } },
           fixture
         })
       } catch (err) {
@@ -542,7 +574,7 @@ describe('Mutation', () => {
       try {
         const mutation = `
           mutation UpdateUserScores($input: UpdateUserScoresInput!){
-            updateUserScores(input: $input) {
+            updateUserScores(scores: $input) {
               email
               scores
             }
@@ -555,7 +587,7 @@ describe('Mutation', () => {
 
         tester.mock({
           query: mutation,
-          variables: { scores: [1] },
+          variables: { scores: { scores: [1] } },
           fixture
         })
       } catch (err) {
@@ -564,6 +596,77 @@ describe('Mutation', () => {
 
       expect(error).to.exist
       expect(error.message).to.be.eq('email is not the same type as the document.')
+    })
+
+    it('Should fail if the mutations has any extra argument', () => {
+      let error
+      try {
+        const mutation = `
+          mutation UpdateUserScores($input: UpdateUserScoresInput!){
+            updateUserScores(scores: $input, name: "demo") {
+              email
+              scores
+            }
+          }
+        `
+
+        tester.mock({
+          query: mutation,
+          variables: { scores: { scores: [1] } }
+        })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq("name argument is defined on the mutation and it's missing on the document updateUserScores")
+    })
+
+    it('Should fail if the mutations has no argument', () => {
+      let error
+      try {
+        const mutation = `
+          mutation {
+            updateUserScores {
+              email
+              scores
+            }
+          }
+        `
+
+        tester.mock({
+          query: mutation,
+          variables: { scores: { scores: [1] } }
+        })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq('scores argument is missing on updateUserScores')
+    })
+
+    it('Should fail if the mutations has no argument', () => {
+      let error
+      try {
+        const mutation = `
+          mutation IsAdmin($input: IsAdminInput!){
+            isAdmin(input: $input) {
+              email
+            }
+          }
+        `
+        tester.mock(mutation, {
+          input: {
+            isAdmin: [true]
+          }
+        })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq("isAdmin is an Array and it shouldn't be one isAdmin")
     })
   })
 })
