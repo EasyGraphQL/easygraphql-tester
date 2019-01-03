@@ -155,22 +155,24 @@ describe('Test my queries and mutations', () => {
 
     it('Should pass if the mutation is valid', () => {
       const mutation = `
-        mutation UpdateUserScores {
-          updateUserScores {
+        mutation UpdateUserScores($scores: ScoresInput!) {
+          updateUserScores(scores: $scores) {
             email
             scores
           }
         }
       `
       tester.test(true, mutation, {
-        scores: [1, 2, 3]
+        scores: {
+          scores: [1, 2, 3]
+        }
       })
     })
 
     it('Should not pass if one value on the mutation input is invalid', () => {
       const mutation = `
-        mutation UpdateUserScores {
-          updateUserScores {
+        mutation UpdateUserScores($scores: ScoresInput!) {
+          updateUserScores(scores: $scores) {
             email
             scores
           }
@@ -178,8 +180,10 @@ describe('Test my queries and mutations', () => {
       `
       // First arg: false, there is no invalidField on the schema.
       tester.test(false, mutation, {
-        scores: [1],
-        invalidField: true
+        scores: {
+          scores: [1],
+          invalidField: true
+        }
       })
     })
 
@@ -279,7 +283,9 @@ const mutation = `
   }
 `
 const input = {
-  name: 'test'
+  input: {
+    name: 'test'    
+  }
 }
 
 const { createUser } = tester.mock({ query: mutation, variables: input })
@@ -412,14 +418,16 @@ const familySchema = fs.readFileSync(path.join(__dirname, 'schema', 'family.gql'
 const tester = new EasyGraphQLTester([userSchema, familySchema])
 
 const mutation = `
-  mutation CreateFamily {
-    createFamily {
+  mutation CreateFamily($input: CreateFamilyInput!) {
+    createFamily(input: $input) {
       lastName
     }
   }
 `
 const test = tester.mock(mutation, {
-  lastName: 'test'
+  input: {
+    lastName: 'test'
+  }
 })
 // Error: email argument is missing on createFamily
 ```

@@ -62,60 +62,68 @@ describe('Assert test', () => {
 
     it('Should pass if the mutation is invalid', () => {
       const mutation = `
-        mutation UpdateUserScores{
-          updateUserScores {
+        mutation UpdateUserScores($scores: UpdateUserScoresInput!) {
+          updateUserScores(scores: $scores) {
             email
             scores
           }
         }
       `
       tester.test(false, mutation, {
-        scores: ['1']
+        scores: {
+          scores: ['1']
+        }
       })
     })
 
     it('Should pass if the mutation is valid', () => {
       const mutation = `
-        mutation UpdateUserScores{
-          updateUserScores {
+        mutation UpdateUserScores($scores: UpdateUserScoresInput!) {
+          updateUserScores(scores: $scores) {
             email
             scores
           }
         }
       `
       tester.test(true, mutation, {
-        scores: [1]
+        scores: {
+          scores: [1]
+        }
       })
     })
 
     it('Should not pass if one value on the mutation input is invalid', () => {
       const mutation = `
-        mutation UpdateUserScores{
-          updateUserScores {
+        mutation UpdateUserScores($scores: UpdateUserScoresInput!) {
+          updateUserScores(scores: $scores) {
             email
             scores
           }
         }
       `
       tester.test(false, mutation, {
-        scores: [1],
-        invalidField: true
+        scores: {
+          scores: [1],
+          invalidField: true
+        }
       })
     })
 
     it('Should pass if the input is invalid', () => {
       const mutation = `
-        mutation CreateUser{
-          createUser {
+        mutation CreateUser($input: UserInput!){
+          createUser(input: $input) {
             email
           }
         }
       `
 
       tester.test(false, mutation, {
-        email: 'test@test.com',
-        fullName: 'test',
-        password: 'test'
+        input: {
+          email: 'test@test.com',
+          fullName: 'test',
+          password: 'test'
+        }
       })
     })
 
@@ -216,7 +224,9 @@ describe('Assert test', () => {
       `
 
       tester.test(true, mutation, {
-        isAdmin: true
+        input: {
+          isAdmin: true
+        }
       })
     })
 
@@ -240,6 +250,21 @@ describe('Assert test', () => {
       tester.test(true, mutation)
     })
 
+    it('Should receive scalar arr', () => {
+      const mutation = `
+        mutation ($username: String!) {
+          insert_user (objects: [{username: $username}]) {
+            returning {
+              id
+              username
+            }
+          }
+        }
+      `
+
+      tester.test(true, mutation)
+    })
+
     it('Should fail if scalar expect scalar and get arr', () => {
       let error
       try {
@@ -255,7 +280,7 @@ describe('Assert test', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq("name is an Array and it shouldn't be one createTest")
+      expect(error.message).to.be.eq('The input value on createTest is an array and it must be an object')
     })
 
     it('Should receive scalar boolean (false) argument', () => {

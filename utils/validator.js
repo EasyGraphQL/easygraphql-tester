@@ -84,78 +84,113 @@ function argumentsValidator (args, schemaArgs, name, queryVariables) {
   })
 }
 
-function inputValidator (variables, schemaArgs, schema, name, arrCalled) {
-  // If the input must be an array and it is not an array value; and, also
-  // it shouldn't be a nested call made by the loop of the variables.
-  const nestedType = schema[schemaArgs[0].type]
-  if (nestedType && schemaArgs[0].isArray && !Array.isArray(variables) && !arrCalled) {
-    throw new Error(`The input value on ${name} must be an array`)
+function inputValidator (variables, schemaArgs, schema, name, queryArgs, arrCalled) {
+  if (queryArgs && Array.isArray(queryArgs)) {
+    queryArgs.forEach(queryArg => {
+      const mutationVariables = schemaArgs.filter(arg => arg.name === queryArg.name)
+
+      if (mutationVariables.length === 0) {
+        throw new Error(`${queryArg.name} argument is defined on the mutation and it's missing on the document ${name}`)
+      }
+    })
   }
 
-  if (Array.isArray(variables) && !schemaArgs[0].isArray) {
-    throw new Error(`The input value on ${name} is an array and it must be an object`)
-  }
-  // If there is an array on the input, we should loop it to access each value on it.
-  if (Array.isArray(variables)) {
-    return variables.forEach(inputVar => inputValidator(inputVar, schemaArgs, schema, name, true))
-  }
+  schemaArgs.forEach(schemaArg => {
+    // If the input must be an array and it is not an array value; and, also
+    // it shouldn't be a nested call made by the loop of the variables.
+    const nestedType = schema[schemaArg.type]
+    const schemaVar = variables[schemaArg.name]
 
-  let inputFields
-  // if the input type is a nested type, so must search it on the schema
-  if (nestedType) {
-    inputFields = nestedType.fields
-  } else {
-    inputFields = schemaArgs
-  }
-
-  // Check if one of the passed variables is not defined on the schema and
-  // throw an error
-  for (const arg of Object.keys(variables)) {
-    const filteredArg = inputFields.filter(schemaVar => schemaVar.name === arg)
-
-    if (filteredArg.length === 0) {
-      throw new Error(`${arg} argument is not defined on ${name} Input`)
-    }
-  }
-
-  // Loop to get all the required fields
-  inputFields.forEach(arg => {
-    if (arg.noNull) {
-      // Check if the input field is present on the variables
-      const filteredArg = variables[arg.name]
+    if (schemaArg.noNull) {
+      const mutationVariables = queryArgs.filter(arg => arg.name === schemaArg.name)
+      if (mutationVariables.length === 0) {
+        throw new Error(`${schemaArg.name} argument is missing on ${name}`)
+      }
 
       // If the argument is missing, there should be an error
-      if (typeof filteredArg === 'undefined') {
-        throw new Error(`${arg.name} argument is missing on ${name}`)
+      if (typeof schemaVar === 'undefined') {
+        throw new Error(`${schemaArg.name} values are missing on ${name}`)
       }
+    }
 
-      // If the argument must be an array and it is different, there should be an error
-      if (arg.isArray && !Array.isArray(filteredArg)) {
-        throw new Error(`${arg.name} must be an Array on ${name}`)
-      }
+    if (nestedType && schemaArg.isArray && !Array.isArray(schemaVar) && !arrCalled) {
+      throw new Error(`The input value on ${name} must be an array`)
+    }
 
-      // If the value shouldn't be an array but it is, return error.
-      if (!arg.isArray && Array.isArray(filteredArg)) {
-        throw new Error(`${arg.name} is an Array and it shouldn't be one ${name}`)
-      }
+    if (Array.isArray(schemaVar) && !schemaArg.isArray) {
+      throw new Error(`The input value on ${name} is an array and it must be an object`)
+    }
+    // If there is an array on the input, we should loop it to access each value on it.
+    if (Array.isArray(schemaVar)) {
+      return schemaVar.forEach(inputVar => validateInputArg(inputVar, schemaVar, name))
+    }
 
-      if (Array.isArray(filteredArg)) {
-        filteredArg.forEach(arrArg => {
-          try {
-            validateInputType(arg, arrArg)
-          } catch (err) {
-            throw err
-          }
-        })
-      } else {
-        try {
-          validateInputType(arg, filteredArg)
-        } catch (err) {
-          throw err
+    let inputFields
+    // if the input type is a nested type, so must search it on the schema
+    if (nestedType) {
+      inputFields = nestedType.fields
+    } else {
+      inputFields = schemaArg
+    }
+
+    // Check if one of the passed schemaVar is not defined on the schema and
+    // throw an error
+    if (isObject(schemaVar)) {
+      for (const arg of Object.keys(schemaVar)) {
+        const filteredArg = inputFields.filter(schemaVar => schemaVar.name === arg)
+        if (filteredArg.length === 0) {
+          throw new Error(`${arg} argument is not defined on ${name} Input`)
         }
       }
     }
+
+    // Loop to get all the required fields
+    if (Array.isArray(inputFields)) {
+      inputFields.forEach(arg => {
+        validateInputArg(arg, schemaVar, name)
+      })
+    } else {
+      validateInputArg(inputFields, schemaVar, name, true)
+    }
   })
+}
+
+function validateInputArg (arg, schemaVar, name, isScalar) {
+  if (arg.noNull) {
+    // Check if the input field is present on the schemaVar
+    const filteredArg = schemaVar[arg.name]
+
+    // If the argument is missing, there should be an error
+    if (!isScalar && typeof filteredArg === 'undefined') {
+      throw new Error(`${arg.name} argument is missing on ${name}`)
+    }
+
+    // If the argument must be an array and it is different, there should be an error
+    if (arg.isArray && !Array.isArray(filteredArg)) {
+      throw new Error(`${arg.name} must be an Array on ${name}`)
+    }
+
+    // If the value shouldn't be an array but it is, return error.
+    if (!arg.isArray && Array.isArray(filteredArg)) {
+      throw new Error(`${arg.name} is an Array and it shouldn't be one ${name}`)
+    }
+
+    if (Array.isArray(filteredArg)) {
+      filteredArg.forEach(arrArg => {
+        try {
+          validateInputType(arg, arrArg)
+        } catch (err) {
+          throw err
+        }
+      })
+    } else {
+      try {
+        validateInputType(arg, filteredArg)
+      } catch (err) {
+        throw err
+      }
+    }
+  }
 }
 
 function validateInputType (arg, filteredArg) {

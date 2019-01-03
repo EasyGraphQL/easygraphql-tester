@@ -68,10 +68,12 @@ describe('Assert test', () => {
       `
 
       tester.test(true, mutation, {
-        email: 'test@test.com',
-        username: 'demo',
-        fullName: 'test',
-        password: 'test'
+        input: {
+          email: 'test@test.com',
+          username: 'demo',
+          fullName: 'test',
+          password: 'test'
+        }
       })
     })
   })

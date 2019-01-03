@@ -32,6 +32,11 @@ type Me {
   createdAt: DateTime!
 }
 
+type user_mutation_response {
+  affected_rows: Int!
+  returning: [User!]!
+}
+
 input UserInput {
   email: String!
   username: String!
@@ -57,6 +62,11 @@ input UpdateUserScoresInput {
   scores: [Int]!
 }
 
+input user_insert_input {
+  id: Int
+  username: String
+}
+
 type Query {
   getMe: Me
   getUserByUsername(username: String!, name: String!): User
@@ -75,9 +85,10 @@ type Mutation {
   isAdmin(input: IsAdminInput!): User
   updatePassword(input: UpdatePasswordInput!): Me
   updateUserAge(input: UpdateUserAgeInput!): Me
-  updateUserScores(input: UpdateUserScoresInput!): Me
+  updateUserScores(scores: UpdateUserScoresInput!): Me
   createBoolean(input: IsAdminInput!): Boolean!
   createTest(name: String!, age: Int!): Boolean!
   createNames(names: [String!]!): String!
   createTodo(completed: Boolean!): Boolean!
+  insert_user(objects: [user_insert_input!]!): user_mutation_response
 }
