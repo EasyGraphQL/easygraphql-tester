@@ -318,5 +318,42 @@ describe('Assert test', () => {
 
       tester.test(true, subscription)
     })
+
+    it('Should test nested arguments on array', () => {
+      const SEARCH_ITEMS_QUERY = `
+        query SEARCH_ITEMS_QUERY($searchTerm: String!) {
+          items(where: { OR: [{ title_contains: $searchTerm }, { description_contains: "yes" }, { name_contains: [true, false] }, { id_contains: 1 }] }) {
+            id
+            image
+            title
+          }
+        }
+      `
+      tester.test(true, SEARCH_ITEMS_QUERY)
+    })
+
+    it('Should fail if a field on the variables is missing', () => {
+      let error
+      try {
+        const RESET_MUTATION = `
+          mutation RESET_MUTATION($demo: String!, $password: String!, $confirmPassword: String!) {
+            resetPassword(resetToken: $demo, password: $password, confirmPassword: $confirmPassword) {
+              id
+              email
+            }
+          }
+        `
+
+        tester.test(true, RESET_MUTATION, {
+          demo: 'jnzjkadnan',
+          confirmPassword: 'aa'
+        })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq('password values are missing on resetPassword')
+    })
   })
 })
