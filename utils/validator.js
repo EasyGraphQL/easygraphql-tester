@@ -29,6 +29,11 @@ function argumentsValidator (args, schemaArgs, name, queryVariables) {
       if (Array.isArray(arg.value) && arg.value.indexOf(queryVariable.name) >= 0) {
         return true
       }
+
+      if (Array.isArray(arg.value)) {
+        const arrVals = arg.value.map(val => getArgValue(val))
+        return arrVals.indexOf(queryVariable.name) >= 0
+      }
       return arg.value === queryVariable.name
     })
 
@@ -91,6 +96,35 @@ function argumentsValidator (args, schemaArgs, name, queryVariables) {
   })
 }
 
+// If the values of the arguments are on an array it is going to get the nested values
+function getArgValue (arg) {
+  switch (arg.kind) {
+    case 'EnumValue':
+    case 'StringValue':
+    case 'BooleanValue':
+      return arg.value
+
+    case 'ListValue':
+      return arg.values.map(val => val.value)
+
+    case 'Variable':
+      return arg.name.value
+
+    case 'IntValue':
+      return parseFloat(arg.value)
+
+    // If the arg is an object, check if it has multiples values
+    case 'ObjectValue':
+      const argVal = arg.fields.map(arg => getArgValue(arg))
+      return argVal.length === 1 ? argVal[0] : [].concat.apply([], argVal)
+
+    case 'ObjectField':
+      return getArgValue(arg.value)
+
+    default:
+  }
+}
+
 function inputValidator (variables, schemaArgs, schema, name, queryArgs, arrCalled) {
   if (queryArgs && Array.isArray(queryArgs)) {
     queryArgs.forEach(queryArg => {
@@ -118,13 +152,19 @@ function inputValidator (variables, schemaArgs, schema, name, queryArgs, arrCall
       const mutationVariables = queryArgs.filter(arg => {
         // If the user pass the input values with the name of the variable, set it to
         // the variable value.
-        if (variables && arg.type === 'Variable' && variables[arg.value]) {
+        if (variables && arg.type === 'Variable' && variables[arg.value] && arg.name === schemaArg.name) {
           schemaVar = variables[arg.value]
         }
 
         // If the user pass the input values with the name of the variable and is an
         // array, set it to the variable value.
-        if (variables && Array.isArray(arg.value) && arg.value[0].kind === 'Variable' && variables[arg.value[0].name.value]) {
+        if (
+          variables &&
+          Array.isArray(arg.value) &&
+          arg.value[0].kind === 'Variable' &&
+          variables[arg.value[0].name.value] &&
+          arg.name === schemaArg.name
+        ) {
           schemaVar = variables[arg.value[0].name.value]
         }
 
@@ -186,7 +226,7 @@ function inputValidator (variables, schemaArgs, schema, name, queryArgs, arrCall
 function validateInputArg (arg, schemaVar, name, arrCalled, isScalar) {
   if (arg.noNull) {
     // Check if the input field is present on the schemaVar
-    const filteredArg = schemaVar[arg.name]
+    const filteredArg = isObject(schemaVar) ? schemaVar[arg.name] : schemaVar
 
     // If the argument is missing, there should be an error
     if (!isScalar && typeof filteredArg === 'undefined') {

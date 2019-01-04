@@ -44,6 +44,12 @@ input UserInput {
   password: String!
 }
 
+type Item {
+  id: String!
+  image: String!
+  title: String!
+}
+
 input IsAdminInput {
   isAdmin: Boolean!
 }
@@ -67,6 +73,11 @@ input user_insert_input {
   username: String
 }
 
+input ItemWhereInput {
+  AND: [ItemWhereInput!]
+  OR: [ItemWhereInput!]
+}
+
 type Query {
   getMe: Me
   getUserByUsername(username: String!, name: String!): User
@@ -77,6 +88,7 @@ type Query {
   search(id: ID!): [SearchResult]!
   getString: String!
   getInt: Int!
+  items(where: ItemWhereInput): [Item]!
 }
 
 type Mutation {
@@ -92,6 +104,7 @@ type Mutation {
   createTodo(completed: Boolean!): Boolean!
   insert_user(objects: [user_insert_input!]!): user_mutation_response
   createNewUser(input: [UserInput!]!, isAdmin: IsAdminInput): User
+  resetPassword(resetToken: String!, password: String!, confirmPassword: String!): User!
 }
 
 type Subscription {
