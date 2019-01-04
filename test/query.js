@@ -861,39 +861,20 @@ describe('Query', () => {
       expect(posts[0].content).to.be.a('string')
     })
 
-    it('Should support a custom name for the root mutation type', () => {
-      const mutation = `
-        mutation addPost($content: String!) {
-          appendPost(post: $content) {
-            content
-          }
-        }
-      `
-
-      const { appendPost } = tester.mock(mutation, { post: { content: 'Hello, world!' } })
-      expect(appendPost).to.exist
-      expect(appendPost.content).to.be.a('string')
-    })
-
     it('Should support mock with graphql-tag', () => {
-      const mutation = gql`
-        mutation addPost($content: String!) {
-          appendPost(post: $content) {
+      const query = gql`
+        query getPosts {
+          posts {
             content
           }
         }
       `
 
-      const { appendPost } = tester.mock({
-        query: mutation,
-        variables: {
-          post: {
-            content: 'Hello, world!'
-          }
-        }
-      })
-      expect(appendPost).to.exist
-      expect(appendPost.content).to.be.a('string')
+      const { posts } = tester.mock(query)
+      expect(posts).to.exist
+      expect(posts).to.be.a('array')
+      expect(posts.length).to.be.gt(0)
+      expect(posts[0].content).to.be.a('string')
     })
   })
 })

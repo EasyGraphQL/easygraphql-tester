@@ -1,6 +1,7 @@
 schema {
   query: RootQuery
   mutation: RootMutation
+  subscription: RootSubscription
 }
 
 type Post {
@@ -13,4 +14,8 @@ type RootQuery {
 
 type RootMutation {
   appendPost(post: Post!): Post!
+}
+
+type RootSubscription {
+  newPost: Post!
 }

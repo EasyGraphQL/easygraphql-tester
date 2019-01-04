@@ -20,4 +20,14 @@ function mutationField (schema) {
   return schema.schemaDefinition ? schema.schemaDefinition.mutation.field : 'Mutation'
 }
 
-module.exports = { queryField, mutationField }
+/**
+ * Returns the name of the root subscription type defined in a schema, or "Subscription"
+ * if the schema does not explicitly specify a root subscription type.
+ * @param schema - The GraphQL schema to read field names from.
+ * @returns {string}
+ */
+function subscriptionField (schema) {
+  return schema.schemaDefinition ? schema.schemaDefinition.subscription.field : 'Subscription'
+}
+
+module.exports = { queryField, mutationField, subscriptionField }
