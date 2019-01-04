@@ -19,6 +19,7 @@ describe('Subscription', () => {
     before(() => {
       tester = new EasyGraphQLTester([userSchema, familySchema])
     })
+
     it('Should mock a subscription', () => {
       const subscription = `
         subscription {
@@ -36,6 +37,25 @@ describe('Subscription', () => {
       expect(newUsers[0].id).to.be.a('string')
       expect(newUsers[0].username).to.be.a('string')
       expect(newUsers[0].email).to.be.a('string')
+    })
+
+    it('Should mock a subscription with object variables', () => {
+      const subscription = `
+        subscription ($isAdmin: Boolean!) {
+          createdUser (where: {
+            isAdmin: isAdmin
+          }){
+            id
+            username
+          }
+        }
+      `
+
+      const { createdUser } = tester.mock(subscription)
+
+      expect(createdUser).to.exist
+      expect(createdUser.id).to.be.a('string')
+      expect(createdUser.username).to.be.a('string')
     })
 
     it('Should set fixture to a subscription', () => {

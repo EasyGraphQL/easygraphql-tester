@@ -473,10 +473,31 @@ describe('Mutation', () => {
       expect(updateUserScores.email).to.be.a('string')
     })
 
+    it('Should return selected fields on createNewUser', () => {
+      const mutation = `
+          mutation CreateNewUser($demo: UserInput!){
+            createNewUser(input: [$demo]) {
+              email
+            }
+          }
+        `
+      const { createNewUser } = tester.mock(mutation, {
+        demo: [{
+          email: 'demo',
+          username: 'demo',
+          fullName: 'demo',
+          password: 'demo'
+        }]
+      })
+
+      expect(createNewUser).to.exist
+      expect(createNewUser.email).to.be.a('string')
+    })
+
     it('Should set fixtures and save it', () => {
       const mutation = `
-        mutation UpdateUserScores($scores: UpdateUserScoresInput!){
-          updateUserScores(scores: $scores) {
+        mutation UpdateUserScores($demo: UpdateUserScoresInput!){
+          updateUserScores(scores: $demo) {
             email
             scores
           }
@@ -490,7 +511,7 @@ describe('Mutation', () => {
 
       const { updateUserScores } = tester.mock({
         query: mutation,
-        variables: { scores: { scores: [1] } },
+        variables: { demo: { scores: [1] } },
         fixture,
         saveFixture: true
       })

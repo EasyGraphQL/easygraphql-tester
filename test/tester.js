@@ -251,7 +251,7 @@ describe('Assert test', () => {
     })
 
     it('Should receive scalar arr', () => {
-      const mutation = `
+      const mutation = gql`
         mutation ($username: String!) {
           insert_user (objects: [{username: $username}]) {
             returning {
@@ -262,7 +262,9 @@ describe('Assert test', () => {
         }
       `
 
-      tester.test(true, mutation)
+      tester.test(true, mutation, {
+        username: 'Test'
+      })
     })
 
     it('Should fail if scalar expect scalar and get arr', () => {

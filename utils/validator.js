@@ -23,7 +23,14 @@ function argumentsValidator (args, schemaArgs, name, queryVariables) {
   })
 
   queryVariables.forEach(queryVariable => {
-    const filteredArg = args.filter(arg => arg.value === queryVariable.name)
+    const filteredArg = args.filter(arg => {
+      // Validate if the variables on the arguments in case is an array
+      // are defined on the query
+      if (Array.isArray(arg.value) && arg.value.indexOf(queryVariable.name) >= 0) {
+        return true
+      }
+      return arg.value === queryVariable.name
+    })
 
     if (filteredArg.length === 0) {
       throw new Error(`${queryVariable.name} variable is not defined on ${name} arguments`)
@@ -99,10 +106,31 @@ function inputValidator (variables, schemaArgs, schema, name, queryArgs, arrCall
     // If the input must be an array and it is not an array value; and, also
     // it shouldn't be a nested call made by the loop of the variables.
     const nestedType = schema[schemaArg.type]
-    const schemaVar = variables[schemaArg.name]
+    let schemaVar = arrCalled ? variables : variables[schemaArg.name]
+
+    // If it can be null, and is a nested call or the variables doesn't exist, it
+    // means that there is no values for the input
+    if (!schemaArg.noNull && (arrCalled || typeof schemaVar === 'undefined')) {
+      return
+    }
 
     if (schemaArg.noNull) {
-      const mutationVariables = queryArgs.filter(arg => arg.name === schemaArg.name)
+      const mutationVariables = queryArgs.filter(arg => {
+        // If the user pass the input values with the name of the variable, set it to
+        // the variable value.
+        if (variables && arg.type === 'Variable' && variables[arg.value]) {
+          schemaVar = variables[arg.value]
+        }
+
+        // If the user pass the input values with the name of the variable and is an
+        // array, set it to the variable value.
+        if (variables && Array.isArray(arg.value) && arg.value[0].kind === 'Variable' && variables[arg.value[0].name.value]) {
+          schemaVar = variables[arg.value[0].name.value]
+        }
+
+        return arg.name === schemaArg.name
+      })
+
       if (mutationVariables.length === 0) {
         throw new Error(`${schemaArg.name} argument is missing on ${name}`)
       }
@@ -122,7 +150,7 @@ function inputValidator (variables, schemaArgs, schema, name, queryArgs, arrCall
     }
     // If there is an array on the input, we should loop it to access each value on it.
     if (Array.isArray(schemaVar)) {
-      return schemaVar.forEach(inputVar => validateInputArg(inputVar, schemaVar, name))
+      return schemaVar.forEach(inputVar => inputValidator(inputVar, schemaArgs, schema, name, queryArgs, true))
     }
 
     let inputFields
@@ -134,8 +162,8 @@ function inputValidator (variables, schemaArgs, schema, name, queryArgs, arrCall
     }
 
     // Check if one of the passed schemaVar is not defined on the schema and
-    // throw an error
-    if (isObject(schemaVar)) {
+    // throw an error, also check that the object is not a GQL object
+    if (isObject(schemaVar) && !schemaVar.kind && !schemaVar.value && !schemaVar.block) {
       for (const arg of Object.keys(schemaVar)) {
         const filteredArg = inputFields.filter(schemaVar => schemaVar.name === arg)
         if (filteredArg.length === 0) {
@@ -147,15 +175,15 @@ function inputValidator (variables, schemaArgs, schema, name, queryArgs, arrCall
     // Loop to get all the required fields
     if (Array.isArray(inputFields)) {
       inputFields.forEach(arg => {
-        validateInputArg(arg, schemaVar, name)
+        validateInputArg(arg, schemaVar, name, arrCalled)
       })
     } else {
-      validateInputArg(inputFields, schemaVar, name, true)
+      validateInputArg(inputFields, schemaVar, name, arrCalled, true)
     }
   })
 }
 
-function validateInputArg (arg, schemaVar, name, isScalar) {
+function validateInputArg (arg, schemaVar, name, arrCalled, isScalar) {
   if (arg.noNull) {
     // Check if the input field is present on the schemaVar
     const filteredArg = schemaVar[arg.name]
@@ -166,7 +194,8 @@ function validateInputArg (arg, schemaVar, name, isScalar) {
     }
 
     // If the argument must be an array and it is different, there should be an error
-    if (arg.isArray && !Array.isArray(filteredArg)) {
+    // If it is arrCalled it means it is an array, should not validate.
+    if (!arrCalled && arg.isArray && !Array.isArray(filteredArg)) {
       throw new Error(`${arg.name} must be an Array on ${name}`)
     }
 
