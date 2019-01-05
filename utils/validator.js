@@ -355,6 +355,8 @@ function getResult (query, mock, schema, schemaType, type) {
 }
 
 function validateSelectedFields (field, selectedSchema, schema, name, type) {
+  if (field.name === '__typename') return
+
   const schemaFields = selectedSchema.fields.filter(schemaField => schemaField.name === field.name)[0]
   if (!schemaFields) {
     throw new Error(`${type} ${name}: The selected field ${field.name} doesn't exists`)
