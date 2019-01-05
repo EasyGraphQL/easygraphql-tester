@@ -28,13 +28,22 @@ function handleObjectFixture (mock, fixture) {
       throw new Error(`${val} is not called on the query, and it's on the fixture.`)
     }
 
+    // If it is a scalar, it should be an empty object instead of the __typename
+    if (isObject(mock[val]) && Object.keys(mock[val]).length === 1 && mock[val].__typename) {
+      mock[val] = {}
+    }
+
     if (Array.isArray(mock[val]) && !Array.isArray(fixture[val])) {
       throw new Error(`${val} is not an array and it should be one.`)
     }
 
     // if the mock[val] is empty it is because it's a custom scalar, in this case
     // it should not be validated
-    if (mock[val] !== null && typeof mock[val] !== typeof fixture[val] && !isEmpty(mock[val])) {
+    if (
+      mock[val] !== null &&
+      typeof mock[val] !== typeof fixture[val] &&
+      !isEmpty(mock[val])
+    ) {
       throw new Error(`${val} is not the same type as the document.`)
     }
 
