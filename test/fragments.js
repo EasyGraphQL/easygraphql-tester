@@ -152,4 +152,51 @@ describe('Query', () => {
       expect(createUser.email).to.be.a('string')
     })
   })
+
+  describe('Multiples fragments', () => {
+    it('Should return selected fields on CreateUser', () => {
+      const multiplesFragments = gql`
+        query UserQuery {
+          getMe {
+            ...family_info
+          }
+        }
+        
+        fragment family_info on FamilyInfo {
+          id
+          email
+          scores
+          familyInfo {
+            father {
+              ...user_info
+            }
+            mother {
+              ...user_info
+            }
+          }
+        }
+
+        fragment user_info on User {
+          email
+          username
+        }
+      `
+      const { getMe } = tester.mock(multiplesFragments)
+      expect(getMe).to.exist
+      expect(getMe.id).to.exist
+      expect(getMe.id).to.be.a('string')
+      expect(getMe.email).to.exist
+      expect(getMe.email).to.be.a('string')
+      expect(getMe.scores).to.be.a('array')
+      expect(getMe.scores[0]).to.be.a('number')
+      expect(getMe.familyInfo).to.exist
+      expect(getMe.familyInfo).to.be.a('array')
+      expect(getMe.familyInfo[0].father).to.exist
+      expect(getMe.familyInfo[0].father.email).to.exist
+      expect(getMe.familyInfo[0].father.email).to.be.a('string')
+      expect(getMe.familyInfo[0].mother).to.exist
+      expect(getMe.familyInfo[0].mother.username).to.exist
+      expect(getMe.familyInfo[0].mother.username).to.be.a('string')
+    })
+  })
 })
