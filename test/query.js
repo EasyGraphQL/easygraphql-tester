@@ -836,6 +836,47 @@ describe('Query', () => {
       expect(getMe.familyInfo[1].father.id).to.be.a('string')
       expect(getMe.familyInfo[1].father.id).to.be.eq('100')
     })
+
+    it('Should support multiples queries', () => {
+      const query = gql`
+        query MULTIPLES_QUERIES {
+          aliasTest: getUserByUsername(username: $username, name: $name){
+            email
+          }
+          getString
+          getInt
+          search(id: "1") {
+            ... on User {
+              id
+            }
+            ... on FamilyInfo {
+              id
+              father {
+                username
+              }
+              brothers {
+                username
+              }
+            }
+          }
+        }
+      `
+
+      const { aliasTest, getString, getInt, search } = tester.mock(query)
+
+      expect(aliasTest).to.exist
+      expect(aliasTest.email).to.be.a('string')
+
+      expect(getString).to.exist
+      expect(getString).to.be.a('string')
+
+      expect(getInt).to.exist
+      expect(getInt).to.be.a('number')
+
+      expect(search).to.exist
+      expect(search).to.be.a('array')
+      expect(search[0].id).to.be.a('string')
+    })
   })
 
   describe('Should support custom names for root types', () => {
