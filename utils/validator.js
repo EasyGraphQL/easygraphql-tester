@@ -57,6 +57,9 @@ function argumentsValidator (args, schemaArgs, name, queryVariables, validatingF
     })
   })
 
+  // If there is any field on queryVariables and it's the final validation after
+  // validating the nested types on `validateArgsOnNestedFields` there should
+  // be an error, the defined variables are not used at all
   if (!validatingField && queryVariables.length) {
     throw new Error(`${queryVariables[0].name} variable is not defined on ${name} arguments`)
   }
