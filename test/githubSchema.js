@@ -89,6 +89,61 @@ describe('With gitHubSchema', () => {
     expect(licenses).to.be.an('array')
   })
 
+  it('Should add fixture to multiples queries', () => {
+    const query = gql`
+      query trialQuery($repo: String!, $count: Int, $orderBy: IssueOrder) {
+        viewer {
+          name
+          isHireable
+          repository(name: $repo) {
+            issues(first: $count, orderBy: $orderBy) {
+              pageInfo {
+                hasPreviousPage
+                hasNextPage
+                startCursor
+                endCursor
+              }
+              totalCount
+              edges {
+                node {
+                  id
+                  title
+                  viewerDidAuthor
+                  state
+                }
+              }
+            }
+          }
+        }
+        licenses {
+          name
+        }
+      }
+    `
+
+    const fixture = {
+      viewer: {
+        name: 'easygraphql'
+      },
+      licenses: [{
+        name: 'Super test'
+      }]
+    }
+
+    const { viewer, licenses } = tester.mock({
+      query,
+      fixture
+    })
+
+    expect(viewer).to.exist
+    expect(viewer.name).to.be.eq('easygraphql')
+    expect(viewer.repository).to.exist
+    expect(licenses).to.exist
+    expect(licenses).to.be.an('array')
+    expect(licenses).to.have.length(1)
+    expect(licenses[0].name).to.be.eq('Super test')
+  })
+
   it('Should not pass with fragments if name variable is missing on repository', () => {
     const query1 = gql`
       query appQuery {

@@ -429,8 +429,10 @@ describe('Mutation', () => {
       `
 
       const fixture = {
-        email: 'demo@demo.com',
-        scores: [1]
+        updateUserScores: {
+          email: 'demo@demo.com',
+          scores: [1]
+        }
       }
 
       const { updateUserScores } = tester.mock({
@@ -455,35 +457,32 @@ describe('Mutation', () => {
       expect(mock.updateUserScores.scores[0]).to.be.eq(1)
     })
 
-    it('Should fail if the fixture has extra data', () => {
-      let error
-      try {
-        const mutation = `
-          mutation UpdateUserScores($input: UpdateUserScoresInput!){
-            updateUserScores(scores: $input) {
-              email
-              scores
-            }
+    it('Should ignore extra data on the fixture', () => {
+      const mutation = `
+        mutation UpdateUserScores($input: UpdateUserScoresInput!){
+          updateUserScores (scores: $input) {
+            email
+            scores
           }
-        `
+        }
+      `
 
-        const fixture = {
+      const fixture = {
+        updateUserScores: {
           email: 'demo@demo.com',
           name: 'easygraphql'
         }
-
-        tester.mock({
-          query: mutation,
-          variables: { scores: { scores: [1] } },
-          fixture,
-          saveFixture: true
-        })
-      } catch (err) {
-        error = err
       }
 
-      expect(error).to.exist
-      expect(error.message).to.be.eq(`name is not called on the query, and it's on the fixture.`)
+      const { updateUserScores } = tester.mock({
+        query: mutation,
+        variables: { scores: { scores: [1] } },
+        fixture,
+        saveFixture: true
+      })
+
+      expect(updateUserScores).to.exist
+      expect(updateUserScores.email).to.be.eq('demo@demo.com')
     })
 
     it('Should fail if the fixture has to be an array', () => {
@@ -499,8 +498,10 @@ describe('Mutation', () => {
         `
 
         const fixture = {
-          email: 'demo@demo.com',
-          scores: 1
+          updateUserScores: {
+            email: 'demo@demo.com',
+            scores: 1
+          }
         }
 
         tester.mock({
@@ -529,7 +530,9 @@ describe('Mutation', () => {
         `
 
         const fixture = {
-          email: true
+          updateUserScores: {
+            email: true
+          }
         }
 
         tester.mock({

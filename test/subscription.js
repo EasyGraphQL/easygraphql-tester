@@ -70,8 +70,10 @@ describe('Subscription', () => {
       `
 
       const fixture = {
-        id: '1',
-        username: 'easygraphql'
+        newUser: {
+          id: '1',
+          username: 'easygraphql'
+        }
       }
 
       const { newUser } = tester.mock({

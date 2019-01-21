@@ -30,7 +30,7 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
       // Check if the query receives args and check if the required ones are passed
       argumentsValidator(queryArgs, querySchema[0].arguments, name, queryVariables)
       // If there are fixtures, set the values
-      mock = setFixture(mock, fixture)
+      mock = setFixture(mock, fixture, name)
       if (saveFixture) {
         mockedSchema[Query][name] = mock
       }
@@ -53,7 +53,7 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
       // The mutation must receive a input, so must check if it receives the correct one
       inputValidator(parsedQuery.variables, mutationSchema[0].arguments, schema, name, queryArgs)
       // If there are fixtures, set the values
-      mock = setFixture(mock, fixture)
+      mock = setFixture(mock, fixture, name)
       if (saveFixture) {
         mockedSchema[Mutation][name] = mock
       }
@@ -78,7 +78,7 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
       // Check if the query receives args and check if the required ones are passed
       argumentsValidator(queryArgs, subscriptionSchema[0].arguments, name, queryVariables)
       // If there are fixtures, set the values
-      mock = setFixture(mock, fixture)
+      mock = setFixture(mock, fixture, name)
       if (saveFixture) {
         mockedSchema[Subscription][name] = mock
       }

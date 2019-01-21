@@ -501,20 +501,22 @@ describe('Query', () => {
         }
       `
 
-      const fixture = [
-        {
-          email: 'demo@demo.com',
-          username: 'demo'
-        },
-        {
-          email: 'demo1@demo.com',
-          username: 'demo1'
-        },
-        {
-          email: 'demo2@demo.com',
-          username: 'demo2'
-        }
-      ]
+      const fixture = {
+        getUsers: [
+          {
+            email: 'demo@demo.com',
+            username: 'demo'
+          },
+          {
+            email: 'demo1@demo.com',
+            username: 'demo1'
+          },
+          {
+            email: 'demo2@demo.com',
+            username: 'demo2'
+          }
+        ]
+      }
 
       const { getUsers } = tester.mock({
         query,
@@ -576,7 +578,9 @@ describe('Query', () => {
       const { getMe } = tester.mock({
         query,
         fixture: {
-          createdAt: '2018-12-27'
+          getMe: {
+            createdAt: '2018-12-27'
+          }
         }
       })
 
@@ -750,7 +754,9 @@ describe('Query', () => {
         }
       `
       const fixture = {
-        email: 'demo@demo.com'
+        getUserByUsername: {
+          email: 'demo@demo.com'
+        }
       }
 
       const { aliasTest } = tester.mock({
@@ -759,14 +765,14 @@ describe('Query', () => {
       })
       expect(aliasTest).to.exist
       expect(aliasTest.email).to.be.a('string')
-      expect(aliasTest.email).to.be.eq(fixture.email)
+      expect(aliasTest.email).to.be.eq(fixture.getUserByUsername.email)
 
       const mock = tester.mock({
         query: query
       })
       expect(mock.aliasTest).to.exist
       expect(mock.aliasTest.email).to.be.a('string')
-      expect(mock.aliasTest.email).not.to.be.eq(fixture.email)
+      expect(mock.aliasTest.email).not.to.be.eq(fixture.getUserByUsername.email)
     })
 
     it('Should set fixtures on nested objects', () => {
@@ -790,33 +796,36 @@ describe('Query', () => {
         }
       `
       const fixture = {
-        email: 'demo@demo.com',
-        user: {
-          email: 'newemail@demo.com'
-        },
-        familyInfo: [{
-          isLocal: true,
-          father: {
-            email: 'father@demo.com'
-          }
-        },
-        {
-          id: '1',
-          isLocal: false,
-          father: {
-            id: '100'
-          }
-        }]
+        getMe: {
+          email: 'demo@demo.com',
+          user: {
+            email: 'newemail@demo.com'
+          },
+          familyInfo: [{
+            isLocal: true,
+            father: {
+              email: 'father@demo.com'
+            }
+          },
+          {
+            id: '1',
+            isLocal: false,
+            father: {
+              id: '100'
+            }
+          }]
+        }
       }
 
       const { getMe } = tester.mock({
         query: query,
         fixture
       })
+      console.log('-->', getMe)
       expect(getMe).to.exist
       expect(getMe.email).to.be.a('string')
-      expect(getMe.email).to.be.eq(fixture.email)
-      expect(getMe.user.email).to.be.eq(fixture.user.email)
+      expect(getMe.email).to.be.eq(fixture.getMe.email)
+      expect(getMe.user.email).to.be.eq(fixture.getMe.user.email)
       expect(getMe.familyInfo).to.be.a('array')
       expect(getMe.familyInfo).to.have.length(2)
 

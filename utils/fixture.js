@@ -1,7 +1,8 @@
 const isObject = require('lodash.isobject')
 const isEmpty = require('lodash.isempty')
 
-function setFixture (mock, fixture) {
+function setFixture (mock, fixture, name) {
+  fixture = fixture && fixture[name] ? fixture[name] : undefined
   if (typeof fixture === 'undefined') {
     return mock
   }
@@ -24,8 +25,9 @@ function setFixture (mock, fixture) {
 
 function handleObjectFixture (mock, fixture) {
   for (const val of Object.keys(fixture)) {
+    // If the value is defined on the fixture but not on the query, skip that value
     if (typeof mock[val] === 'undefined') {
-      throw new Error(`${val} is not called on the query, and it's on the fixture.`)
+      continue
     }
 
     // If it is a scalar, it should be an empty object instead of the __typename
@@ -60,7 +62,7 @@ function handleObjectFixture (mock, fixture) {
 
       mock[val] = fixtureArr
     } else if (isObject(fixture[val])) {
-      mock[val] = setFixture(mock[val], fixture[val])
+      mock[val] = setFixture(mock[val], fixture, val)
     } else {
       mock[val] = fixture[val]
     }
