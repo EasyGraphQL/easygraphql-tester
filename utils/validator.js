@@ -4,14 +4,20 @@ const isObject = require('lodash.isobject')
 const isEmpty = require('lodash.isempty')
 const { queryField, mutationField, subscriptionField } = require('./schemaDefinition')
 
-function validateArgsOnNestedFields (field, queryType, name, queryVariables) {
+function validateArgsOnNestedFields (field, queryType, name, queryVariables, schema) {
   const type = queryType.fields.filter(nestedField => nestedField.name === field.name)
+
   if (type[0]) {
     queryVariables = argumentsValidator(field.arguments, type[0].arguments, name, queryVariables, true)
   }
 
   field.fields.forEach(nestedField => {
-    queryVariables = validateArgsOnNestedFields(nestedField, queryType, name, queryVariables)
+    // If the nestedtype is another type, set it as queryType for the nested validation of the values.
+    if (type[0] && schema[type[0].type]) {
+      queryVariables = validateArgsOnNestedFields(nestedField, schema[type[0].type], name, queryVariables, schema)
+    } else {
+      queryVariables = validateArgsOnNestedFields(nestedField, queryType, name, queryVariables, schema)
+    }
   })
 
   return queryVariables

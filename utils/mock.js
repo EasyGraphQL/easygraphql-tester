@@ -24,7 +24,7 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
       if (Array.isArray(fields)) {
         const queryType = schema[querySchema[0].type]
         fields.forEach(element => {
-          queryVariables = validateArgsOnNestedFields(element, queryType, name, queryVariables)
+          queryVariables = validateArgsOnNestedFields(element, queryType, name, queryVariables, schema)
         })
       }
       // Check if the query receives args and check if the required ones are passed
@@ -72,7 +72,7 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
       if (Array.isArray(fields)) {
         const queryType = schema[subscriptionSchema[0].type]
         fields.forEach(element => {
-          queryVariables = validateArgsOnNestedFields(element, queryType, name, queryVariables)
+          queryVariables = validateArgsOnNestedFields(element, queryType, name, queryVariables, schema)
         })
       }
       // Check if the query receives args and check if the required ones are passed

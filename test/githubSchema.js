@@ -174,7 +174,7 @@ describe('With gitHubSchema', () => {
       fragment issuesNode on Issue @relay(mask: false) {
         id
         title
-        repository {
+        repository(name: "demo") {
           name
         }
         viewerDidAuthor
@@ -185,7 +185,7 @@ describe('With gitHubSchema', () => {
     tester.test(false, query1)
   })
 
-  it('Should not pass with fragments', () => {
+  it('Should pass with fragments', () => {
     const query1 = gql`
       query appQuery {
         viewer {
@@ -215,7 +215,7 @@ describe('With gitHubSchema', () => {
       fragment issuesNode on Issue @relay(mask: false) {
         id
         title
-        repository(name: "easygraphql") {
+        repository {
           name
         }
         viewerDidAuthor

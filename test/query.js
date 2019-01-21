@@ -821,7 +821,7 @@ describe('Query', () => {
         query: query,
         fixture
       })
-      console.log('-->', getMe)
+
       expect(getMe).to.exist
       expect(getMe.email).to.be.a('string')
       expect(getMe.email).to.be.eq(fixture.getMe.email)

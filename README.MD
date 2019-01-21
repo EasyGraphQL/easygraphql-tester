@@ -235,7 +235,7 @@ Call the method `.mock()` and pass an object with this options:
 
 + query: It'll be the query/mutation to test.
 + variables: This is required **if it is a mutation**, it must be an object with the fields of the input.
-+ fixture: This is optional and it is if you want to pass your custom fixtures.
++ fixture: This is optional, it'll be an object with the name of the query/mutation/subscription and the fields to set.
 + saveFixture: By default is `false`, if you pass fixtures, and set it to `true` when you make the same query again,
   it will return the fixture value.
 
@@ -272,8 +272,10 @@ const query = `
 `
 
 const fixture = {
-  id: '1',
-  name: 'EasyGraphQL'
+  getUser: {
+    id: '1',
+    name: 'EasyGraphQL'
+  }
 }
 
 const { getUser } = tester.mock({ query, fixture })
