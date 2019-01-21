@@ -1,6 +1,6 @@
 'use strict'
 
-const { setFixture } = require('./fixture')
+const { setFixture, setFixtureError } = require('./fixture')
 const { queryField, mutationField, subscriptionField } = require('./schemaDefinition')
 const { validateArgsOnNestedFields, argumentsValidator, inputValidator, validator } = require('./validator')
 
@@ -14,6 +14,13 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
   let mockedQuery
   switch (operationType.toLowerCase()) {
     case 'query':
+      // If there are errors defined on the fixture, return them. This should be, the
+      // first validation because if it's going to mock an error is because there should be
+      // an error, so prevent any extra validation and just return the errors.
+      if (fixture && fixture.errors) {
+        const errors = setFixtureError(fixture.errors)
+        return { errors }
+      }
       const Query = queryField(schema)
       // Search the query on the Schema Code parsed into an object
       const querySchema = schema[Query].fields.filter(el => el.name === name)
@@ -30,9 +37,11 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
       // Check if the query receives args and check if the required ones are passed
       argumentsValidator(queryArgs, querySchema[0].arguments, name, queryVariables)
       // If there are fixtures, set the values
-      mock = setFixture(mock, fixture, name)
-      if (saveFixture) {
-        mockedSchema[Query][name] = mock
+      if (fixture && fixture.data) {
+        mock = setFixture(mock, fixture.data, name)
+        if (saveFixture) {
+          mockedSchema[Query][name] = mock
+        }
       }
       // Return the mock of the selected fields
       mockedQuery = { [queryName]: mock }
@@ -45,6 +54,13 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
       return mockedQuery
 
     case 'mutation':
+    // If there are errors defined on the fixture, return them. This should be, the
+      // first validation because if it's going to mock an error is because there should be
+      // an error, so prevent any extra validation and just return the errors.
+      if (fixture && fixture.errors) {
+        const errors = setFixtureError(fixture.errors)
+        return { errors }
+      }
       const Mutation = mutationField(schema)
       // Search the mutation on the Schema Code parsed into an object
       const mutationSchema = schema[Mutation].fields.filter(el => el.name === name)
@@ -53,15 +69,24 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
       // The mutation must receive a input, so must check if it receives the correct one
       inputValidator(parsedQuery.variables, mutationSchema[0].arguments, schema, name, queryArgs)
       // If there are fixtures, set the values
-      mock = setFixture(mock, fixture, name)
-      if (saveFixture) {
-        mockedSchema[Mutation][name] = mock
+      if (fixture && fixture.data) {
+        mock = setFixture(mock, fixture.data, name)
+        if (saveFixture) {
+          mockedSchema[Mutation][name] = mock
+        }
       }
       // Return the mock of the selected fields
       mockedQuery = { [queryName]: mock }
       return mockedQuery
 
     case 'subscription':
+      // If there are errors defined on the fixture, return them. This should be, the
+      // first validation because if it's going to mock an error is because there should be
+      // an error, so prevent any extra validation and just return the errors.
+      if (fixture && fixture.errors) {
+        const errors = setFixtureError(fixture.errors)
+        return { errors }
+      }
       const Subscription = subscriptionField(schema)
       // Search the subscription on the Schema Code parsed into an object
       const subscriptionSchema = schema[Subscription].fields.filter(el => el.name === name)
@@ -78,9 +103,11 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
       // Check if the query receives args and check if the required ones are passed
       argumentsValidator(queryArgs, subscriptionSchema[0].arguments, name, queryVariables)
       // If there are fixtures, set the values
-      mock = setFixture(mock, fixture, name)
-      if (saveFixture) {
-        mockedSchema[Subscription][name] = mock
+      if (fixture && fixture.data) {
+        mock = setFixture(mock, fixture.data, name)
+        if (saveFixture) {
+          mockedSchema[Subscription][name] = mock
+        }
       }
       // Return the mock of the selected fields
       mockedQuery = { [queryName]: mock }

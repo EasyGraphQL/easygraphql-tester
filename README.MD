@@ -235,9 +235,12 @@ Call the method `.mock()` and pass an object with this options:
 
 + query: It'll be the query/mutation to test.
 + variables: This is required **if it is a mutation**, it must be an object with the fields of the input.
-+ fixture: This is optional, it'll be an object with the name of the query/mutation/subscription and the fields to set.
++ fixture: This is optional, it'll be an object with the key `data` and inside it
+  the name of the query/mutation/subscription and the fields to set.
 + saveFixture: By default is `false`, if you pass fixtures, and set it to `true` when you make the same query again,
-  it will return the fixture value.
+  it will return the fixture value. *This is not supported with fixture errors*
++ errors: If you want to return a mock of custom errors, add to the fixture object a property
+  `errors` that has an array with the errors to return.
 
 The result will have top level fields, it means that the result will be an object
 with a property that is going to be the name (top level field) of the query or alias with the mocked
@@ -272,13 +275,31 @@ const query = `
 `
 
 const fixture = {
-  getUser: {
-    id: '1',
-    name: 'EasyGraphQL'
+  data: {
+    getUser: {
+      id: '1',
+      name: 'EasyGraphQL'
+    }
   }
 }
 
 const { getUser } = tester.mock({ query, fixture })
+const { errors } = tester.mock({ 
+  query, 
+  fixture: {
+    errors: [
+      {
+        "message": "Cannot query field \"invalidField\" on type \"FamilyInfo\".",
+        "locations": [
+          {
+            "line": 7,
+            "column": 5
+          }
+        ]
+      }
+    ]
+  }
+})
 
 const queryWithAlias = `
   {
@@ -329,6 +350,21 @@ const { createUser } = tester.mock({ query: mutation, variables: input })
   ]
 }
 
+// errors
+{
+  [
+    {
+      "message": "Cannot query field \"invalidField\" on type \"FamilyInfo\".",
+      "locations": [
+        {
+          "line": 7,
+          "column": 5
+        }
+      ]
+    }
+  ]
+}
+
 //firstUser
 {
   id: '93'
@@ -341,7 +377,6 @@ const { createUser } = tester.mock({ query: mutation, variables: input })
   name: 'Tony Patrick'
 }
 ```
-
 
 If there is an error on the query or mutation [`easygraphql-tester`](https://github.com/EasyGraphQL/easygraphql-tester) will let you know what
 is happening.

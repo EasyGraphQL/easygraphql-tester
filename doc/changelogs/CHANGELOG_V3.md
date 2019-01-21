@@ -22,6 +22,7 @@
 * **Validate nested arguments**: Validate nested arguments and variables, validate that all the variables are used.
 * **Support multiples queries**: Support multiples queries on one operation.
 * **Add fixture with query name**: Set the fixtures with the query name, useful to set fixtures for multiples queries.
+* **Return fixture of errors**: Return a fixture of a custom error.
 
 
 ### Commits

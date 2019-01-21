@@ -429,9 +429,11 @@ describe('Mutation', () => {
       `
 
       const fixture = {
-        updateUserScores: {
-          email: 'demo@demo.com',
-          scores: [1]
+        data: {
+          updateUserScores: {
+            email: 'demo@demo.com',
+            scores: [1]
+          }
         }
       }
 
@@ -468,9 +470,11 @@ describe('Mutation', () => {
       `
 
       const fixture = {
-        updateUserScores: {
-          email: 'demo@demo.com',
-          name: 'easygraphql'
+        data: {
+          updateUserScores: {
+            email: 'demo@demo.com',
+            name: 'easygraphql'
+          }
         }
       }
 
@@ -483,6 +487,42 @@ describe('Mutation', () => {
 
       expect(updateUserScores).to.exist
       expect(updateUserScores.email).to.be.eq('demo@demo.com')
+    })
+
+    it('Should return errors object if it is set on the fixture', () => {
+      const mutation = `
+        mutation UpdateUserScores($input: UpdateUserScoresInput!){
+          updateUserScores (scores: $input) {
+            email
+            scores
+            invalidField
+          }
+        }
+      `
+
+      const fixture = {
+        errors: [
+          {
+            'message': 'Cannot query field "invalidField" on type "updateUserScores".',
+            'locations': [
+              {
+                'line': 7,
+                'column': 5
+              }
+            ]
+          }
+        ]
+      }
+
+      const { errors } = tester.mock({
+        query: mutation,
+        variables: { scores: { scores: [1] } },
+        fixture
+      })
+
+      expect(errors).to.exist
+      expect(errors).to.be.an('array')
+      expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "updateUserScores".')
     })
 
     it('Should fail if the fixture has to be an array', () => {
@@ -498,9 +538,11 @@ describe('Mutation', () => {
         `
 
         const fixture = {
-          updateUserScores: {
-            email: 'demo@demo.com',
-            scores: 1
+          data: {
+            updateUserScores: {
+              email: 'demo@demo.com',
+              scores: 1
+            }
           }
         }
 
@@ -530,8 +572,10 @@ describe('Mutation', () => {
         `
 
         const fixture = {
-          updateUserScores: {
-            email: true
+          data: {
+            updateUserScores: {
+              email: true
+            }
           }
         }
 

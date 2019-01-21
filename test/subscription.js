@@ -58,6 +58,27 @@ describe('Subscription', () => {
       expect(createdUser.username).to.be.a('string')
     })
 
+    it('Should support multiples subscriptions', () => {
+      const subscription = `
+        subscription {
+          createdUser (where: { isAdmin: true }){
+            id
+            username
+          }
+          newUser {
+            id
+            username
+            email
+          } 
+        }
+      `
+
+      const { createdUser, newUser } = tester.mock(subscription)
+
+      expect(createdUser).to.exist
+      expect(newUser).to.exist
+    })
+
     it('Should set fixture to a subscription', () => {
       const subscription = `
         subscription {
@@ -70,9 +91,11 @@ describe('Subscription', () => {
       `
 
       const fixture = {
-        newUser: {
-          id: '1',
-          username: 'easygraphql'
+        data: {
+          newUser: {
+            id: '1',
+            username: 'easygraphql'
+          }
         }
       }
 
@@ -88,6 +111,42 @@ describe('Subscription', () => {
       expect(newUser.username).to.be.a('string')
       expect(newUser.username).to.be.eq('easygraphql')
       expect(newUser.email).to.be.a('string')
+    })
+
+    it('Should errors if it is set on the fixture', () => {
+      const subscription = `
+        subscription {
+          newUser {
+            id
+            username
+            email
+            invalidField
+          } 
+        }
+      `
+
+      const fixture = {
+        errors: [
+          {
+            'message': 'Cannot query field "invalidField" on type "newUser".',
+            'locations': [
+              {
+                'line': 7,
+                'column': 5
+              }
+            ]
+          }
+        ]
+      }
+
+      const { errors } = tester.mock({
+        query: subscription,
+        fixture
+      })
+
+      expect(errors).to.exist
+      expect(errors).to.be.an('array')
+      expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "newUser".')
     })
 
     it('Should return saved fixture', () => {

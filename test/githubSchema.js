@@ -122,12 +122,14 @@ describe('With gitHubSchema', () => {
     `
 
     const fixture = {
-      viewer: {
-        name: 'easygraphql'
-      },
-      licenses: [{
-        name: 'Super test'
-      }]
+      data: {
+        viewer: {
+          name: 'easygraphql'
+        },
+        licenses: [{
+          name: 'Super test'
+        }]
+      }
     }
 
     const { viewer, licenses } = tester.mock({

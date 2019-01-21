@@ -82,4 +82,11 @@ function handleNestedObjects (mock, obj) {
   return obj
 }
 
-module.exports = { setFixture }
+function setFixtureError (fixtureErrors) {
+  if (!Array.isArray(fixtureErrors)) {
+    throw new Error('The errors fixture should be an array')
+  }
+  return fixtureErrors
+}
+
+module.exports = { setFixture, setFixtureError }
