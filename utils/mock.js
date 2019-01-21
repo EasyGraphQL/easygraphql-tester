@@ -2,12 +2,16 @@
 
 const { setFixture } = require('./fixture')
 const { queryField, mutationField, subscriptionField } = require('./schemaDefinition')
-const { argumentsValidator, inputValidator, validator } = require('./validator')
+const { validateArgsOnNestedFields, argumentsValidator, inputValidator, validator } = require('./validator')
 
-function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture) {
-  const { operationType, name, queryVariables, queryName, arguments: queryArgs } = parsedQuery
+function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, globalQueryVariables) {
+  const { operationType, name, queryName, arguments: queryArgs, fields } = parsedQuery
+
+  // The query variables should be used on all the queries.
+  let queryVariables = globalQueryVariables || parsedQuery.queryVariables
 
   let mock
+  let mockedQuery
   switch (operationType.toLowerCase()) {
     case 'query':
       const Query = queryField(schema)
@@ -15,15 +19,30 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture) {
       const querySchema = schema[Query].fields.filter(el => el.name === name)
       // Create a mock and validate the query on the schema
       mock = validator(parsedQuery, mockedSchema[Query][name], schema, 'Query')
+      // Validate nested types against the schema, to be sure the arguments are used,
+      // also check the variables defined to be sure, those are used.
+      if (Array.isArray(fields)) {
+        const queryType = schema[querySchema[0].type]
+        fields.forEach(element => {
+          queryVariables = validateArgsOnNestedFields(element, queryType, name, queryVariables)
+        })
+      }
       // Check if the query receives args and check if the required ones are passed
-      argumentsValidator(parsedQuery.arguments, querySchema[0].arguments, name, queryVariables)
+      argumentsValidator(queryArgs, querySchema[0].arguments, name, queryVariables)
       // If there are fixtures, set the values
       mock = setFixture(mock, fixture)
       if (saveFixture) {
         mockedSchema[Query][name] = mock
       }
       // Return the mock of the selected fields
-      return { [queryName]: mock }
+      mockedQuery = { [queryName]: mock }
+      if (globalQueryVariables) {
+        return {
+          globalQueryVariables: queryVariables,
+          mockedQuery
+        }
+      }
+      return mockedQuery
 
     case 'mutation':
       const Mutation = mutationField(schema)
@@ -39,7 +58,8 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture) {
         mockedSchema[Mutation][name] = mock
       }
       // Return the mock of the selected fields
-      return { [queryName]: mock }
+      mockedQuery = { [queryName]: mock }
+      return mockedQuery
 
     case 'subscription':
       const Subscription = subscriptionField(schema)
@@ -47,15 +67,30 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture) {
       const subscriptionSchema = schema[Subscription].fields.filter(el => el.name === name)
       // Create a mock and validate the subscription on the schema
       mock = validator(parsedQuery, mockedSchema[Subscription][name], schema, 'Subscription')
-      // Check if the subscription receives args and check if the required ones are passed
-      argumentsValidator(parsedQuery.arguments, subscriptionSchema[0].arguments, name, queryVariables)
+      // Validate nested types against the schema, to be sure the arguments are used,
+      // also check the variables defined to be sure, those are used.
+      if (Array.isArray(fields)) {
+        const queryType = schema[subscriptionSchema[0].type]
+        fields.forEach(element => {
+          queryVariables = validateArgsOnNestedFields(element, queryType, name, queryVariables)
+        })
+      }
+      // Check if the query receives args and check if the required ones are passed
+      argumentsValidator(queryArgs, subscriptionSchema[0].arguments, name, queryVariables)
       // If there are fixtures, set the values
       mock = setFixture(mock, fixture)
       if (saveFixture) {
         mockedSchema[Subscription][name] = mock
       }
       // Return the mock of the selected fields
-      return { [queryName]: mock }
+      mockedQuery = { [queryName]: mock }
+      if (globalQueryVariables) {
+        return {
+          globalQueryVariables: queryVariables,
+          mockedQuery
+        }
+      }
+      return mockedQuery
 
     default:
       throw new Error('The operation type is not defined on the schema')
