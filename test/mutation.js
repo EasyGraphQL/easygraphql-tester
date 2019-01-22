@@ -429,8 +429,12 @@ describe('Mutation', () => {
       `
 
       const fixture = {
-        email: 'demo@demo.com',
-        scores: [1]
+        data: {
+          updateUserScores: {
+            email: 'demo@demo.com',
+            scores: [1]
+          }
+        }
       }
 
       const { updateUserScores } = tester.mock({
@@ -455,35 +459,70 @@ describe('Mutation', () => {
       expect(mock.updateUserScores.scores[0]).to.be.eq(1)
     })
 
-    it('Should fail if the fixture has extra data', () => {
-      let error
-      try {
-        const mutation = `
-          mutation UpdateUserScores($input: UpdateUserScoresInput!){
-            updateUserScores(scores: $input) {
-              email
-              scores
-            }
+    it('Should ignore extra data on the fixture', () => {
+      const mutation = `
+        mutation UpdateUserScores($input: UpdateUserScoresInput!){
+          updateUserScores (scores: $input) {
+            email
+            scores
           }
-        `
-
-        const fixture = {
-          email: 'demo@demo.com',
-          name: 'easygraphql'
         }
+      `
 
-        tester.mock({
-          query: mutation,
-          variables: { scores: { scores: [1] } },
-          fixture,
-          saveFixture: true
-        })
-      } catch (err) {
-        error = err
+      const fixture = {
+        data: {
+          updateUserScores: {
+            email: 'demo@demo.com',
+            name: 'easygraphql'
+          }
+        }
       }
 
-      expect(error).to.exist
-      expect(error.message).to.be.eq(`name is not called on the query, and it's on the fixture.`)
+      const { updateUserScores } = tester.mock({
+        query: mutation,
+        variables: { scores: { scores: [1] } },
+        fixture,
+        saveFixture: true
+      })
+
+      expect(updateUserScores).to.exist
+      expect(updateUserScores.email).to.be.eq('demo@demo.com')
+    })
+
+    it('Should return errors object if it is set on the fixture', () => {
+      const mutation = `
+        mutation UpdateUserScores($input: UpdateUserScoresInput!){
+          updateUserScores (scores: $input) {
+            email
+            scores
+            invalidField
+          }
+        }
+      `
+
+      const fixture = {
+        errors: [
+          {
+            'message': 'Cannot query field "invalidField" on type "updateUserScores".',
+            'locations': [
+              {
+                'line': 7,
+                'column': 5
+              }
+            ]
+          }
+        ]
+      }
+
+      const { errors } = tester.mock({
+        query: mutation,
+        variables: { scores: { scores: [1] } },
+        fixture
+      })
+
+      expect(errors).to.exist
+      expect(errors).to.be.an('array')
+      expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "updateUserScores".')
     })
 
     it('Should fail if the fixture has to be an array', () => {
@@ -499,8 +538,12 @@ describe('Mutation', () => {
         `
 
         const fixture = {
-          email: 'demo@demo.com',
-          scores: 1
+          data: {
+            updateUserScores: {
+              email: 'demo@demo.com',
+              scores: 1
+            }
+          }
         }
 
         tester.mock({
@@ -529,7 +572,11 @@ describe('Mutation', () => {
         `
 
         const fixture = {
-          email: true
+          data: {
+            updateUserScores: {
+              email: true
+            }
+          }
         }
 
         tester.mock({

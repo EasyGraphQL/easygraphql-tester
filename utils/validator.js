@@ -4,6 +4,25 @@ const isObject = require('lodash.isobject')
 const isEmpty = require('lodash.isempty')
 const { queryField, mutationField, subscriptionField } = require('./schemaDefinition')
 
+function validateArgsOnNestedFields (field, queryType, name, queryVariables, schema) {
+  const type = queryType.fields.filter(nestedField => nestedField.name === field.name)
+
+  if (type[0]) {
+    queryVariables = argumentsValidator(field.arguments, type[0].arguments, name, queryVariables, true)
+  }
+
+  field.fields.forEach(nestedField => {
+    // If the nestedtype is another type, set it as queryType for the nested validation of the values.
+    if (type[0] && schema[type[0].type]) {
+      queryVariables = validateArgsOnNestedFields(nestedField, schema[type[0].type], name, queryVariables, schema)
+    } else {
+      queryVariables = validateArgsOnNestedFields(nestedField, queryType, name, queryVariables, schema)
+    }
+  })
+
+  return queryVariables
+}
+
 /**
  * Find if the required arguments are passed
  * @param args - The arguments that are on the query
@@ -11,36 +30,39 @@ const { queryField, mutationField, subscriptionField } = require('./schemaDefini
  * @param name - The name of the query, used to return an error
  * @returns {}
  */
-function argumentsValidator (args, schemaArgs, name, queryVariables) {
+function argumentsValidator (args, schemaArgs, name, queryVariables, validatingField) {
   // Check if one of the passed argument is not defined on the schema and
   // throw an error
+  queryVariables = queryVariables || []
   args.forEach(arg => {
     const filteredArg = schemaArgs.filter(schemaArg => schemaArg.name === arg.name)
 
     if (filteredArg.length === 0) {
       throw new Error(`${arg.name} argument is not defined on ${name} arguments`)
     }
-  })
 
-  queryVariables.forEach(queryVariable => {
-    const filteredArg = args.filter(arg => {
+    // Take out from the queryVariables the ones that are used.
+    queryVariables = queryVariables.filter(queryVariable => {
       // Validate if the variables on the arguments in case is an array
       // are defined on the query
       if (Array.isArray(arg.value) && arg.value.indexOf(queryVariable.name) >= 0) {
-        return true
+        return false
       }
 
       if (Array.isArray(arg.value)) {
         const arrVals = arg.value.map(val => getArgValue(val))
-        return arrVals.indexOf(queryVariable.name) >= 0
+        return arrVals.indexOf(queryVariable.name) < 0
       }
-      return arg.value === queryVariable.name
+      return arg.value !== queryVariable.name
     })
-
-    if (filteredArg.length === 0) {
-      throw new Error(`${queryVariable.name} variable is not defined on ${name} arguments`)
-    }
   })
+
+  // If there is any field on queryVariables and it's the final validation after
+  // validating the nested types on `validateArgsOnNestedFields` there should
+  // be an error, the defined variables are not used at all
+  if (!validatingField && queryVariables.length) {
+    throw new Error(`${queryVariables[0].name} variable is not defined on ${name} arguments`)
+  }
 
   // Loop all the arguments defined on the schema
   schemaArgs.forEach(arg => {
@@ -94,6 +116,7 @@ function argumentsValidator (args, schemaArgs, name, queryVariables) {
       }
     }
   })
+  return queryVariables
 }
 
 // If the values of the arguments are on an array it is going to get the nested values
@@ -416,4 +439,4 @@ function mockBuilder (field, mock, name) {
   }
 }
 
-module.exports = { argumentsValidator, inputValidator, validator }
+module.exports = { validateArgsOnNestedFields, argumentsValidator, inputValidator, validator }

@@ -1,0 +1,75 @@
+type Query {
+  viewer: User!
+  licenses: [License]!
+}
+
+type License {
+  id: ID!
+  name: String!
+}
+
+type User {
+  name: String
+  isHireable: Boolean!
+  repository(name: String!): Repository
+  issues(
+    orderBy: IssueOrder
+    labels: [String!]
+    states: [IssueState!]
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): IssueConnection!
+}
+
+type Repository {
+  name: String!
+  issues(
+    orderBy: IssueOrder
+    labels: [String!]
+    states: [IssueState!]
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): IssueConnection!
+}
+
+enum IssueOrderField {
+  CREATED_AT
+  UPDATED_AT
+  COMMENTS
+}
+
+enum IssueState {
+  OPEN
+  CLOSED
+}
+
+type IssueConnection {
+  edges: [IssueEdge]
+  nodes: [Issue]
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type IssueEdge {
+  cursor: String!
+  node: Issue
+}
+
+type Issue {
+  id: ID!
+  title: String!
+  viewerDidAuthor: Boolean!
+  state: IssueState!
+  repository: Repository!
+}
+
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+}
