@@ -15,7 +15,7 @@
 </table>
 
 <a id="3.1.0"></a>
-## Version 3.0.4
+## Version 3.1.0
 
 ### Notable Changes
 
@@ -30,7 +30,7 @@
 * [[`fb37d7d0c2`](https://github.com/EasyGraphQL/easygraphql-tester/commit/fb37d7d0c2)] - Support multiples queries.
 
 <a id="3.0.6"></a>
-## Version 3.0.4
+## Version 3.0.6
 
 ### Notable Changes
 
