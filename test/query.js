@@ -379,7 +379,7 @@ describe('Query', () => {
           }
         }
       `
-      const { getUserByUsername } = tester.mock(query)
+      const { data: { getUserByUsername } } = tester.mock(query)
       expect(getUserByUsername).to.exist
       expect(getUserByUsername.email).to.be.a('string')
     })
@@ -409,7 +409,7 @@ describe('Query', () => {
         }
       `
 
-      const { getMe } = tester.mock(query)
+      const { data: { getMe } } = tester.mock(query)
       expect(getMe).to.exist
       expect(getMe.id).to.exist
       expect(getMe.id).to.be.a('string')
@@ -441,7 +441,7 @@ describe('Query', () => {
           }
         }
       `
-      const { getFamilyInfoByIsLocal } = tester.mock(query)
+      const { data: { getFamilyInfoByIsLocal } } = tester.mock(query)
 
       expect(getFamilyInfoByIsLocal.father.email).to.be.a('string')
     })
@@ -454,7 +454,7 @@ describe('Query', () => {
           }
         }
       `
-      const { getMeByAge } = tester.mock(query)
+      const { data: { getMeByAge } } = tester.mock(query)
 
       expect(getMeByAge.email).to.be.a('string')
     })
@@ -467,7 +467,7 @@ describe('Query', () => {
           }
         }
       `
-      const { getMeByTestResult } = tester.mock(query)
+      const { data: { getMeByTestResult } } = tester.mock(query)
       expect(getMeByTestResult.email).to.be.a('string')
     })
 
@@ -482,7 +482,7 @@ describe('Query', () => {
         }
       `
 
-      const { getUsers } = tester.mock(query)
+      const { data: { getUsers } } = tester.mock(query)
       expect(getUsers).to.exist
       expect(getUsers).to.be.a('array')
       expect(getUsers.length).to.be.gt(0)
@@ -520,7 +520,7 @@ describe('Query', () => {
         }
       }
 
-      const { getUsers } = tester.mock({
+      const { data: { getUsers } } = tester.mock({
         query,
         fixture,
         saveFixture: true
@@ -548,7 +548,7 @@ describe('Query', () => {
         }
       `
 
-      const { getUsers } = tester.mock({
+      const { data: { getUsers } } = tester.mock({
         query
       })
 
@@ -577,7 +577,7 @@ describe('Query', () => {
         }
       `
 
-      const { getMe } = tester.mock({
+      const { data: { getMe } } = tester.mock({
         query,
         fixture: {
           data: {
@@ -605,7 +605,7 @@ describe('Query', () => {
         }
       `
 
-      const { getMe } = tester.mock({
+      const { data: { getMe } } = tester.mock({
         query,
         fixture: {
           data: {
@@ -706,7 +706,7 @@ describe('Query', () => {
               }
               ... on FamilyInfo {
                 id
-                father 
+                father
                 brothers {
                   username
                 }
@@ -737,7 +737,7 @@ describe('Query', () => {
               }
               ... on FamilyInfo {
                 id
-                father 
+                father
                 brothers {
                   username
                 }
@@ -774,7 +774,7 @@ describe('Query', () => {
         }
       `
 
-      const { search } = tester.mock(query)
+      const { data: { search } } = tester.mock(query)
       expect(search).to.exist
       expect(search).to.be.a('array')
       expect(search[0].id).to.be.a('string')
@@ -789,7 +789,7 @@ describe('Query', () => {
         }
       `
 
-      const { getMeByResults } = tester.mock(query)
+      const { data: { getMeByResults } } = tester.mock(query)
       expect(getMeByResults).to.exist
       expect(getMeByResults.email).to.be.a('string')
     })
@@ -801,7 +801,7 @@ describe('Query', () => {
         }
       `
 
-      const { getString } = tester.mock(query)
+      const { data: { getString } } = tester.mock(query)
       expect(getString).to.exist
       expect(getString).to.be.a('string')
     })
@@ -813,7 +813,7 @@ describe('Query', () => {
         }
       `
 
-      const { getInt } = tester.mock(query)
+      const { data: { getInt } } = tester.mock(query)
       expect(getInt).to.exist
       expect(getInt).to.be.a('number')
     })
@@ -827,7 +827,7 @@ describe('Query', () => {
         }
       `
 
-      const { getUserByUsername } = tester.mock(query)
+      const { data: { getUserByUsername } } = tester.mock(query)
       expect(getUserByUsername).to.exist
       expect(getUserByUsername.email).to.be.a('string')
     })
@@ -841,7 +841,7 @@ describe('Query', () => {
         }
       `
 
-      const { aliasTest } = tester.mock(query)
+      const { data: { aliasTest } } = tester.mock(query)
       expect(aliasTest).to.exist
       expect(aliasTest.email).to.be.a('string')
     })
@@ -862,20 +862,24 @@ describe('Query', () => {
         }
       }
 
-      const { aliasTest } = tester.mock({
-        query: query,
-        fixture
-      })
-      expect(aliasTest).to.exist
-      expect(aliasTest.email).to.be.a('string')
-      expect(aliasTest.email).to.be.eq(fixture.data.getUserByUsername.email)
+      {
+        const { data: { aliasTest } } = tester.mock({
+          query: query,
+          fixture
+        })
+        expect(aliasTest).to.exist
+        expect(aliasTest.email).to.be.a('string')
+        expect(aliasTest.email).to.be.eq(fixture.data.getUserByUsername.email)
+      }
 
-      const mock = tester.mock({
-        query: query
-      })
-      expect(mock.aliasTest).to.exist
-      expect(mock.aliasTest.email).to.be.a('string')
-      expect(mock.aliasTest.email).not.to.be.eq(fixture.data.getUserByUsername.email)
+      {
+        const { data: { aliasTest } } = tester.mock({
+          query: query
+        })
+        expect(aliasTest).to.exist
+        expect(aliasTest.email).to.be.a('string')
+        expect(aliasTest.email).not.to.be.eq(fixture.data.getUserByUsername.email)
+      }
     })
 
     it('Should set fixtures on nested objects', () => {
@@ -922,7 +926,7 @@ describe('Query', () => {
         }
       }
 
-      const { getMe } = tester.mock({
+      const { data: { getMe } } = tester.mock({
         query: query,
         fixture
       })
@@ -976,7 +980,7 @@ describe('Query', () => {
         }
       `
 
-      const { aliasTest, getString, getInt, search } = tester.mock(query)
+      const { data: { aliasTest, getString, getInt, search } } = tester.mock(query)
 
       expect(aliasTest).to.exist
       expect(aliasTest.email).to.be.a('string')
@@ -1009,7 +1013,7 @@ describe('Query', () => {
         }
       `
 
-      const { posts } = tester.mock(query)
+      const { data: { posts } } = tester.mock(query)
       expect(posts).to.exist
       expect(posts).to.be.a('array')
       expect(posts.length).to.be.gt(0)
@@ -1025,7 +1029,7 @@ describe('Query', () => {
         }
       `
 
-      const { posts } = tester.mock(query)
+      const { data: { posts } } = tester.mock(query)
       expect(posts).to.exist
       expect(posts).to.be.a('array')
       expect(posts.length).to.be.gt(0)

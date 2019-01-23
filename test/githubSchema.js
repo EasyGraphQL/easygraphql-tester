@@ -82,7 +82,7 @@ describe('With gitHubSchema', () => {
         }
       }
     `
-    const { viewer, licenses } = tester.mock(query)
+    const { data: { viewer, licenses } } = tester.mock(query)
     expect(viewer).to.exist
     expect(viewer.repository).to.exist
     expect(licenses).to.exist
@@ -132,7 +132,7 @@ describe('With gitHubSchema', () => {
       }
     }
 
-    const { viewer, licenses } = tester.mock({
+    const { data: { viewer, licenses } } = tester.mock({
       query,
       fixture
     })

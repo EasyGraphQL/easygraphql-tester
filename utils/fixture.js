@@ -3,21 +3,13 @@ const isEmpty = require('lodash.isempty')
 
 function setFixture (mock, fixture, name) {
   fixture = fixture && fixture[name] ? fixture[name] : undefined
-  if (typeof fixture === 'undefined') {
+
+  if (fixture === undefined) {
     return mock
   }
 
   if (Array.isArray(fixture)) {
-    const fixtureArr = []
-    fixture.forEach(val => {
-      if (mock[0] === null) {
-        return val
-      }
-
-      const result = handleObjectFixture(mock[0], val)
-      fixtureArr.push(Object.assign({}, result))
-    })
-    return fixtureArr
+    return fixture.map(val => val === null ? val : Object.assign({}, handleObjectFixture(mock[0], val)))
   } else {
     return handleObjectFixture(mock, fixture)
   }

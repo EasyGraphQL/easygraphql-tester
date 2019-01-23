@@ -27,11 +27,11 @@ describe('Subscription', () => {
             id
             username
             email
-          } 
+          }
         }
       `
 
-      const { newUsers } = tester.mock(subscription)
+      const { data: { newUsers } } = tester.mock(subscription)
 
       expect(newUsers).to.be.an('array')
       expect(newUsers[0].id).to.be.a('string')
@@ -51,7 +51,7 @@ describe('Subscription', () => {
         }
       `
 
-      const { createdUser } = tester.mock(subscription)
+      const { data: { createdUser } } = tester.mock(subscription)
 
       expect(createdUser).to.exist
       expect(createdUser.id).to.be.a('string')
@@ -69,11 +69,11 @@ describe('Subscription', () => {
             id
             username
             email
-          } 
+          }
         }
       `
 
-      const { createdUser, newUser } = tester.mock(subscription)
+      const { data: { createdUser, newUser } } = tester.mock(subscription)
 
       expect(createdUser).to.exist
       expect(newUser).to.exist
@@ -86,7 +86,7 @@ describe('Subscription', () => {
             id
             username
             email
-          } 
+          }
         }
       `
 
@@ -99,7 +99,7 @@ describe('Subscription', () => {
         }
       }
 
-      const { newUser } = tester.mock({
+      const { data: { newUser } } = tester.mock({
         query: subscription,
         fixture,
         saveFixture: true
@@ -121,7 +121,7 @@ describe('Subscription', () => {
             username
             email
             invalidField
-          } 
+          }
         }
       `
 
@@ -156,11 +156,11 @@ describe('Subscription', () => {
             id
             username
             email
-          } 
+          }
         }
       `
 
-      const { newUser } = tester.mock(subscription)
+      const { data: { newUser } } = tester.mock(subscription)
 
       expect(newUser).to.be.exist
       expect(newUser.id).to.be.a('string')
@@ -179,7 +179,7 @@ describe('Subscription', () => {
               invalidField
               username
               email
-            } 
+            }
           }
         `
 
@@ -201,7 +201,7 @@ describe('Subscription', () => {
               id
               username
               email
-            } 
+            }
           }
         `
 
@@ -223,7 +223,7 @@ describe('Subscription', () => {
               id
               username
               email
-            } 
+            }
           }
         `
 
@@ -253,7 +253,7 @@ describe('Subscription', () => {
         }
       `
 
-      const { newPost } = tester.mock(subscription)
+      const { data: { newPost } } = tester.mock(subscription)
       expect(newPost).to.exist
       expect(newPost.content).to.be.a('string')
     })
@@ -266,8 +266,7 @@ describe('Subscription', () => {
           }
         }
       `
-
-      const { newPost } = tester.mock(subscription)
+      const { data: { newPost } } = tester.mock(subscription)
       expect(newPost).to.exist
       expect(newPost.content).to.be.a('string')
     })
