@@ -17,7 +17,7 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
       // first validation because if it's going to mock an error is because there should be
       // an error, so prevent any extra validation and just return the errors.
       if (fixture && fixture.errors && fixture.data === undefined) {
-        return { mockedQuery: {errors: setFixtureError(fixture.errors)} }
+        return { mockedQuery: { errors: setFixtureError(fixture.errors) } }
       }
       const Query = queryField(schema)
       // Search the query on the Schema Code parsed into an object
@@ -58,7 +58,7 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
       // first validation because if it's going to mock an error is because there should be
       // an error, so prevent any extra validation and just return the errors.
       if (fixture && fixture.errors && fixture.data === undefined) {
-        return { mockedQuery: {errors: setFixtureError(fixture.errors)} }
+        return { mockedQuery: { errors: setFixtureError(fixture.errors) } }
       }
       const Mutation = mutationField(schema)
       // Search the mutation on the Schema Code parsed into an object
@@ -91,7 +91,7 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
       // first validation because if it's going to mock an error is because there should be
       // an error, so prevent any extra validation and just return the errors.
       if (fixture && fixture.errors && fixture.data === undefined) {
-        return { mockedQuery: {errors: setFixtureError(fixture.errors)} }
+        return { mockedQuery: { errors: setFixtureError(fixture.errors) } }
       }
       const Subscription = subscriptionField(schema)
       // Search the subscription on the Schema Code parsed into an object
