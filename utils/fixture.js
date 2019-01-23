@@ -9,7 +9,7 @@ function setFixture (mock, fixture, name) {
   }
 
   if (Array.isArray(fixture)) {
-    return fixture.map(val => val === null ? val : Object.assign({}, handleObjectFixture(mock[0], val)))
+    return fixture.map(val => isObject(val) ? Object.assign({}, handleObjectFixture(mock[0], val)) : val)
   } else {
     return handleObjectFixture(mock, fixture)
   }
