@@ -13,6 +13,12 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
   let mock
   switch (operationType.toLowerCase()) {
     case 'query':
+      // If there are errors defined on the fixture, return them. This should be, the
+      // first validation because if it's going to mock an error is because there should be
+      // an error, so prevent any extra validation and just return the errors.
+      if (fixture && fixture.errors && fixture.data === undefined) {
+        return { mockedQuery: {errors: setFixtureError(fixture.errors)} }
+      }
       const Query = queryField(schema)
       // Search the query on the Schema Code parsed into an object
       const querySchema = schema[Query].fields.filter(el => el.name === name)
@@ -48,6 +54,12 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
       )
 
     case 'mutation':
+      // If there are errors defined on the fixture, return them. This should be, the
+      // first validation because if it's going to mock an error is because there should be
+      // an error, so prevent any extra validation and just return the errors.
+      if (fixture && fixture.errors && fixture.data === undefined) {
+        return { mockedQuery: {errors: setFixtureError(fixture.errors)} }
+      }
       const Mutation = mutationField(schema)
       // Search the mutation on the Schema Code parsed into an object
       const mutationSchema = schema[Mutation].fields.filter(el => el.name === name)
@@ -75,6 +87,12 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
       )
 
     case 'subscription':
+      // If there are errors defined on the fixture, return them. This should be, the
+      // first validation because if it's going to mock an error is because there should be
+      // an error, so prevent any extra validation and just return the errors.
+      if (fixture && fixture.errors && fixture.data === undefined) {
+        return { mockedQuery: {errors: setFixtureError(fixture.errors)} }
+      }
       const Subscription = subscriptionField(schema)
       // Search the subscription on the Schema Code parsed into an object
       const subscriptionSchema = schema[Subscription].fields.filter(el => el.name === name)
