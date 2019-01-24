@@ -88,6 +88,8 @@ type Query {
   search(id: ID!): [SearchResult]!
   getString: String!
   getInt: Int!
+  getMultiplesInt: [Int]!
+  getMultiplesStrings: [String]!
   items(where: ItemWhereInput): [Item]!
 }
 

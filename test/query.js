@@ -806,6 +806,20 @@ describe('Query', () => {
       expect(getString).to.be.a('string')
     })
 
+    it('Should return an arr of strings', () => {
+      const query = `
+        {
+          getMultiplesStrings
+        }
+      `
+
+      const { getMultiplesStrings } = tester.mock(query)
+      expect(getMultiplesStrings).to.exist
+      expect(getMultiplesStrings).to.be.an('array')
+      expect(getMultiplesStrings.length).to.be.gt(0)
+      expect(getMultiplesStrings[0]).to.be.a('string')
+    })
+
     it('Should pass if it returns a Int', () => {
       const query = `
         {
@@ -816,6 +830,20 @@ describe('Query', () => {
       const { getInt } = tester.mock(query)
       expect(getInt).to.exist
       expect(getInt).to.be.a('number')
+    })
+
+    it('Should pass if it returns an arr of Int', () => {
+      const query = `
+        {
+          getMultiplesInt
+        }
+      `
+
+      const { getMultiplesInt } = tester.mock(query)
+      expect(getMultiplesInt).to.exist
+      expect(getMultiplesInt).to.be.an('array')
+      expect(getMultiplesInt.length).to.be.gt(0)
+      expect(getMultiplesInt[0]).to.be.a('number')
     })
 
     it('Should return selected data with query variables', () => {
