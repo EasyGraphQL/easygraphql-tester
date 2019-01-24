@@ -156,34 +156,57 @@ describe('With gitHubSchema', () => {
       }
     `
 
-    const fixture = {
-      data: {
-        licenses: [
-          {id: '1', name: 'license 1'},
-          null,
-          {id: '3', name: 'license 3'}
-        ]
-      },
-      errors: [{
-        message: 'License with ID 2 could not be fetched.',
-        locations: [{line: 3, column: 7}],
-        path: ['licenses', 1, 'name'],
-      }]
+    {
+      const fixture = {
+        data: {
+          licenses: [
+            { id: '1', name: 'license 1' },
+            null,
+            { id: '3', name: 'license 3' }
+          ]
+        },
+        errors: [{
+          message: 'License with ID 2 could not be fetched.',
+          locations: [{ line: 3, column: 7 }],
+          path: ['licenses', 1, 'name']
+        }]
+      }
+
+      const { data: { licenses }, errors } = tester.mock({
+        query,
+        fixture
+      })
+
+      expect(licenses).to.exist
+      expect(licenses).to.be.an('array')
+      expect(licenses).to.have.length(3)
+      expect(licenses[1]).to.be.a('null')
+      expect(errors).to.exist
+      expect(errors).to.be.an('array')
+      expect(errors[0].message).to.be.eq('License with ID 2 could not be fetched.')
     }
 
-    const { data: { licenses }, errors } = tester.mock({
-      query,
-      fixture
-    })
+    {
+      const fixture = {
+        data: null,
+        errors: [{
+          message: 'Licenses could not be fetched.',
+          locations: [{ line: 2, column: 2 }],
+          path: ['licenses']
+        }]
+      }
 
-    expect(licenses).to.exist
-    expect(licenses).to.be.an('array')
-    expect(licenses).to.have.length(3)
-    expect(licenses[1]).to.be.a('null');
-    expect(errors).to.exist
-    expect(errors).to.be.an('array')
-    expect(errors[0].message).to.be.eq('License with ID 2 could not be fetched.')
- })
+      const { data, errors } = tester.mock({
+        query,
+        fixture
+      })
+
+      expect(data).to.be.a('null')
+      expect(errors).to.exist
+      expect(errors).to.be.an('array')
+      expect(errors[0].message).to.be.eq('Licenses could not be fetched.')
+    }
+  })
 
   it('Should not pass with fragments if name variable is missing on repository', () => {
     const query1 = gql`

@@ -491,6 +491,107 @@ describe('Query', () => {
       expect(getUsers[0].fullName).to.be.a('string')
     })
 
+    it('Should throw on invalid fixture for arrays ', () => {
+      {
+        let error
+        try {
+          const query = `
+            {
+              getUsers {
+                email
+                username
+              }
+            }
+          `
+
+          const fixture = {
+            data: {
+              getUsers: 'invalid'
+            }
+          }
+
+          tester.mock({
+            query,
+            fixture
+          })
+        } catch (err) {
+          error = err
+        }
+
+        expect(error).to.exist
+        expect(error.message).to.be.eq('getUsers fixture is not an array and it should be one.')
+      }
+
+      {
+        let error
+        try {
+          const query = `
+            {
+              getUsers {
+                email
+                username
+              }
+            }
+          `
+
+          const fixture = {
+            data: {
+              getUsers: ['invalid']
+            }
+          }
+
+          tester.mock({
+            query,
+            fixture
+          })
+        } catch (err) {
+          error = err
+        }
+
+        expect(error).to.exist
+        expect(error.message).to.be.eq('getUsers fixture is not the same type as the document.')
+      }
+
+      {
+        let error
+        try {
+          const query = `
+            {
+              getMe {
+                familyInfo {
+                  brothers {
+                    username
+                  }
+                }
+              }
+            }
+          `
+          const fixture = {
+            data: {
+              getMe: {
+                familyInfo: [{
+                  brothers: [
+                    { username: 'brother1' },
+                    'invalid'
+                  ]
+                }]
+              }
+            }
+          }
+
+          tester.mock({
+            query,
+            fixture
+          })
+        } catch (err) {
+          error = err
+        }
+
+        expect(error).to.exist
+        expect(error.message).to.be.eq('getMe fixture is not the same type as the document.')
+      }
+    })
+
     it('Should return selected fields on GetUsers with fixtures', () => {
       const query = `
         {
@@ -818,6 +919,27 @@ describe('Query', () => {
       expect(getInt).to.be.a('number')
     })
 
+    it('Should set fixtures for scalars', () => {
+      const query = `
+        {
+          getInt
+        }
+      `
+
+      const fixture = {
+        data: {
+          getInt: 99
+        }
+      }
+
+      const { data: { getInt } } = tester.mock({
+        query: query,
+        fixture
+      })
+      expect(getInt).to.exist
+      expect(getInt).to.be.eq(99)
+    })
+
     it('Should return selected data with query variables', () => {
       const query = `
         query getUserByUsername($username: String!, $name: String!) {
@@ -896,7 +1018,6 @@ describe('Query', () => {
               father {
                 id
                 email
-                username
               }
             }
           }
@@ -910,16 +1031,19 @@ describe('Query', () => {
               email: 'newemail@demo.com'
             },
             familyInfo: [{
+              id: '1',
               isLocal: true,
               father: {
+                id: '101',
                 email: 'father@demo.com'
               }
             },
             {
-              id: '1',
+              id: '2',
               isLocal: false,
               father: {
-                id: '100'
+                id: '101',
+                email: 'father@demo.com'
               }
             }]
           }
@@ -927,7 +1051,7 @@ describe('Query', () => {
       }
 
       const { data: { getMe } } = tester.mock({
-        query: query,
+        query,
         fixture
       })
 
@@ -940,19 +1064,17 @@ describe('Query', () => {
 
       expect(getMe.familyInfo[0].isLocal).to.be.true
       expect(getMe.familyInfo[0].id).to.be.a('string')
-      expect(getMe.familyInfo[0].id).not.to.be.eq('1')
+      expect(getMe.familyInfo[0].id).to.be.eq('1')
       expect(getMe.familyInfo[0].father.email).to.be.eq('father@demo.com')
-      expect(getMe.familyInfo[0].father.username).to.be.a('string')
       expect(getMe.familyInfo[0].father.id).to.be.a('string')
-      expect(getMe.familyInfo[0].father.id).not.to.be.eq('100')
+      expect(getMe.familyInfo[0].father.id).to.be.eq('101')
 
       expect(getMe.familyInfo[1].isLocal).to.be.false
       expect(getMe.familyInfo[1].id).to.be.a('string')
-      expect(getMe.familyInfo[1].id).to.be.eq('1')
-      expect(getMe.familyInfo[1].father.email).not.to.be.eq('father@demo.com')
-      expect(getMe.familyInfo[1].father.username).to.be.a('string')
+      expect(getMe.familyInfo[1].id).to.be.eq('2')
+      expect(getMe.familyInfo[1].father.email).to.be.eq('father@demo.com')
       expect(getMe.familyInfo[1].father.id).to.be.a('string')
-      expect(getMe.familyInfo[1].father.id).to.be.eq('100')
+      expect(getMe.familyInfo[1].father.id).to.be.eq('101')
     })
 
     it('Should support multiples queries', () => {

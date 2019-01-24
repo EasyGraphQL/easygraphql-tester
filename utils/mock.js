@@ -46,7 +46,7 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
         {
           mockedQuery: Object.assign(
             {},
-            mock === undefined ? undefined : { data: { [queryName]: mock } },
+            fixture && fixture.data == null ? { data: null } : mock === undefined ? undefined : { data: { [queryName]: mock } },
             fixture && fixture.errors ? { errors: setFixtureError(fixture.errors) } : undefined
           )
         },
@@ -79,7 +79,7 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
         {
           mockedQuery: Object.assign(
             {},
-            mock === undefined ? undefined : { data: { [queryName]: mock } },
+            fixture && fixture.data == null ? { data: null } : mock === undefined ? undefined : { data: { [queryName]: mock } },
             fixture && fixture.errors ? { errors: setFixtureError(fixture.errors) } : undefined
           )
         },
@@ -120,7 +120,7 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
         {
           mockedQuery: Object.assign(
             {},
-            mock === undefined ? undefined : { data: { [queryName]: mock } },
+            fixture && fixture.data == null ? { data: null } : mock === undefined ? undefined : { data: { [queryName]: mock } },
             fixture && fixture.errors ? { errors: setFixtureError(fixture.errors) } : undefined
           )
         },
