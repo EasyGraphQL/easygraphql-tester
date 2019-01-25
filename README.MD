@@ -283,7 +283,7 @@ const fixture = {
   }
 }
 
-const { getUser } = tester.mock({ query, fixture })
+const { data: { getUser } } = tester.mock({ query, fixture })
 const { errors } = tester.mock({ 
   query, 
   fixture: {
@@ -308,7 +308,7 @@ const queryWithAlias = `
     }
   }
 `
-const { firstUser } = tester.mock({ query: queryWithAlias })
+const { data: { firstUser } } = tester.mock({ query: queryWithAlias })
 
 
 const mutation = `
@@ -325,7 +325,7 @@ const input = {
   }
 }
 
-const { createUser } = tester.mock({ query: mutation, variables: input })
+const { data: { createUser } } = tester.mock({ query: mutation, variables: input })
 ```
 
 ### Mock result
