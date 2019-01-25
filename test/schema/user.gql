@@ -42,6 +42,7 @@ input UserInput {
   username: String!
   fullName: String!
   password: String!
+  dob: DateTime!
 }
 
 type Item {
