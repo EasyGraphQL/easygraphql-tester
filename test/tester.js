@@ -295,6 +295,16 @@ describe('Assert test', () => {
       tester.test(true, mutation)
     })
 
+    it('Should fail if the mutation doesnt receive a boolean', () => {
+      const mutation = `
+        mutation {
+          createTodo(completed: "false")
+        }
+      `
+
+      tester.test(false, mutation)
+    })
+
     it('Should receive mutation with graphql-tag', () => {
       const mutation = gql`
         mutation {

@@ -144,7 +144,8 @@ describe('Query', () => {
           email: 'test@test.com',
           username: 'test',
           fullName: 'test',
-          password: 'test'
+          password: 'test',
+          dob: '10-10-1999'
         }
       })
 

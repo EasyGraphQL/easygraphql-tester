@@ -239,21 +239,29 @@ function inputValidator (variables, schemaArgs, schema, name, queryArgs, arrCall
     // Loop to get all the required fields
     if (Array.isArray(inputFields)) {
       inputFields.forEach(arg => {
-        validateInputArg(arg, schemaVar, name, arrCalled)
+        const isScalar = validateIfArgIsScalar(arg, schema)
+        validateInputArg(arg, schemaVar, name, arrCalled, isScalar)
       })
     } else {
-      validateInputArg(inputFields, schemaVar, name, arrCalled, true)
+      const isScalar = validateIfArgIsScalar(inputFields, schema)
+      validateInputArg(inputFields, schemaVar, name, arrCalled, isScalar)
     }
   })
+}
+
+function validateIfArgIsScalar (arg, schema) {
+  const argumentType = schema[arg.type]
+  return argumentType && argumentType.type ? argumentType.type === 'ScalarTypeDefinition' : false
 }
 
 function validateInputArg (arg, schemaVar, name, arrCalled, isScalar) {
   if (arg.noNull) {
     // Check if the input field is present on the schemaVar
-    const filteredArg = isObject(schemaVar) ? schemaVar[arg.name] : schemaVar
+    let filteredArg = isObject(schemaVar) ? schemaVar[arg.name] : schemaVar
+    filteredArg = !filteredArg && schemaVar.value ? getArgValue(schemaVar) : filteredArg
 
     // If the argument is missing, there should be an error
-    if (!isScalar && typeof filteredArg === 'undefined') {
+    if (typeof filteredArg === 'undefined') {
       throw new Error(`${arg.name} argument is missing on ${name}`)
     }
 
@@ -266,6 +274,11 @@ function validateInputArg (arg, schemaVar, name, arrCalled, isScalar) {
     // If the value shouldn't be an array but it is, return error.
     if (!arg.isArray && Array.isArray(filteredArg)) {
       throw new Error(`${arg.name} is an Array and it shouldn't be one ${name}`)
+    }
+
+    // If it's an scalar we don't want to validate the typeof of it.
+    if (isScalar) {
+      return
     }
 
     if (Array.isArray(filteredArg)) {

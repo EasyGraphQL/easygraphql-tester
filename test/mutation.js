@@ -289,7 +289,8 @@ describe('Mutation', () => {
           email: 'test@test.com',
           username: 'test',
           fullName: 'test',
-          password: 'test'
+          password: 'test',
+          dob: '10-10-1999'
         }
       })
 
@@ -312,7 +313,8 @@ describe('Mutation', () => {
           email: 'test@test.com',
           username: 'test',
           fullName: 'test',
-          password: 'test'
+          password: 'test',
+          dob: '10-10-1999'
         }]
       })
 
@@ -410,7 +412,8 @@ describe('Mutation', () => {
           email: 'demo',
           username: 'demo',
           fullName: 'demo',
-          password: 'demo'
+          password: 'demo',
+          dob: '10-10-1999'
         }]
       })
 
