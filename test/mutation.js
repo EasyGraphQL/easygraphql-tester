@@ -529,6 +529,44 @@ describe('Mutation', () => {
       expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "updateUserScores".')
     })
 
+    it('Should return errors object if it is set on the fixture and data null', () => {
+      const mutation = `
+        mutation UpdateUserScores($input: UpdateUserScoresInput!){
+          updateUserScores (scores: $input) {
+            email
+            scores
+            invalidField
+          }
+        }
+      `
+
+      const fixture = {
+        data: null,
+        errors: [
+          {
+            'message': 'Cannot query field "invalidField" on type "updateUserScores".',
+            'locations': [
+              {
+                'line': 7,
+                'column': 5
+              }
+            ]
+          }
+        ]
+      }
+
+      const { data, errors } = tester.mock({
+        query: mutation,
+        variables: { scores: { scores: [1] } },
+        fixture
+      })
+
+      expect(data).to.be.null
+      expect(errors).to.exist
+      expect(errors).to.be.an('array')
+      expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "updateUserScores".')
+    })
+
     it('Should fail if the fixture has to be an array', () => {
       let error
       try {

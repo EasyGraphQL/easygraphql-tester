@@ -11,14 +11,21 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
   let queryVariables = globalQueryVariables || parsedQuery.queryVariables
 
   let mock
+  let errors
   switch (operationType.toLowerCase()) {
     case 'query':
       // If there are errors defined on the fixture, return them. This should be, the
       // first validation because if it's going to mock an error is because there should be
       // an error, so prevent any extra validation and just return the errors.
-      if (fixture && fixture.errors && fixture.data === undefined) {
-        return { mockedQuery: { errors: setFixtureError(fixture.errors) } }
+      if (fixture && fixture.errors) {
+        errors = setFixtureError(fixture.errors)
+        if (fixture.data === undefined) {
+          return { mockedQuery: { errors } }
+        } else if (fixture.data == null) {
+          return { mockedQuery: { data: null, errors } }
+        }
       }
+
       const Query = queryField(schema)
       // Search the query on the Schema Code parsed into an object
       const querySchema = schema[Query].fields.filter(el => el.name === name)
@@ -42,24 +49,21 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
         }
       }
       // Return the mock of the selected fields
-      return Object.assign(
-        {
-          mockedQuery: Object.assign(
-            {},
-            fixture && fixture.data == null ? { data: null } : mock === undefined ? undefined : { data: { [queryName]: mock } },
-            fixture && fixture.errors ? { errors: setFixtureError(fixture.errors) } : undefined
-          )
-        },
-        globalQueryVariables ? { globalQueryVariables: queryVariables } : undefined
-      )
+      return response(queryName, mock, errors, globalQueryVariables, queryVariables)
 
     case 'mutation':
       // If there are errors defined on the fixture, return them. This should be, the
       // first validation because if it's going to mock an error is because there should be
       // an error, so prevent any extra validation and just return the errors.
-      if (fixture && fixture.errors && fixture.data === undefined) {
-        return { mockedQuery: { errors: setFixtureError(fixture.errors) } }
+      if (fixture && fixture.errors) {
+        errors = setFixtureError(fixture.errors)
+        if (fixture.data === undefined) {
+          return { mockedQuery: { errors } }
+        } else if (fixture.data == null) {
+          return { mockedQuery: { data: null, errors } }
+        }
       }
+
       const Mutation = mutationField(schema)
       // Search the mutation on the Schema Code parsed into an object
       const mutationSchema = schema[Mutation].fields.filter(el => el.name === name)
@@ -75,24 +79,21 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
         }
       }
       // Return the mock of the selected fields
-      return Object.assign(
-        {
-          mockedQuery: Object.assign(
-            {},
-            fixture && fixture.data == null ? { data: null } : mock === undefined ? undefined : { data: { [queryName]: mock } },
-            fixture && fixture.errors ? { errors: setFixtureError(fixture.errors) } : undefined
-          )
-        },
-        globalQueryVariables ? { globalQueryVariables: queryVariables } : undefined
-      )
+      return response(queryName, mock, errors, globalQueryVariables, queryVariables)
 
     case 'subscription':
       // If there are errors defined on the fixture, return them. This should be, the
       // first validation because if it's going to mock an error is because there should be
       // an error, so prevent any extra validation and just return the errors.
-      if (fixture && fixture.errors && fixture.data === undefined) {
-        return { mockedQuery: { errors: setFixtureError(fixture.errors) } }
+      if (fixture && fixture.errors) {
+        errors = setFixtureError(fixture.errors)
+        if (fixture.data === undefined) {
+          return { mockedQuery: { errors } }
+        } else if (fixture.data == null) {
+          return { mockedQuery: { data: null, errors } }
+        }
       }
+
       const Subscription = subscriptionField(schema)
       // Search the subscription on the Schema Code parsed into an object
       const subscriptionSchema = schema[Subscription].fields.filter(el => el.name === name)
@@ -116,20 +117,24 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
         }
       }
       // Return the mock of the selected fields
-      return Object.assign(
-        {
-          mockedQuery: Object.assign(
-            {},
-            fixture && fixture.data == null ? { data: null } : mock === undefined ? undefined : { data: { [queryName]: mock } },
-            fixture && fixture.errors ? { errors: setFixtureError(fixture.errors) } : undefined
-          )
-        },
-        globalQueryVariables ? { globalQueryVariables: queryVariables } : undefined
-      )
+      return response(queryName, mock, errors, globalQueryVariables, queryVariables)
 
     default:
       throw new Error('The operation type is not defined on the schema')
   }
+}
+
+function response (queryName, mock, errors, globalQueryVariables, queryVariables) {
+  return Object.assign(
+    {
+      mockedQuery: Object.assign(
+        {},
+        mock === undefined ? undefined : { data: { [queryName]: mock } },
+        errors ? { errors } : undefined
+      )
+    },
+    globalQueryVariables ? { globalQueryVariables: queryVariables } : undefined
+  )
 }
 
 module.exports = mockQuery

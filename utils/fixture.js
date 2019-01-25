@@ -36,13 +36,7 @@ function scalarValidation (mock, fixture, name) {
     throw new Error(`${name} fixture is not an array and it should be one.`)
   }
 
-  if (Array.isArray(fixture)) {
-    fixture.forEach((val) => {
-      if (typeof mock[0] !== typeof val) {
-        throw new Error(`${name} fixture is not the same type as the document.`)
-      }
-    })
-  } else if (typeof mock !== typeof fixture) {
+  if (typeof mock !== typeof fixture) {
     throw new Error(`${name} fixture is not the same type as the document.`)
   }
 

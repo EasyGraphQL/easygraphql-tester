@@ -113,7 +113,7 @@ describe('Subscription', () => {
       expect(newUser.email).to.be.a('string')
     })
 
-    it('Should errors if it is set on the fixture', () => {
+    it('Should return errors if it is set on the fixture', () => {
       const subscription = `
         subscription {
           newUser {
@@ -144,6 +144,44 @@ describe('Subscription', () => {
         fixture
       })
 
+      expect(errors).to.exist
+      expect(errors).to.be.an('array')
+      expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "newUser".')
+    })
+
+    it('Should errors if it is set on the fixture and data null', () => {
+      const subscription = `
+        subscription {
+          newUser {
+            id
+            username
+            email
+            invalidField
+          }
+        }
+      `
+
+      const fixture = {
+        data: null,
+        errors: [
+          {
+            'message': 'Cannot query field "invalidField" on type "newUser".',
+            'locations': [
+              {
+                'line': 7,
+                'column': 5
+              }
+            ]
+          }
+        ]
+      }
+
+      const { data, errors } = tester.mock({
+        query: subscription,
+        fixture
+      })
+
+      expect(data).to.be.null
       expect(errors).to.exist
       expect(errors).to.be.an('array')
       expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "newUser".')
