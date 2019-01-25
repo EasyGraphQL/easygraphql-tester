@@ -33,9 +33,7 @@ describe('User', () => {
           protocol: 'http',
         },
         response: {
-          body: {
-            data: easyGraphQLTester.mock(getMeQuery)
-          },
+          body: easyGraphQLTester.mock(getMeQuery),
           statusCode: 200,
         },
       }
@@ -59,9 +57,7 @@ describe('User', () => {
           protocol: 'http',
         },
         response: {
-          body: {
-            data: easyGraphQLTester.mock(getUsersQuery)
-          },
+          body: easyGraphQLTester.mock(getUsersQuery),
           statusCode: 200,
         },
       }
