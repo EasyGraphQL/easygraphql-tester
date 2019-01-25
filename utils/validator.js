@@ -334,9 +334,10 @@ function validator (query, mock, schema, type) {
 
     mock.forEach(mockVal => {
       const mockResult = getResult(query, mockVal, schema, schemaType, type)
-      if (mockResult && !isEmpty(mockResult)) {
-        result.push(mockResult)
+      if (mockResult && isObject(mockResult && isEmpty(mockResult))) {
+        return
       }
+      result.push(mockResult)
     })
     return result
   }
