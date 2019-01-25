@@ -6,6 +6,7 @@ type Query {
 type License {
   id: ID!
   name: String!
+  repository(name: String!): Repository
 }
 
 type User {

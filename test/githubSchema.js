@@ -51,6 +51,67 @@ describe('With gitHubSchema', () => {
     tester.test(true, query)
   })
 
+  it('Should pass with multiples queries and variable on the second query', () => {
+    const query = gql`
+      query trialQuery($repo: String!, $count: Int, $orderBy: IssueOrder, $repoName: String!) {
+        viewer {
+          name
+          isHireable
+          repository(name: $repo) {
+            issues(first: $count, orderBy: $orderBy) {
+              pageInfo {
+                hasPreviousPage
+                hasNextPage
+                startCursor
+                endCursor
+              }
+            }
+          }
+        }
+        licenses {
+          name
+          repository(name: $repoName) {
+            name
+          }
+        }
+      }
+    `
+    tester.test(true, query)
+  })
+
+  it('Should fail with multiples queries and a extra variable', () => {
+    let error
+    try {
+      const query = gql`
+        query trialQuery($repo: String!, $count: Int, $orderBy: IssueOrder, $repoName: String!) {
+          viewer {
+            name
+            isHireable
+            repository(name: $repo) {
+              issues(first: $count, orderBy: $orderBy) {
+                pageInfo {
+                  hasPreviousPage
+                  hasNextPage
+                  startCursor
+                  endCursor
+                }
+              }
+            }
+          }
+          licenses {
+            name
+          }
+        }
+      `
+      tester.mock(query)
+    } catch (err) {
+      error = err
+    }
+
+    expect(error).to.exist
+    expect(error.message).to.be.eq('Variable "$repoName" is never used in operation "trialQuery"')
+  })
+
   it('Should mock multiples queries', () => {
     const query = gql`
       query trialQuery($repo: String!, $count: Int, $orderBy: IssueOrder) {
