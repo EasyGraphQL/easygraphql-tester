@@ -4,7 +4,7 @@ const { setFixture, setFixtureError } = require('./fixture')
 const { queryField, mutationField, subscriptionField } = require('./schemaDefinition')
 const { validateArgsOnNestedFields, argumentsValidator, inputValidator, validator } = require('./validator')
 
-function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, globalQueryVariables) {
+function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, globalQueryVariables, isMultipleQuery) {
   const { operationType, name, queryName, arguments: queryArgs, fields } = parsedQuery
 
   // The query variables should be used on all the queries.
@@ -35,7 +35,7 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
         })
       }
       // Check if the query receives args and check if the required ones are passed
-      argumentsValidator(queryArgs, querySchema[0].arguments, name, queryVariables)
+      argumentsValidator(queryArgs, querySchema[0].arguments, name, queryVariables, isMultipleQuery)
       // If there are fixtures, set the values
       if (fixture && fixture.data) {
         mock = setFixture(mock, fixture.data, name)
@@ -101,7 +101,7 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
         })
       }
       // Check if the query receives args and check if the required ones are passed
-      argumentsValidator(queryArgs, subscriptionSchema[0].arguments, name, queryVariables)
+      argumentsValidator(queryArgs, subscriptionSchema[0].arguments, name, queryVariables, isMultipleQuery)
       // If there are fixtures, set the values
       if (fixture && fixture.data) {
         mock = setFixture(mock, fixture.data, name)
