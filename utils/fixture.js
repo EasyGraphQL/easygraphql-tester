@@ -2,10 +2,6 @@ const isObject = require('lodash.isobject')
 const isEmpty = require('lodash.isempty')
 
 function setFixture (mock, fixture, name) {
-  if (fixture === null) {
-    return null
-  }
-
   fixture = fixture && fixture[name] ? fixture[name] : undefined
 
   if (fixture === undefined) {
