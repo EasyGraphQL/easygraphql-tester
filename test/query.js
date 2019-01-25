@@ -379,7 +379,7 @@ describe('Query', () => {
           }
         }
       `
-      const { getUserByUsername } = tester.mock(query)
+      const { data: { getUserByUsername } } = tester.mock(query)
       expect(getUserByUsername).to.exist
       expect(getUserByUsername.email).to.be.a('string')
     })
@@ -409,7 +409,7 @@ describe('Query', () => {
         }
       `
 
-      const { getMe } = tester.mock(query)
+      const { data: { getMe } } = tester.mock(query)
       expect(getMe).to.exist
       expect(getMe.id).to.exist
       expect(getMe.id).to.be.a('string')
@@ -441,7 +441,7 @@ describe('Query', () => {
           }
         }
       `
-      const { getFamilyInfoByIsLocal } = tester.mock(query)
+      const { data: { getFamilyInfoByIsLocal } } = tester.mock(query)
 
       expect(getFamilyInfoByIsLocal.father.email).to.be.a('string')
     })
@@ -454,7 +454,7 @@ describe('Query', () => {
           }
         }
       `
-      const { getMeByAge } = tester.mock(query)
+      const { data: { getMeByAge } } = tester.mock(query)
 
       expect(getMeByAge.email).to.be.a('string')
     })
@@ -467,7 +467,7 @@ describe('Query', () => {
           }
         }
       `
-      const { getMeByTestResult } = tester.mock(query)
+      const { data: { getMeByTestResult } } = tester.mock(query)
       expect(getMeByTestResult.email).to.be.a('string')
     })
 
@@ -482,13 +482,114 @@ describe('Query', () => {
         }
       `
 
-      const { getUsers } = tester.mock(query)
+      const { data: { getUsers } } = tester.mock(query)
       expect(getUsers).to.exist
       expect(getUsers).to.be.a('array')
       expect(getUsers.length).to.be.gt(0)
       expect(getUsers[0].email).to.be.a('string')
       expect(getUsers[0].username).to.be.a('string')
       expect(getUsers[0].fullName).to.be.a('string')
+    })
+
+    it('Should throw on invalid fixture for arrays ', () => {
+      {
+        let error
+        try {
+          const query = `
+            {
+              getUsers {
+                email
+                username
+              }
+            }
+          `
+
+          const fixture = {
+            data: {
+              getUsers: 'invalid'
+            }
+          }
+
+          tester.mock({
+            query,
+            fixture
+          })
+        } catch (err) {
+          error = err
+        }
+
+        expect(error).to.exist
+        expect(error.message).to.be.eq('getUsers fixture is not an array and it should be one.')
+      }
+
+      {
+        let error
+        try {
+          const query = `
+            {
+              getUsers {
+                email
+                username
+              }
+            }
+          `
+
+          const fixture = {
+            data: {
+              getUsers: ['invalid']
+            }
+          }
+
+          tester.mock({
+            query,
+            fixture
+          })
+        } catch (err) {
+          error = err
+        }
+
+        expect(error).to.exist
+        expect(error.message).to.be.eq('getUsers fixture is not the same type as the document.')
+      }
+
+      {
+        let error
+        try {
+          const query = `
+            {
+              getMe {
+                familyInfo {
+                  brothers {
+                    username
+                  }
+                }
+              }
+            }
+          `
+          const fixture = {
+            data: {
+              getMe: {
+                familyInfo: [{
+                  brothers: [
+                    { username: 'brother1' },
+                    'invalid'
+                  ]
+                }]
+              }
+            }
+          }
+
+          tester.mock({
+            query,
+            fixture
+          })
+        } catch (err) {
+          error = err
+        }
+
+        expect(error).to.exist
+        expect(error.message).to.be.eq('getMe fixture is not the same type as the document.')
+      }
     })
 
     it('Should return selected fields on GetUsers with fixtures', () => {
@@ -520,7 +621,7 @@ describe('Query', () => {
         }
       }
 
-      const { getUsers } = tester.mock({
+      const { data: { getUsers } } = tester.mock({
         query,
         fixture,
         saveFixture: true
@@ -548,7 +649,7 @@ describe('Query', () => {
         }
       `
 
-      const { getUsers } = tester.mock({
+      const { data: { getUsers } } = tester.mock({
         query
       })
 
@@ -577,7 +678,7 @@ describe('Query', () => {
         }
       `
 
-      const { getMe } = tester.mock({
+      const { data: { getMe } } = tester.mock({
         query,
         fixture: {
           data: {
@@ -605,7 +706,7 @@ describe('Query', () => {
         }
       `
 
-      const { getMe } = tester.mock({
+      const { data: { getMe } } = tester.mock({
         query,
         fixture: {
           data: {
@@ -706,7 +807,7 @@ describe('Query', () => {
               }
               ... on FamilyInfo {
                 id
-                father 
+                father
                 brothers {
                   username
                 }
@@ -737,7 +838,7 @@ describe('Query', () => {
               }
               ... on FamilyInfo {
                 id
-                father 
+                father
                 brothers {
                   username
                 }
@@ -774,7 +875,7 @@ describe('Query', () => {
         }
       `
 
-      const { search } = tester.mock(query)
+      const { data: { search } } = tester.mock(query)
       expect(search).to.exist
       expect(search).to.be.a('array')
       expect(search[0].id).to.be.a('string')
@@ -789,7 +890,7 @@ describe('Query', () => {
         }
       `
 
-      const { getMeByResults } = tester.mock(query)
+      const { data: { getMeByResults } } = tester.mock(query)
       expect(getMeByResults).to.exist
       expect(getMeByResults.email).to.be.a('string')
     })
@@ -801,7 +902,7 @@ describe('Query', () => {
         }
       `
 
-      const { getString } = tester.mock(query)
+      const { data: { getString } } = tester.mock(query)
       expect(getString).to.exist
       expect(getString).to.be.a('string')
     })
@@ -827,7 +928,7 @@ describe('Query', () => {
         }
       `
 
-      const { getInt } = tester.mock(query)
+      const { data: { getInt } } = tester.mock(query)
       expect(getInt).to.exist
       expect(getInt).to.be.a('number')
     })
@@ -846,6 +947,27 @@ describe('Query', () => {
       expect(getMultiplesInt[0]).to.be.a('number')
     })
 
+    it('Should set fixtures for scalars', () => {
+      const query = `
+        {
+          getInt
+        }
+      `
+
+      const fixture = {
+        data: {
+          getInt: 99
+        }
+      }
+
+      const { data: { getInt } } = tester.mock({
+        query: query,
+        fixture
+      })
+      expect(getInt).to.exist
+      expect(getInt).to.be.eq(99)
+    })
+
     it('Should return selected data with query variables', () => {
       const query = `
         query getUserByUsername($username: String!, $name: String!) {
@@ -855,7 +977,7 @@ describe('Query', () => {
         }
       `
 
-      const { getUserByUsername } = tester.mock(query)
+      const { data: { getUserByUsername } } = tester.mock(query)
       expect(getUserByUsername).to.exist
       expect(getUserByUsername.email).to.be.a('string')
     })
@@ -869,7 +991,7 @@ describe('Query', () => {
         }
       `
 
-      const { aliasTest } = tester.mock(query)
+      const { data: { aliasTest } } = tester.mock(query)
       expect(aliasTest).to.exist
       expect(aliasTest.email).to.be.a('string')
     })
@@ -890,20 +1012,24 @@ describe('Query', () => {
         }
       }
 
-      const { aliasTest } = tester.mock({
-        query: query,
-        fixture
-      })
-      expect(aliasTest).to.exist
-      expect(aliasTest.email).to.be.a('string')
-      expect(aliasTest.email).to.be.eq(fixture.data.getUserByUsername.email)
+      {
+        const { data: { aliasTest } } = tester.mock({
+          query: query,
+          fixture
+        })
+        expect(aliasTest).to.exist
+        expect(aliasTest.email).to.be.a('string')
+        expect(aliasTest.email).to.be.eq(fixture.data.getUserByUsername.email)
+      }
 
-      const mock = tester.mock({
-        query: query
-      })
-      expect(mock.aliasTest).to.exist
-      expect(mock.aliasTest.email).to.be.a('string')
-      expect(mock.aliasTest.email).not.to.be.eq(fixture.data.getUserByUsername.email)
+      {
+        const { data: { aliasTest } } = tester.mock({
+          query: query
+        })
+        expect(aliasTest).to.exist
+        expect(aliasTest.email).to.be.a('string')
+        expect(aliasTest.email).not.to.be.eq(fixture.data.getUserByUsername.email)
+      }
     })
 
     it('Should set fixtures on nested objects', () => {
@@ -920,7 +1046,6 @@ describe('Query', () => {
               father {
                 id
                 email
-                username
               }
             }
           }
@@ -934,24 +1059,27 @@ describe('Query', () => {
               email: 'newemail@demo.com'
             },
             familyInfo: [{
+              id: '1',
               isLocal: true,
               father: {
+                id: '101',
                 email: 'father@demo.com'
               }
             },
             {
-              id: '1',
+              id: '2',
               isLocal: false,
               father: {
-                id: '100'
+                id: '101',
+                email: 'father@demo.com'
               }
             }]
           }
         }
       }
 
-      const { getMe } = tester.mock({
-        query: query,
+      const { data: { getMe } } = tester.mock({
+        query,
         fixture
       })
 
@@ -964,19 +1092,17 @@ describe('Query', () => {
 
       expect(getMe.familyInfo[0].isLocal).to.be.true
       expect(getMe.familyInfo[0].id).to.be.a('string')
-      expect(getMe.familyInfo[0].id).not.to.be.eq('1')
+      expect(getMe.familyInfo[0].id).to.be.eq('1')
       expect(getMe.familyInfo[0].father.email).to.be.eq('father@demo.com')
-      expect(getMe.familyInfo[0].father.username).to.be.a('string')
       expect(getMe.familyInfo[0].father.id).to.be.a('string')
-      expect(getMe.familyInfo[0].father.id).not.to.be.eq('100')
+      expect(getMe.familyInfo[0].father.id).to.be.eq('101')
 
       expect(getMe.familyInfo[1].isLocal).to.be.false
       expect(getMe.familyInfo[1].id).to.be.a('string')
-      expect(getMe.familyInfo[1].id).to.be.eq('1')
-      expect(getMe.familyInfo[1].father.email).not.to.be.eq('father@demo.com')
-      expect(getMe.familyInfo[1].father.username).to.be.a('string')
+      expect(getMe.familyInfo[1].id).to.be.eq('2')
+      expect(getMe.familyInfo[1].father.email).to.be.eq('father@demo.com')
       expect(getMe.familyInfo[1].father.id).to.be.a('string')
-      expect(getMe.familyInfo[1].father.id).to.be.eq('100')
+      expect(getMe.familyInfo[1].father.id).to.be.eq('101')
     })
 
     it('Should support multiples queries', () => {
@@ -1004,7 +1130,7 @@ describe('Query', () => {
         }
       `
 
-      const { aliasTest, getString, getInt, search } = tester.mock(query)
+      const { data: { aliasTest, getString, getInt, search } } = tester.mock(query)
 
       expect(aliasTest).to.exist
       expect(aliasTest.email).to.be.a('string')
@@ -1037,7 +1163,7 @@ describe('Query', () => {
         }
       `
 
-      const { posts } = tester.mock(query)
+      const { data: { posts } } = tester.mock(query)
       expect(posts).to.exist
       expect(posts).to.be.a('array')
       expect(posts.length).to.be.gt(0)
@@ -1053,7 +1179,7 @@ describe('Query', () => {
         }
       `
 
-      const { posts } = tester.mock(query)
+      const { data: { posts } } = tester.mock(query)
       expect(posts).to.exist
       expect(posts).to.be.a('array')
       expect(posts.length).to.be.gt(0)

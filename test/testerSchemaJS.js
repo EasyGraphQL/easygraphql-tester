@@ -88,7 +88,7 @@ describe('Assert test', () => {
           }
         }
       `
-      const { getUser } = tester.mock(query)
+      const { data: { getUser } } = tester.mock(query)
 
       expect(getUser.email).to.be.a('string')
       expect(getUser.fullName).to.be.a('string')
