@@ -26,7 +26,7 @@ describe('Query', () => {
           query UserQuery {
             ...User
           }
-          
+
           fragment User on Query {
             getUser {
               id
@@ -58,7 +58,7 @@ describe('Query', () => {
           query UserQuery($username: String!) {
             ...User
           }
-          
+
           fragment User on Query {
             getUserByUsername(username: $username) {
               email
@@ -81,7 +81,7 @@ describe('Query', () => {
         query UserQuery {
           ...User
         }
-        
+
         fragment User on Query {
           getMe {
             id
@@ -103,7 +103,7 @@ describe('Query', () => {
         }
       `
 
-      const { getMe } = tester.mock(query)
+      const { data: { getMe } } = tester.mock(query)
       expect(getMe).to.exist
       expect(getMe.id).to.exist
       expect(getMe.id).to.be.a('string')
@@ -139,12 +139,13 @@ describe('Query', () => {
           }
         }
       `
-      const { createUser } = tester.mock(mutation, {
+      const { data: { createUser } } = tester.mock(mutation, {
         input: {
           email: 'test@test.com',
           username: 'test',
           fullName: 'test',
-          password: 'test'
+          password: 'test',
+          dob: '10-10-1999'
         }
       })
 
@@ -161,7 +162,7 @@ describe('Query', () => {
             ...family_info
           }
         }
-        
+
         fragment family_info on FamilyInfo {
           id
           email
@@ -181,7 +182,7 @@ describe('Query', () => {
           username
         }
       `
-      const { getMe } = tester.mock(multiplesFragments)
+      const { data: { getMe } } = tester.mock(multiplesFragments)
       expect(getMe).to.exist
       expect(getMe.id).to.exist
       expect(getMe.id).to.be.a('string')

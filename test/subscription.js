@@ -27,11 +27,11 @@ describe('Subscription', () => {
             id
             username
             email
-          } 
+          }
         }
       `
 
-      const { newUsers } = tester.mock(subscription)
+      const { data: { newUsers } } = tester.mock(subscription)
 
       expect(newUsers).to.be.an('array')
       expect(newUsers[0].id).to.be.a('string')
@@ -51,7 +51,7 @@ describe('Subscription', () => {
         }
       `
 
-      const { createdUser } = tester.mock(subscription)
+      const { data: { createdUser } } = tester.mock(subscription)
 
       expect(createdUser).to.exist
       expect(createdUser.id).to.be.a('string')
@@ -69,11 +69,11 @@ describe('Subscription', () => {
             id
             username
             email
-          } 
+          }
         }
       `
 
-      const { createdUser, newUser } = tester.mock(subscription)
+      const { data: { createdUser, newUser } } = tester.mock(subscription)
 
       expect(createdUser).to.exist
       expect(newUser).to.exist
@@ -86,7 +86,7 @@ describe('Subscription', () => {
             id
             username
             email
-          } 
+          }
         }
       `
 
@@ -99,7 +99,7 @@ describe('Subscription', () => {
         }
       }
 
-      const { newUser } = tester.mock({
+      const { data: { newUser } } = tester.mock({
         query: subscription,
         fixture,
         saveFixture: true
@@ -113,7 +113,7 @@ describe('Subscription', () => {
       expect(newUser.email).to.be.a('string')
     })
 
-    it('Should errors if it is set on the fixture', () => {
+    it('Should return errors if it is set on the fixture', () => {
       const subscription = `
         subscription {
           newUser {
@@ -121,7 +121,7 @@ describe('Subscription', () => {
             username
             email
             invalidField
-          } 
+          }
         }
       `
 
@@ -149,6 +149,44 @@ describe('Subscription', () => {
       expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "newUser".')
     })
 
+    it('Should errors if it is set on the fixture and data null', () => {
+      const subscription = `
+        subscription {
+          newUser {
+            id
+            username
+            email
+            invalidField
+          }
+        }
+      `
+
+      const fixture = {
+        data: null,
+        errors: [
+          {
+            'message': 'Cannot query field "invalidField" on type "newUser".',
+            'locations': [
+              {
+                'line': 7,
+                'column': 5
+              }
+            ]
+          }
+        ]
+      }
+
+      const { data, errors } = tester.mock({
+        query: subscription,
+        fixture
+      })
+
+      expect(data).to.be.null
+      expect(errors).to.exist
+      expect(errors).to.be.an('array')
+      expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "newUser".')
+    })
+
     it('Should return saved fixture', () => {
       const subscription = `
         subscription {
@@ -156,11 +194,11 @@ describe('Subscription', () => {
             id
             username
             email
-          } 
+          }
         }
       `
 
-      const { newUser } = tester.mock(subscription)
+      const { data: { newUser } } = tester.mock(subscription)
 
       expect(newUser).to.be.exist
       expect(newUser.id).to.be.a('string')
@@ -179,7 +217,7 @@ describe('Subscription', () => {
               invalidField
               username
               email
-            } 
+            }
           }
         `
 
@@ -201,7 +239,7 @@ describe('Subscription', () => {
               id
               username
               email
-            } 
+            }
           }
         `
 
@@ -223,7 +261,7 @@ describe('Subscription', () => {
               id
               username
               email
-            } 
+            }
           }
         `
 
@@ -253,7 +291,7 @@ describe('Subscription', () => {
         }
       `
 
-      const { newPost } = tester.mock(subscription)
+      const { data: { newPost } } = tester.mock(subscription)
       expect(newPost).to.exist
       expect(newPost.content).to.be.a('string')
     })
@@ -266,8 +304,7 @@ describe('Subscription', () => {
           }
         }
       `
-
-      const { newPost } = tester.mock(subscription)
+      const { data: { newPost } } = tester.mock(subscription)
       expect(newPost).to.exist
       expect(newPost.content).to.be.a('string')
     })

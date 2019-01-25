@@ -284,12 +284,13 @@ describe('Mutation', () => {
           }
         }
       `
-      const { createUser } = tester.mock(mutation, {
+      const { data: { createUser } } = tester.mock(mutation, {
         input: {
           email: 'test@test.com',
           username: 'test',
           fullName: 'test',
-          password: 'test'
+          password: 'test',
+          dob: '10-10-1999'
         }
       })
 
@@ -307,12 +308,13 @@ describe('Mutation', () => {
           }
         }
       `
-      const { createUsers } = tester.mock(mutation, {
+      const { data: { createUsers } } = tester.mock(mutation, {
         input: [{
           email: 'test@test.com',
           username: 'test',
           fullName: 'test',
-          password: 'test'
+          password: 'test',
+          dob: '10-10-1999'
         }]
       })
 
@@ -332,7 +334,7 @@ describe('Mutation', () => {
           }
         }
       `
-      const { updateUserAge } = tester.mock(mutation, {
+      const { data: { updateUserAge } } = tester.mock(mutation, {
         input: {
           id: '123',
           age: 10
@@ -350,7 +352,7 @@ describe('Mutation', () => {
         }
       `
 
-      const { createBoolean } = tester.mock(mutation, {
+      const { data: { createBoolean } } = tester.mock(mutation, {
         input: {
           isAdmin: true
         }
@@ -368,7 +370,7 @@ describe('Mutation', () => {
           }
         }
       `
-      const { isAdmin } = tester.mock(mutation, {
+      const { data: { isAdmin } } = tester.mock(mutation, {
         input: {
           isAdmin: true
         }
@@ -387,7 +389,7 @@ describe('Mutation', () => {
             }
           }
         `
-      const { updateUserScores } = tester.mock(mutation, {
+      const { data: { updateUserScores } } = tester.mock(mutation, {
         scores: {
           scores: [1]
         }
@@ -405,12 +407,13 @@ describe('Mutation', () => {
             }
           }
         `
-      const { createNewUser } = tester.mock(mutation, {
+      const { data: { createNewUser } } = tester.mock(mutation, {
         demo: [{
           email: 'demo',
           username: 'demo',
           fullName: 'demo',
-          password: 'demo'
+          password: 'demo',
+          dob: '10-10-1999'
         }]
       })
 
@@ -437,26 +440,30 @@ describe('Mutation', () => {
         }
       }
 
-      const { updateUserScores } = tester.mock({
-        query: mutation,
-        variables: { demo: { scores: [1] } },
-        fixture,
-        saveFixture: true
-      })
+      {
+        const { data: { updateUserScores } } = tester.mock({
+          query: mutation,
+          variables: { demo: { scores: [1] } },
+          fixture,
+          saveFixture: true
+        })
 
-      expect(updateUserScores).to.exist
-      expect(updateUserScores.email).to.be.a('string')
-      expect(updateUserScores.email).to.be.eq('demo@demo.com')
+        expect(updateUserScores).to.exist
+        expect(updateUserScores.email).to.be.a('string')
+        expect(updateUserScores.email).to.be.eq('demo@demo.com')
+      }
 
-      const mock = tester.mock({
-        query: mutation,
-        variables: { scores: { scores: [1] } }
-      })
+      {
+        const { data: { updateUserScores } } = tester.mock({
+          query: mutation,
+          variables: { scores: { scores: [1] } }
+        })
 
-      expect(mock.updateUserScores).to.exist
-      expect(mock.updateUserScores.email).to.be.a('string')
-      expect(mock.updateUserScores.email).to.be.eq('demo@demo.com')
-      expect(mock.updateUserScores.scores[0]).to.be.eq(1)
+        expect(updateUserScores).to.exist
+        expect(updateUserScores.email).to.be.a('string')
+        expect(updateUserScores.email).to.be.eq('demo@demo.com')
+        expect(updateUserScores.scores[0]).to.be.eq(1)
+      }
     })
 
     it('Should ignore extra data on the fixture', () => {
@@ -478,7 +485,7 @@ describe('Mutation', () => {
         }
       }
 
-      const { updateUserScores } = tester.mock({
+      const { data: { updateUserScores } } = tester.mock({
         query: mutation,
         variables: { scores: { scores: [1] } },
         fixture,
@@ -520,6 +527,44 @@ describe('Mutation', () => {
         fixture
       })
 
+      expect(errors).to.exist
+      expect(errors).to.be.an('array')
+      expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "updateUserScores".')
+    })
+
+    it('Should return errors object if it is set on the fixture and data null', () => {
+      const mutation = `
+        mutation UpdateUserScores($input: UpdateUserScoresInput!){
+          updateUserScores (scores: $input) {
+            email
+            scores
+            invalidField
+          }
+        }
+      `
+
+      const fixture = {
+        data: null,
+        errors: [
+          {
+            'message': 'Cannot query field "invalidField" on type "updateUserScores".',
+            'locations': [
+              {
+                'line': 7,
+                'column': 5
+              }
+            ]
+          }
+        ]
+      }
+
+      const { data, errors } = tester.mock({
+        query: mutation,
+        variables: { scores: { scores: [1] } },
+        fixture
+      })
+
+      expect(data).to.be.null
       expect(errors).to.exist
       expect(errors).to.be.an('array')
       expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "updateUserScores".')
@@ -680,7 +725,7 @@ describe('Mutation', () => {
         }
       `
 
-      const { appendPost } = tester.mock(mutation, { post: { content: 'Hello, world!' } })
+      const { data: { appendPost } } = tester.mock(mutation, { post: { content: 'Hello, world!' } })
       expect(appendPost).to.exist
       expect(appendPost.content).to.be.a('string')
     })
@@ -694,7 +739,7 @@ describe('Mutation', () => {
         }
       `
 
-      const { appendPost } = tester.mock({
+      const { data: { appendPost } } = tester.mock({
         query: mutation,
         variables: {
           post: {

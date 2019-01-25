@@ -51,8 +51,8 @@ describe('Test my schema, queries and mutations', () => {
   describe('Mutations', () => {
     it('Invalid input type', () => {
       const mutation = `
-        mutation UpdateUserScores{
-          updateUserScores {
+        mutation UpdateUserScores($input: UpdateUserScoresInput!) {
+          updateUserScores(input: $input) {
             email
             scores
           }
@@ -62,14 +62,16 @@ describe('Test my schema, queries and mutations', () => {
       // Second arg: mutation to test
       // Third arg: input value
       tester.test(false, mutation, {
-        scores: ['1']
+        input: {
+          scores: ['1']
+        }
       })
     })
 
     it('Should pass if the input type is valid', () => {
       const mutation = `
-        mutation UpdateUserScores{
-          updateUserScores {
+        mutation UpdateUserScores($input: UpdateUserScoresInput!) {
+          updateUserScores(input: $input) {
             email
             scores
           }
@@ -79,7 +81,9 @@ describe('Test my schema, queries and mutations', () => {
       // Second arg: mutation to test
       // Third arg: input value
       tester.test(true, mutation, {
-        scores: [1]
+        input: {
+          scores: [1]
+        }
       })
     })
   })

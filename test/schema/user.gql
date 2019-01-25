@@ -42,6 +42,7 @@ input UserInput {
   username: String!
   fullName: String!
   password: String!
+  dob: DateTime!
 }
 
 type Item {
@@ -88,6 +89,8 @@ type Query {
   search(id: ID!): [SearchResult]!
   getString: String!
   getInt: Int!
+  getMultiplesInt: [Int]!
+  getMultiplesStrings: [String]!
   items(where: ItemWhereInput): [Item]!
 }
 
