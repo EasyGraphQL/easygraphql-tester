@@ -914,7 +914,7 @@ describe('Query', () => {
         }
       `
 
-      const { getMultiplesStrings } = tester.mock(query)
+      const { data: { getMultiplesStrings } } = tester.mock(query)
       expect(getMultiplesStrings).to.exist
       expect(getMultiplesStrings).to.be.an('array')
       expect(getMultiplesStrings.length).to.be.gt(0)
@@ -940,7 +940,7 @@ describe('Query', () => {
         }
       `
 
-      const { getMultiplesInt } = tester.mock(query)
+      const { data: { getMultiplesInt } } = tester.mock(query)
       expect(getMultiplesInt).to.exist
       expect(getMultiplesInt).to.be.an('array')
       expect(getMultiplesInt.length).to.be.gt(0)
