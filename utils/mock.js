@@ -6,7 +6,6 @@ const { validateArgsOnNestedFields, argumentsValidator, inputValidator, validato
 
 function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, globalQueryVariables, isMultipleQuery) {
   const { operationType, name, queryName, arguments: queryArgs, fields } = parsedQuery
-
   // The query variables should be used on all the queries.
   let queryVariables = globalQueryVariables || parsedQuery.queryVariables
 
@@ -43,7 +42,7 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
       argumentsValidator(queryArgs, querySchema[0].arguments, name, queryVariables, isMultipleQuery)
       // If there are fixtures, set the values
       if (fixture && fixture.data !== undefined) {
-        mock = setFixture(mock, fixture.data, name)
+        mock = setFixture(mock, fixture.data, name, querySchema[0], schema)
         if (saveFixture) {
           mockedSchema[Query][name] = mock
         }
@@ -73,7 +72,7 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
       inputValidator(parsedQuery.variables, mutationSchema[0].arguments, schema, name, queryArgs)
       // If there are fixtures, set the values
       if (fixture && fixture.data !== undefined) {
-        mock = setFixture(mock, fixture.data, name)
+        mock = setFixture(mock, fixture.data, name, mutationSchema[0], schema)
         if (saveFixture) {
           mockedSchema[Mutation][name] = mock
         }
@@ -111,7 +110,7 @@ function mockQuery (schema, mockedSchema, parsedQuery, fixture, saveFixture, glo
       argumentsValidator(queryArgs, subscriptionSchema[0].arguments, name, queryVariables, isMultipleQuery)
       // If there are fixtures, set the values
       if (fixture && fixture.data !== undefined) {
-        mock = setFixture(mock, fixture.data, name)
+        mock = setFixture(mock, fixture.data, name, subscriptionSchema[0], schema)
         if (saveFixture) {
           mockedSchema[Subscription][name] = mock
         }

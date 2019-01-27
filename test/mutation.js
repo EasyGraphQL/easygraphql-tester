@@ -601,7 +601,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('scores is not an array and it should be one.')
+      expect(error.message).to.be.eq('scores fixture is not an array and it should be one.')
     })
 
     it('Should fail if the fixture has a different data type', () => {

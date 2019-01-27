@@ -549,7 +549,7 @@ describe('Query', () => {
         }
 
         expect(error).to.exist
-        expect(error.message).to.be.eq('getUsers fixture is not the same type as the document.')
+        expect(error.message).to.be.eq('getUsers is not the same type as the document.')
       }
 
       {
@@ -573,6 +573,44 @@ describe('Query', () => {
                   brothers: [
                     { username: 'brother1' },
                     'invalid'
+                  ]
+                }]
+              }
+            }
+          }
+
+          tester.mock({
+            query,
+            fixture
+          })
+        } catch (err) {
+          error = err
+        }
+
+        expect(error).to.exist
+        expect(error.message).to.be.eq('getMe is not the same type as the document.')
+      }
+
+      {
+        let error
+        try {
+          const query = `
+            {
+              getMe {
+                familyInfo {
+                  brothers {
+                    username
+                  }
+                }
+              }
+            }
+          `
+          const fixture = {
+            data: {
+              getMe: {
+                familyInfo: [{
+                  brothers: [
+                    { username: 'brother1', invalid: true }
                   ]
                 }]
               }
@@ -921,6 +959,54 @@ describe('Query', () => {
       expect(getMultiplesStrings[0]).to.be.a('string')
     })
 
+    it('Should throw an error if the fixture is not String', () => {
+      let error
+      try {
+        const query = `
+          {
+            getString
+          }
+        `
+
+        const fixture = {
+          data: {
+            getString: 1
+          }
+        }
+
+        tester.mock({ query, fixture })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq('getString is not the same type as the document.')
+    })
+
+    it('Should throw an error if a value inside the array is null', () => {
+      let error
+      try {
+        const query = `
+          {
+            getMultiplesStrings
+          }
+        `
+
+        const fixture = {
+          data: {
+            getMultiplesStrings: ['a', 'b', 'c', null]
+          }
+        }
+
+        tester.mock({ query, fixture })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq("getMultiplesStrings inside an array can't be null.")
+    })
+
     it('Should pass if it returns a Int', () => {
       const query = `
         {
@@ -928,7 +1014,13 @@ describe('Query', () => {
         }
       `
 
-      const { data: { getInt } } = tester.mock(query)
+      const fixture = {
+        data: {
+          getInt: 1
+        }
+      }
+
+      const { data: { getInt } } = tester.mock({ query, fixture })
       expect(getInt).to.exist
       expect(getInt).to.be.a('number')
     })
@@ -940,11 +1032,43 @@ describe('Query', () => {
         }
       `
 
-      const { data: { getMultiplesInt } } = tester.mock(query)
+      const fixture = {
+        data: {
+          getMultiplesInt: [1, 2, 3]
+        }
+      }
+
+      const { data: { getMultiplesInt } } = tester.mock({ query, fixture })
       expect(getMultiplesInt).to.exist
       expect(getMultiplesInt).to.be.an('array')
       expect(getMultiplesInt.length).to.be.gt(0)
+      expect(getMultiplesInt.length).to.be.eq(3)
       expect(getMultiplesInt[0]).to.be.a('number')
+      expect(getMultiplesInt[0]).to.be.eq(1)
+    })
+
+    it('Should throw an error if the fixture is null', () => {
+      let error
+      try {
+        const query = `
+          {
+            getMultiplesInt
+          }
+        `
+
+        const fixture = {
+          data: {
+            getMultiplesInt: null
+          }
+        }
+
+        tester.mock({ query, fixture })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq("getMultiplesInt can't be null.")
     })
 
     it('Should set fixtures for scalars', () => {
