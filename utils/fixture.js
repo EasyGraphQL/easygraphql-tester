@@ -28,21 +28,26 @@ function validateFixture (mock, fixture, selectedType, schema, name) {
 
     if (Array.isArray(fixture)) {
       return fixture.map(val => {
-        return validateFixture(mock[0], val, schema[selectedType.type], schema, name)
+        // If the autoMock is false, set an empty object to set the value after validation
+        const mockedVal = mock[0] || {}
+
+        return validateFixture(mockedVal, val, schema[selectedType.type], schema, name)
       })
     } else if (isObject(fixture)) {
       for (const val of Object.keys(fixture)) {
         const selectedField = fields.filter(field => field.name === val)
+        // If the autoMock is false, set an empty object to set the value after validation
+        const mockedVal = mock[val] || {}
         // If it's extra fields on the fixture, continue
         if (!selectedField.length) {
           continue
         }
 
         // If it is a custom scalar, should not validate the typeof
-        if (isObject(mock[val]) && Object.keys(mock[val]).length === 1 && mock[val].__typename) {
+        if (isObject(mockedVal) && Object.keys(mockedVal).length === 1 && mockedVal.__typename) {
           mock[val] = fixture[val]
         } else {
-          mock[val] = validateFixture(mock[val], fixture[val], selectedField[0], schema, name)
+          mock[val] = validateFixture(mockedVal, fixture[val], selectedField[0], schema, name)
         }
       }
 
@@ -59,13 +64,16 @@ function validateFixture (mock, fixture, selectedType, schema, name) {
   } else if (isObject(fixture)) {
     const fields = selectedType.fields
     for (const val of Object.keys(fixture)) {
+      // If the autoMock is false, set an empty object to set the value after validation
+      const mockedVal = mock[val] || {}
       const selectedField = fields.filter(field => field.name === val)
 
       if (!selectedField.length) {
         throw new Error(`${name} fixture is not the same type as the document.`)
       }
-      mock[val] = validateFixture(mock[val], fixture[val], selectedField[0], schema, name)
+      mock[val] = validateFixture(mockedVal, fixture[val], selectedField[0], schema, name)
     }
+    return Object.assign({}, mock)
   }
 
   validateType(fixture, selectedType, name)

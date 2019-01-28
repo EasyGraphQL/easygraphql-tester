@@ -834,6 +834,9 @@ describe('Query', () => {
   })
 
   describe('Should support unions', () => {
+    beforeEach(() => {
+      tester.clearFixture()
+    })
     it('Should throw an error with the invalid field on father', () => {
       let error
       try {
@@ -1227,6 +1230,66 @@ describe('Query', () => {
       expect(getMe.familyInfo[1].father.email).to.be.eq('father@demo.com')
       expect(getMe.familyInfo[1].father.id).to.be.a('string')
       expect(getMe.familyInfo[1].father.id).to.be.eq('101')
+    })
+
+    it('Should fail if the fixture is missing query field with autoMock false', () => {
+      let error
+      try {
+        const query = `
+          {
+            getMe {
+              email
+              user {
+                email
+              }
+              familyInfo {
+                id
+                isLocal
+                father {
+                  id
+                  email
+                  fullName
+                }
+              }
+            }
+          }
+        `
+        const fixture = {
+          data: {
+            getMe: {
+              email: 'demo@demo.com',
+              user: {
+                email: 'newemail@demo.com'
+              },
+              familyInfo: [{
+                id: '1',
+                isLocal: true,
+                father: {
+                  id: '101',
+                  email: 'father@demo.com'
+                }
+              },
+              {
+                id: '2',
+                isLocal: false,
+                father: {
+                  id: '101',
+                  email: 'father@demo.com'
+                }
+              }]
+            }
+          }
+        }
+
+        tester.setFixture(fixture, { autoMock: false })
+
+        tester.mock(query)
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq('getMe: fullName is not defined on the mock')
     })
 
     it('Should support multiples queries', () => {
