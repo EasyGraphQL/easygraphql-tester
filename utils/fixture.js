@@ -54,13 +54,7 @@ function validateFixture (mock, fixture, selectedType, schema, name) {
       return mock
     }
   } else if (Array.isArray(fixture)) {
-    fixture.forEach(val => {
-      if (selectedType.isArray && selectedType.noNullArrayValues && val === null) {
-        throw new Error(`${selectedType.name} inside an array can't be null.`)
-      }
-
-      validateType(val, selectedType, name)
-    })
+    fixture.forEach(val => validateType(val, selectedType, name))
   } else if (isObject(fixture)) {
     const fields = selectedType.fields
     for (const val of Object.keys(fixture)) {
@@ -83,6 +77,11 @@ function validateFixture (mock, fixture, selectedType, schema, name) {
 
 function validateType (fixture, selectedType, name) {
   name = selectedType.name || name
+
+  if (selectedType.isArray && selectedType.noNullArrayValues && fixture === null) {
+    throw new Error(`${name} inside an array can't be null.`)
+  }
+
   switch (typeof fixture) {
     case 'number':
       if (selectedType.type !== 'Int' && selectedType.type !== 'Float') {
