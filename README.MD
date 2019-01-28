@@ -238,15 +238,61 @@ Call the method `.mock()` and pass an object with this options:
 + fixture: This is optional, it'll be an object with the key `data` and inside it
   the name of the query/mutation/subscription and the fields to set.
 + saveFixture: By default is `false`, if you pass fixtures, and set it to `true` when you make the same query again,
-  it will return the fixture value. *This is not supported with fixture errors*
-+ errors: If you want to return a mock of custom errors, add to the fixture object a property
-  `errors` that has an array with the errors to return.
+  it will return the fixture value.
 
 The result will have top level fields, it means that the result will be an object
-with a property that is going to be the name (top level field) of the query or alias with the mocked
-result.
+with a property that is going to be `data` and inside it the name (top level field) 
+of the query or alias with the mocked result.
 
 *In case you have a custom scalar, set the value on the fixture, if it's not set it will be `{}`*
+
+### Fixtures:
+
+There are two ways to set the fixture on a operation:
+
+#### Operation options:
+Set the fixture as an option when testing a query/mutation/subscription
+
+E.g
+```js
+const fixture = {
+  data: {
+    getUser: {
+      id: '1',
+      name: 'EasyGraphQL'
+    }
+  }
+}
+
+const { data: { getUser } } = tester.mock({ query, fixture })
+```
+
+#### `setFixture()` method
+Also, the fixture can be set before the test using `.setFixture()` method from the constructor,
+it'll receive two arguments; the first one is going to be the fixture, and the second one will be
+an object of options to set if it should auto mock the extra fields that are on the query but are not
+on the fixture, by default it's `true`.
+
+Run `tester.clearFixture()` to return the fixture to `null` and `autoMock = true` in case you
+set it to `false`
+
+E.g
+```js
+const tester = new EasyGraphQLTester([userSchema, familySchema])
+
+const fixture = {
+  data: {
+    getUser: {
+      id: '1',
+      name: 'EasyGraphQL'
+    }
+  }
+}
+
+tester.setFixture(fixture, { autoMock: false })
+const { data: { getUser } } = tester.mock({ query })
+tester.clearFixture()
+```
 
 ### Mock example
 ```js
@@ -377,6 +423,8 @@ const { data: { createUser } } = tester.mock({ query: mutation, variables: input
   name: 'Tony Patrick'
 }
 ```
+
+## Errors
 
 If there is an error on the query or mutation [`easygraphql-tester`](https://github.com/EasyGraphQL/easygraphql-tester) will let you know what
 is happening.
