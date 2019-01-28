@@ -25,6 +25,7 @@
 
 ### Commits
 
+* [[`e6e4c4072c`](https://github.com/EasyGraphQL/easygraphql-tester/commit/e6e4c4072c)] - Set fixture method.
 
 <a id="4.0.0"></a>
 ## Version 4.0.0
