@@ -6,10 +6,25 @@
 </tr>
 <tr>
 <td>
+<a href="#4.1.0">4.1.0</a><br/>
 <a href="#4.0.0">4.0.0</a><br/>
 </td>
 </tr>
 </table>
+
+<a id="4.1.0"></a>
+## Version 4.1.0
+
+### Notable Changes
+
+* **Update fixture validation**: Validate fixture against the parsed schema and no against the mock.
+* **Set fixture using class method**: Set fixtures with `.setFixture()`.
+* **Prevent auto mock query fields with fixture**: Prevent autoMock of the fields that are not on the fixture.
+* **Validate fixture values with autoMock disables**: validate that the fields on the fixture match with the request ones on the query (ignore extra fields that are not used on the query).
+* **Clear fixture value set with setFixture**: Clear the fixture passed with `.setFixture()` and return `autoMock` to `true`.
+
+### Commits
+
 
 <a id="4.0.0"></a>
 ## Version 4.0.0
