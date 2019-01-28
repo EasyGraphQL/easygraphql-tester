@@ -2,7 +2,6 @@
 
 const isObject = require('lodash.isobject')
 const isEmpty = require('lodash.isempty')
-const { queryField, mutationField, subscriptionField } = require('./schemaDefinition')
 
 function validateArgsOnNestedFields (field, queryType, name, queryVariables, schema) {
   const type = queryType.fields.filter(nestedField => nestedField.name === field.name)
@@ -325,20 +324,11 @@ function validateInputType (arg, filteredArg) {
   }
 }
 
-function validator (query, mock, schema, type) {
+function validator (query, mock, schema, schemaType, type, autoMock) {
   // If the query name is missing on the mock, there should be an error because
   // it is not defined on the schema
   if (typeof mock === 'undefined') {
     throw new Error(`There is no ${query.operationType} called ${query.name} on the Schema`)
-  }
-
-  let schemaType
-  if (type === 'Query') {
-    schemaType = schema[queryField(schema)].fields.filter(el => el.name === query.name)[0]
-  } else if (type === 'Mutation') {
-    schemaType = schema[mutationField(schema)].fields.filter(el => el.name === query.name)[0]
-  } else {
-    schemaType = schema[subscriptionField(schema)].fields.filter(el => el.name === query.name)[0]
   }
   // If the mock is array, it will loop each value, so the query can access
   // each value requested on the Query/Mutation
@@ -346,7 +336,7 @@ function validator (query, mock, schema, type) {
     const result = []
 
     mock.forEach(mockVal => {
-      const mockResult = getResult(query, mockVal, schema, schemaType, type)
+      const mockResult = getResult(query, mockVal, schema, schemaType, type, autoMock)
       if (mockResult && isObject(mockResult && isEmpty(mockResult))) {
         return
       }
@@ -355,10 +345,10 @@ function validator (query, mock, schema, type) {
     return result
   }
   // Create object to return, with all the fields mocked, and nested
-  return getResult(query, mock, schema, schemaType, type)
+  return getResult(query, mock, schema, schemaType, type, autoMock)
 }
 
-function getResult (query, mock, schema, schemaType, type) {
+function getResult (query, mock, schema, schemaType, type, autoMock) {
   let result = {}
 
   if (!Array.isArray(query.fields)) {
@@ -374,7 +364,7 @@ function getResult (query, mock, schema, schemaType, type) {
       const mockResult = {}
       field.fields.forEach(element => {
         validateSelectedFields(element, schema[field.name], schema, query.name, type)
-        const result = mockBuilder(element, mock, query.name, schema)
+        const result = mockBuilder(element, mock, query.name, autoMock)
 
         if (isObject(result) && !isEmpty(result)) {
           mockResult[element.name] = result
@@ -385,7 +375,7 @@ function getResult (query, mock, schema, schemaType, type) {
       result = Object.assign(result, mockResult)
     } else {
       validateSelectedFields(field, schema[schemaType.type], schema, query.name, type)
-      result[field.name] = mockBuilder(field, mock, query.name, schema)
+      result[field.name] = mockBuilder(field, mock, query.name, autoMock)
     }
   })
 
@@ -414,13 +404,18 @@ function validateSelectedFields (field, selectedSchema, schema, name, type) {
 
 // This is going to be a recursive method that will search nested values on nested
 // types.
-function mockBuilder (field, mock, name) {
+function mockBuilder (field, mock, name, autoMock) {
   if (!mock) {
     return
   }
 
   if (field.fields.length === 0) {
-    return mock[field.name]
+    const mockedField = mock[field.name]
+    if (typeof mockedField === 'undefined' && !autoMock) {
+      throw new Error(`${name}: ${field.name} is not defined on the mock`)
+    }
+
+    return mockedField
   }
 
   // If the mock is an array, it will loop each value, to access the requested
@@ -430,7 +425,7 @@ function mockBuilder (field, mock, name) {
     mock[field.name].forEach(el => {
       const mockResult = {}
       field.fields.forEach(element => {
-        const result = mockBuilder(element, el, name)
+        const result = mockBuilder(element, el, name, autoMock)
         if (typeof result !== 'undefined') {
           mockResult[element.name] = result
         }
@@ -444,8 +439,7 @@ function mockBuilder (field, mock, name) {
   } else {
     const mockResult = {}
     field.fields.forEach(element => {
-      const result = mockBuilder(element, mock[field.name], name)
-
+      const result = mockBuilder(element, mock[field.name], name, autoMock)
       if (typeof result !== 'undefined') {
         mockResult[element.name] = result
       }

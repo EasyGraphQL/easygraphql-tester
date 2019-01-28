@@ -90,7 +90,7 @@ type Query {
   getString: String!
   getInt: Int!
   getMultiplesInt: [Int]!
-  getMultiplesStrings: [String]!
+  getMultiplesStrings: [String!]!
   items(where: ItemWhereInput): [Item]!
 }
 

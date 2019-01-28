@@ -17,6 +17,10 @@ describe('With gitHubSchema', () => {
     tester = new EasyGraphQLTester(gitHubSchema)
   })
 
+  afterEach(() => {
+    tester.clearFixture()
+  })
+
   it('Should pass with multiples queries', () => {
     const query = gql`
       query trialQuery($repo: String!, $count: Int, $orderBy: IssueOrder) {
@@ -349,5 +353,44 @@ describe('With gitHubSchema', () => {
     `
 
     tester.test(true, query1)
+  })
+
+  it('Should set fixture with setFixture, before the test', () => {
+    const fixture = {
+      data: {
+        licenses: [
+          { id: '1', name: 'license MIT' },
+          null,
+          { id: '3', name: 'license 3' }
+        ]
+      },
+      errors: [{
+        message: 'License with ID 2 could not be fetched.',
+        locations: [{ line: 3, column: 7 }],
+        path: ['licenses', 1, 'name']
+      }]
+    }
+
+    tester.setFixture(fixture)
+    const query = gql`
+      {
+        licenses {
+          id
+          name
+        }
+      }
+    `
+
+    const { data: { licenses }, errors } = tester.mock(query)
+
+    expect(licenses).to.exist
+    expect(licenses).to.be.an('array')
+    expect(licenses).to.have.length(3)
+    expect(licenses[0].id).to.be.eq('1')
+    expect(licenses[0].name).to.be.eq('license MIT')
+    expect(licenses[1]).to.be.a('null')
+    expect(errors).to.exist
+    expect(errors).to.be.an('array')
+    expect(errors[0].message).to.be.eq('License with ID 2 could not be fetched.')
   })
 })

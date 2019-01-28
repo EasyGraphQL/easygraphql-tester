@@ -276,6 +276,10 @@ describe('Mutation', () => {
   })
 
   describe('Should return selected fields', () => {
+    afterEach(() => {
+      tester.clearFixture()
+    })
+
     it('Should return selected fields on CreateUser', () => {
       const mutation = `
         mutation CreateUser($input: UserInput!){
@@ -466,6 +470,76 @@ describe('Mutation', () => {
       }
     })
 
+    it('Should set fixture and prevent mocking the fields', () => {
+      const mutation = `
+        mutation UpdateUserScores($demo: UpdateUserScoresInput!){
+          updateUserScores(scores: $demo) {
+            email
+            scores
+          }
+        }
+      `
+
+      const fixture = {
+        data: {
+          updateUserScores: {
+            email: 'demo@demo.com',
+            scores: [1]
+          }
+        }
+      }
+
+      tester.setFixture(fixture, { autoMock: false })
+
+      {
+        const { data: { updateUserScores } } = tester.mock({
+          query: mutation,
+          variables: { demo: { scores: [1] } }
+        })
+
+        expect(updateUserScores).to.exist
+        expect(updateUserScores.email).to.be.a('string')
+        expect(updateUserScores.email).to.be.eq('demo@demo.com')
+        expect(updateUserScores.scores).to.be.an('array')
+      }
+    })
+
+    it('Should fail if autoMock false and missing field on fixture', () => {
+      let error
+      try {
+        const mutation = `
+          mutation UpdateUserScores($demo: UpdateUserScoresInput!){
+            updateUserScores(scores: $demo) {
+              email
+              scores
+              username
+            }
+          }
+        `
+
+        const fixture = {
+          data: {
+            updateUserScores: {
+              email: 'demo@demo.com',
+              scores: [1]
+            }
+          }
+        }
+
+        tester.setFixture(fixture, { autoMock: false })
+
+        tester.mock({
+          query: mutation,
+          variables: { demo: { scores: [1] } }
+        })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq('updateUserScores: username is not defined on the mock')
+    })
+
     it('Should ignore extra data on the fixture', () => {
       const mutation = `
         mutation UpdateUserScores($input: UpdateUserScoresInput!){
@@ -601,7 +675,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('scores is not an array and it should be one.')
+      expect(error.message).to.be.eq('scores fixture is not an array and it should be one.')
     })
 
     it('Should fail if the fixture has a different data type', () => {

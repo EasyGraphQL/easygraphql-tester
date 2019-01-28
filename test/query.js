@@ -549,7 +549,7 @@ describe('Query', () => {
         }
 
         expect(error).to.exist
-        expect(error.message).to.be.eq('getUsers fixture is not the same type as the document.')
+        expect(error.message).to.be.eq('getUsers is not the same type as the document.')
       }
 
       {
@@ -573,6 +573,44 @@ describe('Query', () => {
                   brothers: [
                     { username: 'brother1' },
                     'invalid'
+                  ]
+                }]
+              }
+            }
+          }
+
+          tester.mock({
+            query,
+            fixture
+          })
+        } catch (err) {
+          error = err
+        }
+
+        expect(error).to.exist
+        expect(error.message).to.be.eq('getMe is not the same type as the document.')
+      }
+
+      {
+        let error
+        try {
+          const query = `
+            {
+              getMe {
+                familyInfo {
+                  brothers {
+                    username
+                  }
+                }
+              }
+            }
+          `
+          const fixture = {
+            data: {
+              getMe: {
+                familyInfo: [{
+                  brothers: [
+                    { username: 'brother1', invalid: true }
                   ]
                 }]
               }
@@ -796,6 +834,9 @@ describe('Query', () => {
   })
 
   describe('Should support unions', () => {
+    beforeEach(() => {
+      tester.clearFixture()
+    })
     it('Should throw an error with the invalid field on father', () => {
       let error
       try {
@@ -921,6 +962,54 @@ describe('Query', () => {
       expect(getMultiplesStrings[0]).to.be.a('string')
     })
 
+    it('Should throw an error if the fixture is not String', () => {
+      let error
+      try {
+        const query = `
+          {
+            getString
+          }
+        `
+
+        const fixture = {
+          data: {
+            getString: 1
+          }
+        }
+
+        tester.mock({ query, fixture })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq('getString is not the same type as the document.')
+    })
+
+    it('Should throw an error if a value inside the array is null', () => {
+      let error
+      try {
+        const query = `
+          {
+            getMultiplesStrings
+          }
+        `
+
+        const fixture = {
+          data: {
+            getMultiplesStrings: ['a', 'b', 'c', null]
+          }
+        }
+
+        tester.mock({ query, fixture })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq("getMultiplesStrings inside an array can't be null.")
+    })
+
     it('Should pass if it returns a Int', () => {
       const query = `
         {
@@ -928,7 +1017,13 @@ describe('Query', () => {
         }
       `
 
-      const { data: { getInt } } = tester.mock(query)
+      const fixture = {
+        data: {
+          getInt: 1
+        }
+      }
+
+      const { data: { getInt } } = tester.mock({ query, fixture })
       expect(getInt).to.exist
       expect(getInt).to.be.a('number')
     })
@@ -940,11 +1035,43 @@ describe('Query', () => {
         }
       `
 
-      const { data: { getMultiplesInt } } = tester.mock(query)
+      const fixture = {
+        data: {
+          getMultiplesInt: [1, 2, 3]
+        }
+      }
+
+      const { data: { getMultiplesInt } } = tester.mock({ query, fixture })
       expect(getMultiplesInt).to.exist
       expect(getMultiplesInt).to.be.an('array')
       expect(getMultiplesInt.length).to.be.gt(0)
+      expect(getMultiplesInt.length).to.be.eq(3)
       expect(getMultiplesInt[0]).to.be.a('number')
+      expect(getMultiplesInt[0]).to.be.eq(1)
+    })
+
+    it('Should throw an error if the fixture is null', () => {
+      let error
+      try {
+        const query = `
+          {
+            getMultiplesInt
+          }
+        `
+
+        const fixture = {
+          data: {
+            getMultiplesInt: null
+          }
+        }
+
+        tester.mock({ query, fixture })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq("getMultiplesInt can't be null.")
     })
 
     it('Should set fixtures for scalars', () => {
@@ -1103,6 +1230,66 @@ describe('Query', () => {
       expect(getMe.familyInfo[1].father.email).to.be.eq('father@demo.com')
       expect(getMe.familyInfo[1].father.id).to.be.a('string')
       expect(getMe.familyInfo[1].father.id).to.be.eq('101')
+    })
+
+    it('Should fail if the fixture is missing query field with autoMock false', () => {
+      let error
+      try {
+        const query = `
+          {
+            getMe {
+              email
+              user {
+                email
+              }
+              familyInfo {
+                id
+                isLocal
+                father {
+                  id
+                  email
+                  fullName
+                }
+              }
+            }
+          }
+        `
+        const fixture = {
+          data: {
+            getMe: {
+              email: 'demo@demo.com',
+              user: {
+                email: 'newemail@demo.com'
+              },
+              familyInfo: [{
+                id: '1',
+                isLocal: true,
+                father: {
+                  id: '101',
+                  email: 'father@demo.com'
+                }
+              },
+              {
+                id: '2',
+                isLocal: false,
+                father: {
+                  id: '101',
+                  email: 'father@demo.com'
+                }
+              }]
+            }
+          }
+        }
+
+        tester.setFixture(fixture, { autoMock: false })
+
+        tester.mock(query)
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq('getMe: fullName is not defined on the mock')
     })
 
     it('Should support multiples queries', () => {

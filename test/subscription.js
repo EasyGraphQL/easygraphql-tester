@@ -20,6 +20,10 @@ describe('Subscription', () => {
       tester = new EasyGraphQLTester([userSchema, familySchema])
     })
 
+    afterEach(() => {
+      tester.clearFixture()
+    })
+
     it('Should mock a subscription', () => {
       const subscription = `
         subscription {
@@ -185,6 +189,93 @@ describe('Subscription', () => {
       expect(errors).to.exist
       expect(errors).to.be.an('array')
       expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "newUser".')
+    })
+
+    it('Should set fixture using setFixture method and autoMock false', () => {
+      const subscription = `
+        subscription {
+          newUser {
+            id
+            username
+          }
+        }
+      `
+
+      const fixture = {
+        data: {
+          newUser: {
+            id: '123',
+            username: 'easygraphql'
+          }
+        },
+        errors: [
+          {
+            'message': 'Cannot query field "invalidField" on type "newUser".',
+            'locations': [
+              {
+                'line': 7,
+                'column': 5
+              }
+            ]
+          }
+        ]
+      }
+
+      tester.setFixture(fixture, { autoMock: false })
+      const { data: { newUser }, errors } = tester.mock({
+        query: subscription
+      })
+
+      expect(newUser).to.exist
+      expect(newUser.id).to.be.eq('123')
+      expect(errors).to.exist
+      expect(errors).to.be.an('array')
+      expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "newUser".')
+    })
+
+    it('Should fail if autoMock false and a field is missing on fixture', () => {
+      let error
+      try {
+        const subscription = `
+          subscription {
+            newUser {
+              id
+              username
+              email
+            }
+          }
+        `
+
+        const fixture = {
+          data: {
+            newUser: {
+              id: '123',
+              username: 'easygraphql'
+            }
+          },
+          errors: [
+            {
+              'message': 'Cannot query field "invalidField" on type "newUser".',
+              'locations': [
+                {
+                  'line': 7,
+                  'column': 5
+                }
+              ]
+            }
+          ]
+        }
+
+        tester.setFixture(fixture, { autoMock: false })
+        tester.mock({
+          query: subscription
+        })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq('newUser: email is not defined on the mock')
     })
 
     it('Should return saved fixture', () => {
