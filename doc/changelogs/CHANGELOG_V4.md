@@ -6,11 +6,24 @@
 </tr>
 <tr>
 <td>
+<a href="#4.1.1">4.1.1</a><br/>
 <a href="#4.1.0">4.1.0</a><br/>
 <a href="#4.0.0">4.0.0</a><br/>
 </td>
 </tr>
 </table>
+
+<a id="4.1.1"></a>
+## Version 4.1.1
+
+### Notable Changes
+
+* **Set fixture to custom scalar**: Set passed fixture to custom scalar.
+* **Validate schema against fixture typeof**: Validate field type against the typeof fixture.
+
+### Commits
+
+* [[`3f634be654`](https://github.com/EasyGraphQL/easygraphql-tester/commit/3f634be654)] - Fix custom scalar.
 
 <a id="4.1.0"></a>
 ## Version 4.1.0
