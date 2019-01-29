@@ -43,16 +43,17 @@ function validateFixture (mock, fixture, selectedType, schema, name) {
           continue
         }
 
-        // If it is a custom scalar, should not validate the typeof
-        if (isObject(mockedVal) && Object.keys(mockedVal).length === 1 && mockedVal.__typename) {
-          mock[val] = fixture[val]
-        } else {
-          mock[val] = validateFixture(mockedVal, fixture[val], selectedField[0], schema, name)
-        }
+        mock[val] = validateFixture(mockedVal, fixture[val], selectedField[0], schema, name)
       }
 
       return mock
     }
+
+    if (schema[selectedType.type].type === 'ScalarTypeDefinition') {
+      return fixture
+    }
+
+    return validateType(fixture, selectedType, name)
   } else if (Array.isArray(fixture)) {
     fixture.forEach(val => validateType(val, selectedType, name))
   } else if (isObject(fixture)) {
