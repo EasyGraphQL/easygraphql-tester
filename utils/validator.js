@@ -300,27 +300,29 @@ function validateInputArg (arg, schemaVar, name, arrCalled, isScalar) {
 
 function validateInputType (arg, filteredArg) {
   // Switch the different type of arguments, and check if it is the same as the one on the schema
-  switch (typeof filteredArg) {
-    case 'number':
-      if (arg.type !== 'Int' && arg.type !== 'Float') {
+  switch (arg.type) {
+    case 'Int':
+    case 'Float':
+      if (typeof filteredArg !== 'number') {
         throw new Error(`${arg.name} argument is not type ${arg.type}`)
       }
       break
 
-    case 'string':
-      if (arg.type !== 'String' && arg.type !== 'ID') {
+    case 'String':
+    case 'ID':
+      if (typeof filteredArg !== 'string') {
         throw new Error(`${arg.name} argument is not type ${arg.type}`)
       }
       break
 
-    case 'boolean':
-      if (arg.type !== 'Boolean') {
+    case 'Boolean':
+      if (typeof filteredArg !== 'boolean') {
         throw new Error(`${arg.name} argument is not type ${arg.type}`)
       }
       break
 
     default:
-      break
+      throw new Error(`${arg.name} argument is not type ${arg.type}`)
   }
 }
 

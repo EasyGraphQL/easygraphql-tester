@@ -30,6 +30,7 @@ type Me {
   familyRelation: FamilyRelation!
   user: User!
   createdAt: DateTime!
+  isAdmin: Boolean!
 }
 
 type user_mutation_response {

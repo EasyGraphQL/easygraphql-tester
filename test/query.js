@@ -760,6 +760,64 @@ describe('Query', () => {
       expect(getMe.email).not.to.be.eq('demo@demo.com')
     })
 
+    it('Should throw an error if the fixture value is not a boolean', () => {
+      let error
+      try {
+        const query = `
+          {
+            getMe {
+              isAdmin
+            }
+          }
+        `
+
+        tester.mock({
+          query,
+          fixture: {
+            data: {
+              getMe: {
+                isAdmin: 'true'
+              }
+            }
+          }
+        })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq('isAdmin is not the same type as the document.')
+    })
+
+    it('Should throw an error if the fixture value is not a int', () => {
+      let error
+      try {
+        const query = `
+          {
+            getMe {
+              age
+            }
+          }
+        `
+
+        tester.mock({
+          query,
+          fixture: {
+            data: {
+              getMe: {
+                age: '27'
+              }
+            }
+          }
+        })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq('age is not the same type as the document.')
+    })
+
     it('Should return errors mock if it is set on the fixture', () => {
       const query = `
         {

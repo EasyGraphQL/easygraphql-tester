@@ -53,9 +53,10 @@ function validateFixture (mock, fixture, selectedType, schema, name) {
       return fixture
     }
 
-    return validateType(fixture, selectedType, name)
+    return validateType(fixture, schema[selectedType.type], name)
   } else if (Array.isArray(fixture)) {
     fixture.forEach(val => validateType(val, selectedType, name))
+    return fixture
   } else if (isObject(fixture)) {
     const fields = selectedType.fields
     for (const val of Object.keys(fixture)) {
@@ -83,27 +84,29 @@ function validateType (fixture, selectedType, name) {
     throw new Error(`${name} inside an array can't be null.`)
   }
 
-  switch (typeof fixture) {
-    case 'number':
-      if (selectedType.type !== 'Int' && selectedType.type !== 'Float') {
+  switch (selectedType.type) {
+    case 'Int':
+    case 'Float':
+      if (typeof fixture !== 'number') {
         throw new Error(`${name} is not the same type as the document.`)
       }
       break
 
-    case 'string':
-      if (selectedType.type !== 'String' && selectedType.type !== 'ID') {
+    case 'String':
+    case 'ID':
+      if (typeof fixture !== 'string') {
         throw new Error(`${name} is not the same type as the document.`)
       }
       break
 
-    case 'boolean':
-      if (selectedType.type !== 'Boolean') {
+    case 'Boolean':
+      if (typeof fixture !== 'boolean') {
         throw new Error(`${name} is not the same type as the document.`)
       }
       break
 
     default:
-      break
+      throw new Error(`${name} is not the same type as the document.`)
   }
 }
 
