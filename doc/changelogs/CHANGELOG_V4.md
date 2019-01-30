@@ -6,12 +6,24 @@
 </tr>
 <tr>
 <td>
+<a href="#4.1.2">4.1.2</a><br/>
 <a href="#4.1.1">4.1.1</a><br/>
 <a href="#4.1.0">4.1.0</a><br/>
 <a href="#4.0.0">4.0.0</a><br/>
 </td>
 </tr>
 </table>
+
+<a id="4.1.2"></a>
+## Version 4.1.2
+
+### Notable Changes
+
+* **Set fixture to enum**: Set passed fixture to enum.
+
+### Commits
+
+* [[`cd5723b51c`](https://github.com/EasyGraphQL/easygraphql-tester/commit/cd5723b51c)] - Set fixture to enum.
 
 <a id="4.1.1"></a>
 ## Version 4.1.1
