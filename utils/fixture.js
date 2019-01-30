@@ -49,10 +49,6 @@ function validateFixture (mock, fixture, selectedType, schema, name) {
       return mock
     }
 
-    if (schema[selectedType.type].type === 'ScalarTypeDefinition') {
-      return fixture
-    }
-
     return validateType(fixture, schema[selectedType.type], name)
   } else if (Array.isArray(fixture)) {
     fixture.forEach(val => validateType(val, selectedType, name))
@@ -90,20 +86,29 @@ function validateType (fixture, selectedType, name) {
       if (typeof fixture !== 'number') {
         throw new Error(`${name} is not the same type as the document.`)
       }
-      break
+      return fixture
 
     case 'String':
     case 'ID':
       if (typeof fixture !== 'string') {
         throw new Error(`${name} is not the same type as the document.`)
       }
-      break
+      return fixture
 
     case 'Boolean':
       if (typeof fixture !== 'boolean') {
         throw new Error(`${name} is not the same type as the document.`)
       }
-      break
+      return fixture
+
+    case 'ScalarTypeDefinition':
+      return fixture
+
+    case 'EnumTypeDefinition':
+      if (!selectedType.values.includes(fixture)) {
+        throw new Error(`${selectedType.name} fixture enum is not the same type as the document.`)
+      }
+      return fixture
 
     default:
       throw new Error(`${name} is not the same type as the document.`)
