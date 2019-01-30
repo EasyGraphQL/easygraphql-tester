@@ -80,39 +80,35 @@ function validateType (fixture, selectedType, name) {
     throw new Error(`${name} inside an array can't be null.`)
   }
 
-  if (selectedType.type === 'ScalarTypeDefinition') {
-    return fixture
-  }
-
-  if (selectedType.type === 'EnumTypeDefinition') {
-    const selectedValue = selectedType.values.includes(fixture)
-
-    if (!selectedValue) {
-      throw new Error(`${selectedType.name} fixture enum is not the same type as the document.`)
-    }
-    return fixture
-  }
-
   switch (selectedType.type) {
     case 'Int':
     case 'Float':
       if (typeof fixture !== 'number') {
         throw new Error(`${name} is not the same type as the document.`)
       }
-      break
+      return
 
     case 'String':
     case 'ID':
       if (typeof fixture !== 'string') {
         throw new Error(`${name} is not the same type as the document.`)
       }
-      break
+      return
 
     case 'Boolean':
       if (typeof fixture !== 'boolean') {
         throw new Error(`${name} is not the same type as the document.`)
       }
-      break
+      return
+
+    case 'ScalarTypeDefinition':
+      return fixture
+
+    case 'EnumTypeDefinition':
+      if (!selectedType.values.includes(fixture)) {
+        throw new Error(`${selectedType.name} fixture enum is not the same type as the document.`)
+      }
+      return fixture
 
     default:
       throw new Error(`${name} is not the same type as the document.`)
