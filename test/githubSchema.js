@@ -519,7 +519,7 @@ describe('With gitHubSchema', () => {
     const { edges } = data.viewer.repository.issues
     expect(edges).to.be.an('array')
     expect(edges).to.have.length(5)
-    console.log('--->', edges)
+
     expect(edges[0].node.title).to.be.eq('test 25')
     expect(edges[1].node.title).to.be.eq('test 24')
     expect(edges[2].node.title).to.be.eq('test 23')
