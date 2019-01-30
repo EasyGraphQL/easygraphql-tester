@@ -6,6 +6,7 @@
 </tr>
 <tr>
 <td>
+<a href="#4.1.3">4.1.3</a><br/>
 <a href="#4.1.2">4.1.2</a><br/>
 <a href="#4.1.1">4.1.1</a><br/>
 <a href="#4.1.0">4.1.0</a><br/>
@@ -13,6 +14,17 @@
 </td>
 </tr>
 </table>
+
+<a id="4.1.3"></a>
+## Version 4.1.3
+
+### Notable Changes
+
+* **Fix fixture on nested array**: Prevent returning the last value of the array and set the correct values.
+
+### Commits
+
+* [[`73345b4ff9`](https://github.com/EasyGraphQL/easygraphql-tester/commit/73345b4ff9)] - Fix array nested fixture.
 
 <a id="4.1.2"></a>
 ## Version 4.1.2
