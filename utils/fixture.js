@@ -86,20 +86,20 @@ function validateType (fixture, selectedType, name) {
       if (typeof fixture !== 'number') {
         throw new Error(`${name} is not the same type as the document.`)
       }
-      return
+      return fixture
 
     case 'String':
     case 'ID':
       if (typeof fixture !== 'string') {
         throw new Error(`${name} is not the same type as the document.`)
       }
-      return
+      return fixture
 
     case 'Boolean':
       if (typeof fixture !== 'boolean') {
         throw new Error(`${name} is not the same type as the document.`)
       }
-      return
+      return fixture
 
     case 'ScalarTypeDefinition':
       return fixture
