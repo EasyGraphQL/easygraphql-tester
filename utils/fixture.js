@@ -10,7 +10,8 @@ function setFixture (mock, fixture, name, selectedType, schema) {
   return validateFixture(mock, fixture, selectedType, schema, name)
 }
 
-function validateFixture (mock, fixture, selectedType, schema, name) {
+function validateFixture (usedMock, fixture, selectedType, schema, name) {
+  const mock = Object.assign({}, usedMock)
   if (selectedType.noNull && fixture === null) {
     throw new Error(`${selectedType.name} can't be null.`)
   }
@@ -65,7 +66,7 @@ function validateFixture (mock, fixture, selectedType, schema, name) {
       }
       mock[val] = validateFixture(mockedVal, fixture[val], selectedField[0], schema, name)
     }
-    return Object.assign({}, mock)
+    return mock
   }
 
   validateType(fixture, selectedType, name)

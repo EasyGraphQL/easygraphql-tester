@@ -516,6 +516,16 @@ describe('With gitHubSchema', () => {
 
     const { data, errors } = tester.mock({ query, fixture, variables })
 
+    const { edges } = data.viewer.repository.issues
+    expect(edges).to.be.an('array')
+    expect(edges).to.have.length(5)
+    console.log('--->', edges)
+    expect(edges[0].node.title).to.be.eq('test 25')
+    expect(edges[1].node.title).to.be.eq('test 24')
+    expect(edges[2].node.title).to.be.eq('test 23')
+    expect(edges[3].node.title).to.be.eq('test 22')
+    expect(edges[4].node.title).to.be.eq('test 21')
+
     expect(data).to.exist
     expect(errors).to.exist
     expect(errors).to.be.an('array')
