@@ -49,10 +49,6 @@ function validateFixture (mock, fixture, selectedType, schema, name) {
       return mock
     }
 
-    if (schema[selectedType.type].type === 'ScalarTypeDefinition') {
-      return fixture
-    }
-
     return validateType(fixture, schema[selectedType.type], name)
   } else if (Array.isArray(fixture)) {
     fixture.forEach(val => validateType(val, selectedType, name))
@@ -82,6 +78,19 @@ function validateType (fixture, selectedType, name) {
 
   if (selectedType.isArray && selectedType.noNullArrayValues && fixture === null) {
     throw new Error(`${name} inside an array can't be null.`)
+  }
+
+  if (selectedType.type === 'ScalarTypeDefinition') {
+    return fixture
+  }
+
+  if (selectedType.type === 'EnumTypeDefinition') {
+    const selectedValue = selectedType.values.includes(fixture)
+
+    if (!selectedValue) {
+      throw new Error(`${selectedType.name} fixture enum is not the same type as the document.`)
+    }
+    return fixture
   }
 
   switch (selectedType.type) {
