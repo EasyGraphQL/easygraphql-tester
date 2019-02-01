@@ -6,6 +6,7 @@
 </tr>
 <tr>
 <td>
+<a href="#4.1.4">4.1.4</a><br/>
 <a href="#4.1.3">4.1.3</a><br/>
 <a href="#4.1.2">4.1.2</a><br/>
 <a href="#4.1.1">4.1.1</a><br/>
@@ -14,6 +15,22 @@
 </td>
 </tr>
 </table>
+
+<a id="4.1.4"></a>
+## Version 4.1.4
+
+### Notable Changes
+
+* **Validate deprecated fields**: Pass the option to validate deprecated fields, if there is one it'll throw an error.
+* **Use JSON schema**: Bump dependencies to use JSON schema.
+* **easygraphql-mock**:
+  - Bump version of easygraphql-mock.
+* **easygraphql-parser**:
+  - Bump version of easygraphql-parser.
+
+### Commits
+
+
 
 <a id="4.1.3"></a>
 ## Version 4.1.3

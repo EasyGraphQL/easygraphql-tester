@@ -326,7 +326,7 @@ function validateInputType (arg, filteredArg) {
   }
 }
 
-function validator (query, mock, schema, schemaType, type, autoMock) {
+function validator (query, mock, schema, schemaType, type, autoMock, validateDeprecated) {
   // If the query name is missing on the mock, there should be an error because
   // it is not defined on the schema
   if (typeof mock === 'undefined') {
@@ -338,7 +338,7 @@ function validator (query, mock, schema, schemaType, type, autoMock) {
     const result = []
 
     mock.forEach(mockVal => {
-      const mockResult = getResult(query, mockVal, schema, schemaType, type, autoMock)
+      const mockResult = getResult(query, mockVal, schema, schemaType, type, autoMock, validateDeprecated)
       if (mockResult && isObject(mockResult && isEmpty(mockResult))) {
         return
       }
@@ -347,10 +347,10 @@ function validator (query, mock, schema, schemaType, type, autoMock) {
     return result
   }
   // Create object to return, with all the fields mocked, and nested
-  return getResult(query, mock, schema, schemaType, type, autoMock)
+  return getResult(query, mock, schema, schemaType, type, autoMock, validateDeprecated)
 }
 
-function getResult (query, mock, schema, schemaType, type, autoMock) {
+function getResult (query, mock, schema, schemaType, type, autoMock, validateDeprecated) {
   let result = {}
 
   if (!Array.isArray(query.fields)) {
@@ -365,7 +365,7 @@ function getResult (query, mock, schema, schemaType, type, autoMock) {
     if (field.inlineFragment) {
       const mockResult = {}
       field.fields.forEach(element => {
-        validateSelectedFields(element, schema[field.name], schema, query.name, type)
+        validateSelectedFields(element, schema[field.name], schema, query.name, type, validateDeprecated)
         const result = mockBuilder(element, mock, query.name, autoMock)
 
         if (isObject(result) && !isEmpty(result)) {
@@ -376,7 +376,7 @@ function getResult (query, mock, schema, schemaType, type, autoMock) {
       })
       result = Object.assign(result, mockResult)
     } else {
-      validateSelectedFields(field, schema[schemaType.type], schema, query.name, type)
+      validateSelectedFields(field, schema[schemaType.type], schema, query.name, type, validateDeprecated)
       result[field.name] = mockBuilder(field, mock, query.name, autoMock)
     }
   })
@@ -384,12 +384,16 @@ function getResult (query, mock, schema, schemaType, type, autoMock) {
   return result
 }
 
-function validateSelectedFields (field, selectedSchema, schema, name, type) {
+function validateSelectedFields (field, selectedSchema, schema, name, type, validateDeprecated) {
   if (field.name === '__typename') return
 
   const schemaFields = selectedSchema.fields.filter(schemaField => schemaField.name === field.name)[0]
   if (!schemaFields) {
     throw new Error(`${type} ${name}: The selected field ${field.name} doesn't exists`)
+  }
+
+  if (schemaFields.isDeprecated && validateDeprecated) {
+    throw new Error(`The selected field ${schemaFields.name} is deprecated`)
   }
 
   const selectedType = schema[schemaFields.type]
@@ -399,7 +403,7 @@ function validateSelectedFields (field, selectedSchema, schema, name, type) {
     }
 
     field.fields.forEach(el => {
-      return validateSelectedFields(el, schema[schemaFields.type], schema, name, type)
+      return validateSelectedFields(el, schema[schemaFields.type], schema, name, type, validateDeprecated)
     })
   }
 }
