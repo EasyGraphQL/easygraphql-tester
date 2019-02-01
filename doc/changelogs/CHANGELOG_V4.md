@@ -30,7 +30,7 @@
 
 ### Commits
 
-
+* [[`7df57d65b5`](https://github.com/EasyGraphQL/easygraphql-tester/commit/7df57d65b5)] - Validate deprecated fields and receive JSON schema.
 
 <a id="4.1.3"></a>
 ## Version 4.1.3
