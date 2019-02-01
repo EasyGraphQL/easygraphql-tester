@@ -239,6 +239,8 @@ Call the method `.mock()` and pass an object with this options:
   the name of the query/mutation/subscription and the fields to set.
 + saveFixture: By default is `false`, if you pass fixtures, and set it to `true` when you make the same query again,
   it will return the fixture value.
++ validateDeprecated: If you want to validate if the query is requesting a deprecated field, set this option to `true`
+  and it'll return an error if a field is deprecated.
 
 The result will have top level fields, it means that the result will be an object
 with a property that is going to be `data` and inside it the name (top level field) 
@@ -329,7 +331,7 @@ const fixture = {
   }
 }
 
-const { data: { getUser } } = tester.mock({ query, fixture })
+const { data: { getUser } } = tester.mock({ query, fixture, validateDeprecated: true })
 const { errors } = tester.mock({ 
   query, 
   fixture: {

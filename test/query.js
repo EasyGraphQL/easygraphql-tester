@@ -853,6 +853,31 @@ describe('Query', () => {
       expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "getUsers".')
     })
 
+    it('Should throw an error if a field is deprecated', () => {
+      let error
+      try {
+        const query = `
+          {
+            getUsers {
+              id
+              email
+              username
+            }
+          }
+        `
+
+        tester.mock({
+          query,
+          validateDeprecated: true
+        })
+      } catch (err) {
+        error = err
+      }
+
+      expect(error).to.exist
+      expect(error.message).to.be.eq('The selected field id is deprecated')
+    })
+
     it('Should throw an error if fixture error is not an array', () => {
       let error
       try {

@@ -9,7 +9,7 @@ enum FamilyRelation {
 }
 
 type User {
-  id: ID!
+  id: ID! @deprecated(reason: "Use `newField`.")
   email: String!
   username: String!
   fullName: String!
