@@ -11,8 +11,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run standard",
-      "pre-push": "npm run test"
+      "pre-commit": "npm run standard"
     }
   },
   "standard": {
@@ -36,10 +35,12 @@
   "dependencies": {
     "easygraphql-mock": "^0.1.11",
     "easygraphql-parser": "^0.0.7",
+    "graphql": "^14.1.1",
     "graphql-tag": "^2.9.2",
     "lodash.isempty": "^4.4.0",
     "lodash.isobject": "^3.0.2",
-    "lodash.mergewith": "^4.6.1"
+    "lodash.mergewith": "^4.6.1",
+    "merge-graphql-schemas": "^1.5.8"
   },
   "devDependencies": {
     "chai": "^4.1.2",

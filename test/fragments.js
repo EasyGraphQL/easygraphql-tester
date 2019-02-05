@@ -46,7 +46,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('There is no query called getUser on the Schema')
+      expect(error.message).to.be.eq('Cannot query field "getUser" on type "Query". Did you mean "getUsers" or "getMe"?')
     })
   })
 
@@ -71,7 +71,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('name argument is missing on getUserByUsername')
+      expect(error.message).to.be.eq('Field "getUserByUsername" argument "name" of type "String!" is required but not provided.')
     })
   })
 
@@ -159,11 +159,11 @@ describe('Query', () => {
       const multiplesFragments = gql`
         query UserQuery {
           getMe {
-            ...family_info
+            ...me_info
           }
         }
 
-        fragment family_info on FamilyInfo {
+        fragment me_info on Me {
           id
           email
           scores

@@ -37,6 +37,16 @@ type Repository {
   ): IssueConnection!
 }
 
+input IssueOrder {
+  direction: OrderDirection!
+  field: IssueOrderField!
+}
+
+enum OrderDirection {
+  ASC
+  DESC
+}
+
 enum IssueOrderField {
   CREATED_AT
   UPDATED_AT

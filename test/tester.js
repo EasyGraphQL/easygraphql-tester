@@ -282,7 +282,7 @@ describe('Assert test', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('The input value on createTest is an array and it must be an object')
+      expect(error.message).to.be.eq('Expected type String, found ["Test"].')
     })
 
     it('Should receive scalar boolean (false) argument', () => {
@@ -327,19 +327,6 @@ describe('Assert test', () => {
       `
 
       tester.test(true, subscription)
-    })
-
-    it('Should test nested arguments on array', () => {
-      const SEARCH_ITEMS_QUERY = `
-        query SEARCH_ITEMS_QUERY($searchTerm: String!) {
-          items(where: { OR: [{ title_contains: $searchTerm }, { description_contains: "yes" }, { name_contains: [true, false] }, { id_contains: 1 }] }) {
-            id
-            image
-            title
-          }
-        }
-      `
-      tester.test(true, SEARCH_ITEMS_QUERY)
     })
 
     it('Should fail if a field on the variables is missing', () => {

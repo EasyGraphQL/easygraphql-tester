@@ -365,7 +365,6 @@ function getResult (query, mock, schema, schemaType, type, autoMock, validateDep
     if (field.inlineFragment) {
       const mockResult = {}
       field.fields.forEach(element => {
-        validateSelectedFields(element, schema[field.name], schema, query.name, type, validateDeprecated)
         const result = mockBuilder(element, mock, query.name, autoMock)
 
         if (isObject(result) && !isEmpty(result)) {
@@ -376,36 +375,11 @@ function getResult (query, mock, schema, schemaType, type, autoMock, validateDep
       })
       result = Object.assign(result, mockResult)
     } else {
-      validateSelectedFields(field, schema[schemaType.type], schema, query.name, type, validateDeprecated)
       result[field.name] = mockBuilder(field, mock, query.name, autoMock)
     }
   })
 
   return result
-}
-
-function validateSelectedFields (field, selectedSchema, schema, name, type, validateDeprecated) {
-  if (field.name === '__typename') return
-
-  const schemaFields = selectedSchema.fields.filter(schemaField => schemaField.name === field.name)[0]
-  if (!schemaFields) {
-    throw new Error(`${type} ${name}: The selected field ${field.name} doesn't exists`)
-  }
-
-  if (schemaFields.isDeprecated && validateDeprecated) {
-    throw new Error(`The selected field ${schemaFields.name} is deprecated`)
-  }
-
-  const selectedType = schema[schemaFields.type]
-  if (selectedType && selectedType.type !== 'ScalarTypeDefinition') {
-    if (isObject(selectedType) && field.fields.length === 0 && selectedType.values.length === 0) {
-      throw new Error(`${type} ${name}: There should be a selected field on ${field.name}`)
-    }
-
-    field.fields.forEach(el => {
-      return validateSelectedFields(el, schema[schemaFields.type], schema, name, type, validateDeprecated)
-    })
-  }
 }
 
 // This is going to be a recursive method that will search nested values on nested

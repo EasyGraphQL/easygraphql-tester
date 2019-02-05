@@ -71,7 +71,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq(`Mutation createUser: The selected field invalidField doesn't exists`)
+      expect(error.message).to.be.eq('Cannot query field "invalidField" on type "User".')
     })
   })
 
@@ -151,7 +151,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('The input value on createUsers must be an array')
+      expect(error.message).to.be.eq('Variable "$input" of type "UserInput!" used in position expecting type "[UserInput]!".')
     })
 
     it('Should throw an error if the input is an array and it must be an obj', () => {
@@ -581,29 +581,15 @@ describe('Mutation', () => {
         }
       `
 
-      const fixture = {
-        errors: [
-          {
-            'message': 'Cannot query field "invalidField" on type "updateUserScores".',
-            'locations': [
-              {
-                'line': 7,
-                'column': 5
-              }
-            ]
-          }
-        ]
-      }
-
       const { errors } = tester.mock({
         query: mutation,
         variables: { scores: { scores: [1] } },
-        fixture
+        mockErrors: true
       })
 
       expect(errors).to.exist
       expect(errors).to.be.an('array')
-      expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "updateUserScores".')
+      expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "Me".')
     })
 
     it('Should return errors object if it is set on the fixture and data null', () => {
@@ -635,12 +621,14 @@ describe('Mutation', () => {
       const { data, errors } = tester.mock({
         query: mutation,
         variables: { scores: { scores: [1] } },
-        fixture
+        fixture,
+        mockErrors: true
       })
 
       expect(data).to.be.null
       expect(errors).to.exist
       expect(errors).to.be.an('array')
+      expect(errors).to.have.length.gt(1)
       expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "updateUserScores".')
     })
 
@@ -732,7 +720,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq("name argument is defined on the mutation and it's missing on the document updateUserScores")
+      expect(error.message).to.be.eq('Unknown argument "name" on field "updateUserScores" of type "Mutation".')
     })
 
     it('Should fail if the mutations has no argument', () => {
@@ -756,7 +744,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('scores argument is missing on updateUserScores')
+      expect(error.message).to.be.eq('Field "updateUserScores" argument "scores" of type "UpdateUserScoresInput!" is required but not provided.')
     })
 
     it('Should fail if the mutations has no argument', () => {
@@ -792,7 +780,7 @@ describe('Mutation', () => {
 
     it('Should support a custom name for the root mutation type', () => {
       const mutation = `
-        mutation addPost($content: String!) {
+        mutation addPost($content: PostInput!) {
           appendPost(post: $content) {
             content
           }
@@ -806,7 +794,7 @@ describe('Mutation', () => {
 
     it('Should support mock with graphql-tag', () => {
       const mutation = gql`
-        mutation addPost($content: String!) {
+        mutation addPost($content: PostInput!) {
           appendPost(post: $content) {
             content
           }
