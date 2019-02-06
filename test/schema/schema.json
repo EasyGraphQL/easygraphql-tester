@@ -1,4 +1,5 @@
 {
+  "data": {
     "__schema": {
       "queryType": {
         "name": "RootQuery"
@@ -1138,5 +1139,6 @@
           ]
         }
       ]
+    }
   }
 }

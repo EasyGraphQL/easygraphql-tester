@@ -12,16 +12,9 @@ function setFixture (mock, fixture, name, selectedType, schema) {
 
 function validateFixture (usedMock, fixture, selectedType, schema, name) {
   const mock = Object.assign({}, usedMock)
-  if (selectedType.noNull && fixture === null) {
-    throw new Error(`${selectedType.name} can't be null.`)
-  }
 
   if (fixture === null) {
     return null
-  }
-
-  if (selectedType.isArray && !Array.isArray(fixture)) {
-    throw new Error(`${selectedType.name} fixture is not an array and it should be one.`)
   }
 
   if (schema[selectedType.type]) {
@@ -50,9 +43,9 @@ function validateFixture (usedMock, fixture, selectedType, schema, name) {
       return mock
     }
 
-    return validateType(fixture, schema[selectedType.type], name)
+    return fixture
   } else if (Array.isArray(fixture)) {
-    fixture.forEach(val => validateType(val, selectedType, name))
+    fixture.forEach(val => val)
     return fixture
   } else if (isObject(fixture)) {
     const fields = selectedType.fields
@@ -61,59 +54,12 @@ function validateFixture (usedMock, fixture, selectedType, schema, name) {
       const mockedVal = mock[val] || {}
       const selectedField = fields.filter(field => field.name === val)
 
-      if (!selectedField.length) {
-        throw new Error(`${name} fixture is not the same type as the document.`)
-      }
       mock[val] = validateFixture(mockedVal, fixture[val], selectedField[0], schema, name)
     }
     return mock
   }
 
-  validateType(fixture, selectedType, name)
-
   return fixture !== undefined ? fixture : mock
-}
-
-function validateType (fixture, selectedType, name) {
-  name = selectedType.name || name
-
-  if (selectedType.isArray && selectedType.noNullArrayValues && fixture === null) {
-    throw new Error(`${name} inside an array can't be null.`)
-  }
-
-  switch (selectedType.type) {
-    case 'Int':
-    case 'Float':
-      if (typeof fixture !== 'number') {
-        throw new Error(`${name} is not the same type as the document.`)
-      }
-      return fixture
-
-    case 'String':
-    case 'ID':
-      if (typeof fixture !== 'string') {
-        throw new Error(`${name} is not the same type as the document.`)
-      }
-      return fixture
-
-    case 'Boolean':
-      if (typeof fixture !== 'boolean') {
-        throw new Error(`${name} is not the same type as the document.`)
-      }
-      return fixture
-
-    case 'ScalarTypeDefinition':
-      return fixture
-
-    case 'EnumTypeDefinition':
-      if (!selectedType.values.includes(fixture)) {
-        throw new Error(`${selectedType.name} fixture enum is not the same type as the document.`)
-      }
-      return fixture
-
-    default:
-      throw new Error(`${name} is not the same type as the document.`)
-  }
 }
 
 function setFixtureError (fixtureErrors) {

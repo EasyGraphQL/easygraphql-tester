@@ -37,7 +37,6 @@
     "easygraphql-mock": "^0.1.11",
     "easygraphql-parser": "^0.0.7",
     "graphql": "^14.1.1",
-    "graphql-tag": "^2.9.2",
     "lodash.isempty": "^4.4.0",
     "lodash.isobject": "^3.0.2",
     "merge-graphql-schemas": "^1.5.8"
@@ -45,6 +44,7 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "coveralls": "^3.0.2",
+    "graphql-tag": "^2.9.2",
     "husky": "^1.2.1",
     "mocha": "^5.2.0",
     "nyc": "^13.0.1",

@@ -482,7 +482,7 @@ describe('Query', () => {
       expect(getUsers[0].fullName).to.be.a('string')
     })
 
-    it('Should throw on invalid fixture for arrays ', () => {
+    it('Should throw on invalid fixture for arrays', () => {
       {
         let error
         try {
@@ -510,7 +510,7 @@ describe('Query', () => {
         }
 
         expect(error).to.exist
-        expect(error.message).to.be.eq('getUsers fixture is not an array and it should be one.')
+        expect(error.message).to.be.eq('Expected Iterable, but did not find one for field Query.getUsers.')
       }
 
       {
@@ -540,7 +540,7 @@ describe('Query', () => {
         }
 
         expect(error).to.exist
-        expect(error.message).to.be.eq('getUsers is not the same type as the document.')
+        expect(error.message).to.be.eq('Cannot return null for non-nullable field User.email.')
       }
 
       {
@@ -579,45 +579,7 @@ describe('Query', () => {
         }
 
         expect(error).to.exist
-        expect(error.message).to.be.eq('getMe is not the same type as the document.')
-      }
-
-      {
-        let error
-        try {
-          const query = `
-            {
-              getMe {
-                familyInfo {
-                  brothers {
-                    username
-                  }
-                }
-              }
-            }
-          `
-          const fixture = {
-            data: {
-              getMe: {
-                familyInfo: [{
-                  brothers: [
-                    { username: 'brother1', invalid: true }
-                  ]
-                }]
-              }
-            }
-          }
-
-          tester.mock({
-            query,
-            fixture
-          })
-        } catch (err) {
-          error = err
-        }
-
-        expect(error).to.exist
-        expect(error.message).to.be.eq('getMe fixture is not the same type as the document.')
+        expect(error.message).to.be.eq('Cannot return null for non-nullable field User.username.')
       }
     })
 
@@ -778,7 +740,7 @@ describe('Query', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('isAdmin is not the same type as the document.')
+      expect(error.message).to.be.eq('Boolean cannot represent a non boolean value: "true"')
     })
 
     it('Should throw an error if the fixture value is not a int', () => {
@@ -797,7 +759,7 @@ describe('Query', () => {
           fixture: {
             data: {
               getMe: {
-                age: '27'
+                age: 'age'
               }
             }
           }
@@ -807,7 +769,7 @@ describe('Query', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('age is not the same type as the document.')
+      expect(error.message).to.be.eq('Int cannot represent non-integer value: "age"')
     })
 
     it('Should return errors mock if it is set on the fixture', () => {
@@ -1042,30 +1004,6 @@ describe('Query', () => {
       expect(getMultiplesStrings[0]).to.be.a('string')
     })
 
-    it('Should throw an error if the fixture is not String', () => {
-      let error
-      try {
-        const query = `
-          {
-            getString
-          }
-        `
-
-        const fixture = {
-          data: {
-            getString: 1
-          }
-        }
-
-        tester.mock({ query, fixture })
-      } catch (err) {
-        error = err
-      }
-
-      expect(error).to.exist
-      expect(error.message).to.be.eq('getString is not the same type as the document.')
-    })
-
     it('Should throw an error if a value inside the array is null', () => {
       let error
       try {
@@ -1087,7 +1025,7 @@ describe('Query', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq("getMultiplesStrings inside an array can't be null.")
+      expect(error.message).to.be.eq('Cannot return null for non-nullable field Query.getMultiplesStrings.')
     })
 
     it('Should pass if it returns a Int', () => {
@@ -1151,7 +1089,7 @@ describe('Query', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq("getMultiplesInt can't be null.")
+      expect(error.message).to.be.eq('Cannot return null for non-nullable field Query.getMultiplesInt.')
     })
 
     it('Should set fixtures for scalars', () => {

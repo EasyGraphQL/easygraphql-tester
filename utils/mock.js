@@ -6,7 +6,7 @@ const isObject = require('lodash.isobject')
 const { schemaDefinition } = require('./schemaDefinition')
 const { setFixture, setFixtureError } = require('./fixture')
 
-function validation (schema, doc, variableValues, mock, opts, parsedSchema, parsedQuery) {
+function validation (schema, doc, variableValues, mock, opts, parsedSchema) {
   const { fixture } = opts
 
   let fixtureErrors = []
@@ -23,12 +23,13 @@ function validation (schema, doc, variableValues, mock, opts, parsedSchema, pars
     doc = parse(doc)
   }
 
+  const operationNames = getOperationName(doc)
   const operationNode = getOperationAST(doc)
   const operation = schemaDefinition(parsedSchema, operationNode.operation)
 
   let rootValue
   if (fixture) {
-    rootValue = setMockFixture(mock, operation, parsedQuery, parsedSchema, opts)
+    rootValue = setMockFixture(mock, operation, operationNames, parsedSchema, opts)
   } else {
     rootValue = mock[operation]
   }
@@ -69,30 +70,32 @@ function setMockFixture (mock, operation, parsedQuery, parsedSchema, opts) {
   const mockedFixture = Object.assign({}, mock[operation])
 
   if (Array.isArray(parsedQuery)) {
-    parsedQuery.forEach(query => {
-      assignFixture(mockedFixture, mock, operation, query.name, parsedSchema, opts)
-    })
-  } else {
-    assignFixture(mockedFixture, mock, operation, parsedQuery.name, parsedSchema, opts)
-  }
+    parsedQuery.forEach(name => {
+      const { fixture, saveFixture = false, autoMock = true } = opts
 
+      const operationSchema = parsedSchema[operation].fields.filter(el => el.name === name)[0]
+      if (!autoMock) {
+        mockedFixture[name] = setFixture({}, fixture.data, name, operationSchema, parsedSchema)
+      } else {
+        if (fixture && fixture.data !== undefined) {
+          mockedFixture[name] = setFixture(mock[operation][name], fixture.data, name, operationSchema, parsedSchema)
+          if (saveFixture) {
+            mock[operation][name] = mockedFixture[name]
+          }
+        }
+      }
+    })
+  }
   return mockedFixture
 }
 
-function assignFixture (mockedFixture, mock, operation, name, parsedSchema, opts) {
-  const { fixture, saveFixture = false, autoMock = true } = opts
+function getOperationName (doc) {
+  const result = doc.definitions.map(newDoc => {
+    const selections = newDoc.selectionSet.selections ? newDoc.selectionSet.selections : null
+    return selections.map(selection => selection.name.value)
+  })
 
-  const operationSchema = parsedSchema[operation].fields.filter(el => el.name === name)[0]
-  if (!autoMock) {
-    mockedFixture[name] = setFixture({}, fixture.data, name, operationSchema, parsedSchema)
-  } else {
-    if (fixture && fixture.data !== undefined) {
-      mockedFixture[name] = setFixture(mock[operation][name], fixture.data, name, operationSchema, parsedSchema)
-      if (saveFixture) {
-        mock[operation][name] = mockedFixture[name]
-      }
-    }
-  }
+  return [].concat.apply([], result)
 }
 
 module.exports = validation

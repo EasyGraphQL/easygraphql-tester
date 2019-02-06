@@ -620,40 +620,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('scores fixture is not an array and it should be one.')
-    })
-
-    it('Should fail if the fixture has a different data type', () => {
-      let error
-      try {
-        const mutation = `
-          mutation UpdateUserScores($input: UpdateUserScoresInput!){
-            updateUserScores(scores: $input) {
-              email
-              scores
-            }
-          }
-        `
-
-        const fixture = {
-          data: {
-            updateUserScores: {
-              email: true
-            }
-          }
-        }
-
-        tester.mock({
-          query: mutation,
-          variables: { input: { scores: [1] } },
-          fixture
-        })
-      } catch (err) {
-        error = err
-      }
-
-      expect(error).to.exist
-      expect(error.message).to.be.eq('email is not the same type as the document.')
+      expect(error.message).to.be.eq('Expected Iterable, but did not find one for field Me.scores.')
     })
 
     it('Should fail if the mutations has any extra argument', () => {
