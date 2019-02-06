@@ -9,27 +9,27 @@ const { setFixture, setFixtureError } = require('./fixture')
 function validation (schema, doc, variableValues, mock, opts, parsedSchema) {
   const { fixture } = opts
 
-  let fixtureErrors = []
-  if (fixture && fixture.errors) {
-    fixtureErrors = setFixtureError(fixture.errors)
-    if (fixture.data === undefined) {
-      return { errors: fixtureErrors }
-    } else if (fixture.data == null) {
-      return { data: null, errors: fixtureErrors }
-    }
-  }
-
   if (!isObject(doc)) {
     doc = parse(doc)
   }
 
-  const operationNames = getOperationName(doc)
   const operationNode = getOperationAST(doc)
   const operation = schemaDefinition(parsedSchema, operationNode.operation)
 
   let rootValue
+  let fixtureErrors = []
   if (fixture) {
-    rootValue = setMockFixture(mock, operation, operationNames, parsedSchema, opts)
+    if (fixture.errors) {
+      fixtureErrors = setFixtureError(fixture.errors)
+      if (fixture.data === undefined) {
+        return { errors: fixtureErrors }
+      } else if (fixture.data == null) {
+        return { data: null, errors: fixtureErrors }
+      }
+    }
+
+    const operationNames = getOperationName(doc)
+    rootValue = setFixture(mock, operation, operationNames, parsedSchema, opts)
   } else {
     rootValue = mock[operation]
   }
@@ -64,29 +64,6 @@ function handleErrors (errors) {
   if (errors.length) {
     throw new Error(errors[0].message)
   }
-}
-
-function setMockFixture (mock, operation, parsedQuery, parsedSchema, opts) {
-  const mockedFixture = Object.assign({}, mock[operation])
-
-  if (Array.isArray(parsedQuery)) {
-    parsedQuery.forEach(name => {
-      const { fixture, saveFixture = false, autoMock = true } = opts
-
-      const operationSchema = parsedSchema[operation].fields.filter(el => el.name === name)[0]
-      if (!autoMock) {
-        mockedFixture[name] = setFixture({}, fixture.data, name, operationSchema, parsedSchema)
-      } else {
-        if (fixture && fixture.data !== undefined) {
-          mockedFixture[name] = setFixture(mock[operation][name], fixture.data, name, operationSchema, parsedSchema)
-          if (saveFixture) {
-            mock[operation][name] = mockedFixture[name]
-          }
-        }
-      }
-    })
-  }
-  return mockedFixture
 }
 
 function getOperationName (doc) {

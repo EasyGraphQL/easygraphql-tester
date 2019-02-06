@@ -1,13 +1,27 @@
 const isObject = require('lodash.isobject')
 
-function setFixture (mock, fixture, name, selectedType, schema) {
-  fixture = fixture !== undefined ? fixture[name] : undefined
+function setFixture (mock, operation, parsedQuery, parsedSchema, opts) {
+  const mockedFixture = Object.assign({}, mock[operation])
 
-  if (fixture === undefined) {
-    return mock
+  if (Array.isArray(parsedQuery)) {
+    parsedQuery.forEach(name => {
+      const { fixture, saveFixture = false, autoMock = true } = opts
+
+      const operationSchema = parsedSchema[operation].fields.filter(el => el.name === name)[0]
+      if (!autoMock && fixture.data && fixture.data[name] !== undefined) {
+        mockedFixture[name] = validateFixture({}, fixture.data[name], operationSchema, parsedSchema)
+      } else {
+        if (fixture && fixture.data && fixture.data[name] !== undefined) {
+          mockedFixture[name] = validateFixture(mock[operation][name], fixture.data[name], operationSchema, parsedSchema)
+          if (saveFixture) {
+            mock[operation][name] = mockedFixture[name]
+          }
+        }
+      }
+    })
   }
 
-  return validateFixture(mock, fixture, selectedType, schema, name)
+  return mockedFixture
 }
 
 function validateFixture (usedMock, fixture, selectedType, schema, name) {
