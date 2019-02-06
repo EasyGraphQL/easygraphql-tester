@@ -6,7 +6,7 @@ const isObject = require('lodash.isobject')
 const { schemaDefinition } = require('./schemaDefinition')
 const { setFixture, setFixtureError } = require('./fixture')
 
-function validation (schema, doc, variableValues, mock, opts, parsedSchema) {
+function mock (schema, doc, variableValues, mock, opts, parsedSchema) {
   const { fixture } = opts
 
   if (!isObject(doc)) {
@@ -75,4 +75,4 @@ function getOperationName (doc) {
   return [].concat.apply([], result)
 }
 
-module.exports = validation
+module.exports = mock
