@@ -6,7 +6,7 @@ type FamilyInfo {
   isLocal: Boolean!
 }
 
-extend type Query {
+type Query {
   getFamilyInfo: FamilyInfo
   getFamilyInfoByIsLocal(isLocal: Boolean!): FamilyInfo
 }

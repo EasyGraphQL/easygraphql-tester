@@ -55,7 +55,12 @@ describe('Subscription', () => {
         }
       `
 
-      const { data: { createdUser } } = tester.mock(subscription)
+      const { data: { createdUser } } = tester.mock({
+        query: subscription,
+        variables: {
+          isAdmin: true
+        }
+      })
 
       expect(createdUser).to.exist
       expect(createdUser.id).to.be.a('string')
@@ -189,7 +194,8 @@ describe('Subscription', () => {
 
       tester.setFixture(fixture, { autoMock: false })
       const { data: { newUser }, errors } = tester.mock({
-        query: subscription
+        query: subscription,
+        mockErrors: true
       })
 
       expect(newUser).to.exist
@@ -241,7 +247,7 @@ describe('Subscription', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('newUser: email is not defined on the mock')
+      expect(error.message).to.be.eq('Cannot return null for non-nullable field User.email.')
     })
 
     it('Should return saved fixture', () => {
@@ -328,7 +334,7 @@ describe('Subscription', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('Expected type Int!, found true.')
+      expect(error.message).to.be.eq('Argument "limit" has invalid value true.')
     })
   })
 
@@ -347,7 +353,6 @@ describe('Subscription', () => {
           }
         }
       `
-
       const { data: { newPost } } = tester.mock(subscription)
       expect(newPost).to.exist
       expect(newPost.content).to.be.a('string')

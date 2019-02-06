@@ -52,7 +52,9 @@ describe('With gitHubSchema', () => {
         }
       }
     `
-    tester.test(true, query)
+    tester.test(true, query, {
+      repo: 'easygraphql'
+    })
   })
 
   it('Should pass with multiples queries and variable on the second query', () => {
@@ -80,7 +82,10 @@ describe('With gitHubSchema', () => {
         }
       }
     `
-    tester.test(true, query)
+    tester.test(true, query, {
+      repo: 'easygraphql',
+      repoName: 'easygraphql'
+    })
   })
 
   it('Should fail with multiples queries and a extra variable', () => {
@@ -107,7 +112,13 @@ describe('With gitHubSchema', () => {
           }
         }
       `
-      tester.mock(query)
+      tester.mock({
+        query,
+        variables: {
+          repo: 'easygraphql',
+          repoName: 'easygraphql'
+        }
+      })
     } catch (err) {
       error = err
     }
@@ -147,7 +158,12 @@ describe('With gitHubSchema', () => {
         }
       }
     `
-    const { data: { viewer, licenses } } = tester.mock(query)
+    const { data: { viewer, licenses } } = tester.mock({
+      query,
+      variables: {
+        repo: 'easygraphql'
+      }
+    })
     expect(viewer).to.exist
     expect(viewer.repository).to.exist
     expect(licenses).to.exist
@@ -199,7 +215,10 @@ describe('With gitHubSchema', () => {
 
     const { data: { viewer, licenses } } = tester.mock({
       query,
-      fixture
+      fixture,
+      variables: {
+        repo: 'easygraphql'
+      }
     })
 
     expect(viewer).to.exist
@@ -239,7 +258,8 @@ describe('With gitHubSchema', () => {
 
       const { data: { licenses }, errors } = tester.mock({
         query,
-        fixture
+        fixture,
+        mockErrors: true
       })
 
       expect(licenses).to.exist
@@ -381,7 +401,10 @@ describe('With gitHubSchema', () => {
       }
     `
 
-    const { data: { licenses }, errors } = tester.mock(query)
+    const { data: { licenses }, errors } = tester.mock({
+      query,
+      mockErrors: true
+    })
 
     expect(licenses).to.exist
     expect(licenses).to.be.an('array')
@@ -514,7 +537,12 @@ describe('With gitHubSchema', () => {
       orderBy: { field: 'CREATED_AT', direction: 'DESC' }
     }
 
-    const { data, errors } = tester.mock({ query, fixture, variables })
+    const { data, errors } = tester.mock({
+      query,
+      fixture,
+      variables,
+      mockErrors: true
+    })
 
     const { edges } = data.viewer.repository.issues
     expect(edges).to.be.an('array')

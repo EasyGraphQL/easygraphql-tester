@@ -282,7 +282,7 @@ describe('Assert test', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('Expected type String, found ["Test"].')
+      expect(error.message).to.be.eq('Argument "name" has invalid value ["Test"].')
     })
 
     it('Should receive scalar boolean (false) argument', () => {
@@ -350,7 +350,7 @@ describe('Assert test', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('password values are missing on resetPassword')
+      expect(error.message).to.be.eq('Variable "$password" of required type "String!" was not provided.')
     })
   })
 })

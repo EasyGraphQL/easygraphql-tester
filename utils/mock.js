@@ -1,137 +1,98 @@
 'use strict'
 
+const { parse, validate, findDeprecatedUsages, getOperationAST, defaultTypeResolver } = require('graphql')
+const { execute } = require('graphql/execution/execute')
+const isObject = require('lodash.isobject')
+const { schemaDefinition } = require('./schemaDefinition')
 const { setFixture, setFixtureError } = require('./fixture')
-const { queryField, mutationField, subscriptionField } = require('./schemaDefinition')
-const { validateArgsOnNestedFields, argumentsValidator, inputValidator, validator } = require('./validator')
 
-function mockQuery (schema, mockedSchema, parsedQuery, operationOptions, globalQueryVariables, isMultipleQuery) {
-  const { fixture, saveFixture = false, autoMock = true, validateDeprecated = false } = operationOptions
+function validation (schema, doc, variableValues, mock, opts, parsedSchema, parsedQuery) {
+  const { fixture } = opts
 
-  const { operationType, name, queryName, arguments: queryArgs, fields } = parsedQuery
-  // The query variables should be used on all the queries.
-  let queryVariables = globalQueryVariables || parsedQuery.queryVariables
-
-  // If there are errors defined on the fixture, return them. This should be, the
-  // first validation because if it's going to mock an error is because there should be
-  // an error, so prevent any extra validation and just return the errors.
-  let errors
+  let fixtureErrors = []
   if (fixture && fixture.errors) {
-    errors = setFixtureError(fixture.errors)
+    fixtureErrors = setFixtureError(fixture.errors)
     if (fixture.data === undefined) {
-      return { mockedQuery: { errors } }
+      return { errors: fixtureErrors }
     } else if (fixture.data == null) {
-      return { mockedQuery: { data: null, errors } }
+      return { data: null, errors: fixtureErrors }
     }
   }
 
-  let mock
-  switch (operationType.toLowerCase()) {
-    case 'query':
-      const Query = queryField(schema)
-      // Search the query on the Schema Code parsed into an object
-      const querySchema = schema[Query].fields.filter(el => el.name === name)[0]
-      // If the automock is disabled, set as mock the fixture after validation
-      // and the validate selected fields
-      if (!autoMock) {
-        const mockedFixture = setFixture({}, fixture.data, name, querySchema, schema)
-        mock = validator(parsedQuery, mockedFixture, schema, querySchema, 'Query', autoMock, validateDeprecated)
-      } else {
-        // Create a mock and validate the query on the schema
-        mock = validator(parsedQuery, mockedSchema[Query][name], schema, querySchema, 'Query', autoMock, validateDeprecated)
-        // If there are fixtures, set the values
-        if (fixture && fixture.data !== undefined) {
-          mock = setFixture(mock, fixture.data, name, querySchema, schema)
-          if (saveFixture) {
-            mockedSchema[Query][name] = mock
-          }
-        }
-      }
-      // Validate nested types against the schema, to be sure the arguments are used,
-      // also check the variables defined to be sure, those are used.
-      if (Array.isArray(fields)) {
-        const queryType = schema[querySchema.type]
-        fields.forEach(element => {
-          queryVariables = validateArgsOnNestedFields(element, queryType, name, queryVariables, schema)
-        })
-      }
-      // Check if the query receives args and check if the required ones are passed
-      argumentsValidator(queryArgs, querySchema.arguments, name, queryVariables, isMultipleQuery)
-      // Return the mock of the selected fields
-      return response(queryName, mock, errors, globalQueryVariables, queryVariables)
+  if (!isObject(doc)) {
+    doc = parse(doc)
+  }
 
-    case 'mutation':
-      const Mutation = mutationField(schema)
-      // Search the mutation on the Schema Code parsed into an object
-      const mutationSchema = schema[Mutation].fields.filter(el => el.name === name)[0]
-      // If the automock is disabled, set as mock the fixture after validation
-      // and the validate selected fields
-      if (!autoMock) {
-        const mockedFixture = setFixture({}, fixture.data, name, mutationSchema, schema)
-        mock = validator(parsedQuery, mockedFixture, schema, mutationSchema, 'Mutation', autoMock, validateDeprecated)
-      } else {
-        // Create a mock and validate the mutation on the schema
-        mock = validator(parsedQuery, mockedSchema[Mutation][name], schema, mutationSchema, 'Mutation', autoMock, validateDeprecated)
-        // If there are fixtures, set the values
-        if (fixture && fixture.data !== undefined) {
-          mock = setFixture(mock, fixture.data, name, mutationSchema, schema)
-          if (saveFixture) {
-            mockedSchema[Mutation][name] = mock
-          }
-        }
-      }
-      inputValidator(parsedQuery.variables, mutationSchema.arguments, schema, name, queryArgs)
-      // Return the mock of the selected fields
-      return response(queryName, mock, errors, globalQueryVariables, queryVariables)
+  const operationNode = getOperationAST(doc)
+  const operation = schemaDefinition(parsedSchema, operationNode.operation)
 
-    case 'subscription':
-      const Subscription = subscriptionField(schema)
-      // Search the subscription on the Schema Code parsed into an object
-      const subscriptionSchema = schema[Subscription].fields.filter(el => el.name === name)[0]
-      // If the automock is disabled, set as mock the fixture after validation
-      // and the validate selected fields
-      if (!autoMock) {
-        const mockedFixture = setFixture({}, fixture.data, name, subscriptionSchema, schema)
-        mock = validator(parsedQuery, mockedFixture, schema, subscriptionSchema, 'Subscription', autoMock, validateDeprecated)
-      } else {
-        // Create a mock and validate the query on the schema
-        mock = validator(parsedQuery, mockedSchema[Subscription][name], schema, subscriptionSchema, 'Subscription', autoMock, validateDeprecated)
-        // If there are fixtures, set the values
-        if (fixture && fixture.data !== undefined) {
-          mock = setFixture(mock, fixture.data, name, subscriptionSchema, schema)
-          if (saveFixture) {
-            mockedSchema[Subscription][name] = mock
-          }
-        }
-      }
-      // Validate nested types against the schema, to be sure the arguments are used,
-      // also check the variables defined to be sure, those are used.
-      if (Array.isArray(fields)) {
-        const queryType = schema[subscriptionSchema.type]
-        fields.forEach(element => {
-          queryVariables = validateArgsOnNestedFields(element, queryType, name, queryVariables, schema)
-        })
-      }
-      // Check if the query receives args and check if the required ones are passed
-      argumentsValidator(queryArgs, subscriptionSchema.arguments, name, queryVariables, isMultipleQuery)
-      // Return the mock of the selected fields
-      return response(queryName, mock, errors, globalQueryVariables, queryVariables)
+  let rootValue
+  if (fixture) {
+    rootValue = setMockFixture(mock, operation, parsedQuery, parsedSchema, opts)
+  } else {
+    rootValue = mock[operation]
+  }
 
-    default:
-      throw new Error('The operation type is not defined on the schema')
+  const result = execute({
+    schema,
+    document: doc,
+    variableValues,
+    rootValue,
+    typeResolver: defaultTypeResolver
+  })
+
+  if (opts.validateDeprecated) {
+    validateDeprecated(schema, doc)
+  }
+
+  const errors = validate(schema, doc)
+
+  result.errors = [].concat(result.errors ? result.errors : [], errors, fixtureErrors)
+  if (!opts.mockErrors) {
+    handleErrors(result.errors)
+  }
+
+  return result
+}
+
+function validateDeprecated (schema, doc) {
+  handleErrors(findDeprecatedUsages(schema, doc))
+}
+
+function handleErrors (errors) {
+  if (errors.length) {
+    throw new Error(errors[0].message)
   }
 }
 
-function response (queryName, mock, errors, globalQueryVariables, queryVariables) {
-  return Object.assign(
-    {
-      mockedQuery: Object.assign(
-        {},
-        mock === undefined ? undefined : { data: { [queryName]: mock } },
-        errors ? { errors } : undefined
-      )
-    },
-    globalQueryVariables ? { globalQueryVariables: queryVariables } : undefined
-  )
+function setMockFixture (mock, operation, parsedQuery, parsedSchema, opts) {
+  const mockedFixture = Object.assign({}, mock[operation])
+
+  if (Array.isArray(parsedQuery)) {
+    parsedQuery.forEach(query => {
+      assignFixture(mockedFixture, mock, operation, query.name, parsedSchema, opts)
+    })
+  } else {
+    assignFixture(mockedFixture, mock, operation, parsedQuery.name, parsedSchema, opts)
+  }
+
+  return mockedFixture
 }
 
-module.exports = mockQuery
+function assignFixture (mockedFixture, mock, operation, name, parsedSchema, opts) {
+  const { fixture, saveFixture = false, autoMock = true } = opts
+
+  const operationSchema = parsedSchema[operation].fields.filter(el => el.name === name)[0]
+  if (!autoMock) {
+    mockedFixture[name] = setFixture({}, fixture.data, name, operationSchema, parsedSchema)
+  } else {
+    if (fixture && fixture.data !== undefined) {
+      mockedFixture[name] = setFixture(mock[operation][name], fixture.data, name, operationSchema, parsedSchema)
+      if (saveFixture) {
+        mock[operation][name] = mockedFixture[name]
+      }
+    }
+  }
+}
+
+module.exports = validation

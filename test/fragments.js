@@ -65,13 +65,18 @@ describe('Query', () => {
             }
           }
         `
-        tester.mock(query)
+        tester.mock({
+          query,
+          variables: {
+            username: 'easygraphql'
+          }
+        })
       } catch (err) {
         error = err
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('Field "getUserByUsername" argument "name" of type "String!" is required but not provided.')
+      expect(error.message).to.be.eq('Argument "name" of required type "String!" was not provided.')
     })
   })
 
