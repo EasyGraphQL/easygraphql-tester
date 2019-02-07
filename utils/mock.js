@@ -1,6 +1,32 @@
 'use strict'
 
 const { parse, validate, findDeprecatedUsages, getOperationAST, defaultTypeResolver } = require('graphql')
+const {
+  UniqueOperationNamesRule,
+  LoneAnonymousOperationRule,
+  SingleFieldSubscriptionsRule,
+  KnownTypeNamesRule,
+  FragmentsOnCompositeTypesRule,
+  VariablesAreInputTypesRule,
+  ScalarLeafsRule,
+  FieldsOnCorrectTypeRule,
+  UniqueFragmentNamesRule,
+  KnownFragmentNamesRule,
+  NoUnusedFragmentsRule,
+  PossibleFragmentSpreadsRule,
+  NoFragmentCyclesRule,
+  UniqueVariableNamesRule,
+  NoUndefinedVariablesRule,
+  NoUnusedVariablesRule,
+  UniqueDirectivesPerLocationRule,
+  KnownArgumentNamesRule,
+  UniqueArgumentNamesRule,
+  ValuesOfCorrectTypeRule,
+  ProvidedRequiredArgumentsRule,
+  VariablesInAllowedPositionRule,
+  OverlappingFieldsCanBeMergedRule,
+  UniqueInputFieldNamesRule
+} = require('graphql/validation')
 const { execute } = require('graphql/execution/execute')
 const isObject = require('lodash.isobject')
 const { schemaDefinition } = require('./schemaDefinition')
@@ -46,7 +72,35 @@ function mock (schema, doc, variableValues, mock, opts, parsedSchema) {
     validateDeprecated(schema, doc)
   }
 
-  const errors = validate(schema, doc)
+  // Ignore KnownDirectivesRule
+  const rules = [
+    UniqueOperationNamesRule,
+    LoneAnonymousOperationRule,
+    SingleFieldSubscriptionsRule,
+    KnownTypeNamesRule,
+    FragmentsOnCompositeTypesRule,
+    VariablesAreInputTypesRule,
+    ScalarLeafsRule,
+    FieldsOnCorrectTypeRule,
+    UniqueFragmentNamesRule,
+    KnownFragmentNamesRule,
+    NoUnusedFragmentsRule,
+    PossibleFragmentSpreadsRule,
+    NoFragmentCyclesRule,
+    UniqueVariableNamesRule,
+    NoUndefinedVariablesRule,
+    NoUnusedVariablesRule,
+    UniqueDirectivesPerLocationRule,
+    KnownArgumentNamesRule,
+    UniqueArgumentNamesRule,
+    ValuesOfCorrectTypeRule,
+    ProvidedRequiredArgumentsRule,
+    VariablesInAllowedPositionRule,
+    OverlappingFieldsCanBeMergedRule,
+    UniqueInputFieldNamesRule
+  ]
+
+  const errors = validate(schema, doc, rules)
 
   result.errors = [].concat(result.errors ? result.errors : [], errors, fixtureErrors)
   if (!opts.mockErrors) {

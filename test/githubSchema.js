@@ -334,7 +334,7 @@ describe('With gitHubSchema', () => {
     tester.test(false, query1)
   })
 
-  it.skip('Should pass with fragments', () => {
+  it('Should pass with fragments', () => {
     const query1 = gql`
       query appQuery($count: Int, $cursor: String, $orderBy: IssueOrder) {
         viewer {
