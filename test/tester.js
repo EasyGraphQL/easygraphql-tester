@@ -39,14 +39,16 @@ describe('Assert test', () => {
 
     it('Should pass if the query is valid', () => {
       const validQuery = `
-        {
-          getMeByTestResult(result: 4.9) {
+        query GET_ME($result: Float!){
+          getMeByTestResult(result: $result) {
             email
             createdAt
           }
         }
       `
-      tester.test(true, validQuery)
+      tester.test(true, validQuery, {
+        result: 4.9
+      })
     })
 
     it('Should not pass if the query arg is invalid', () => {
