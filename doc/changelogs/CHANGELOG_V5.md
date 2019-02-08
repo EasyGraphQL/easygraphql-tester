@@ -21,3 +21,5 @@
 * **Parse the operation with GraphQL**: Parse the document with GraphQL internal method, and remove query-parser.
 
 ### Commits
+
+* [[`110389225a`](https://github.com/EasyGraphQL/easygraphql-tester/commit/110389225a)] - Use GraphQL methods.
