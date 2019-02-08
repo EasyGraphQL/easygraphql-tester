@@ -42,12 +42,12 @@ describe('Mutation', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('username argument is missing on createUser')
+      expect(error.message).to.be.eq('Variable "$input" got invalid value { email: "test@test.com", fullName: "test", password: "test" }; Field value.username of required type String! was not provided.')
     })
   })
 
   describe('Should throw an error if a field is invalid', () => {
-    it('Should throw an error with the invalid field', () => {
+    it('Should throw an error with a missing field', () => {
       let error
       try {
         const mutation = `
@@ -71,7 +71,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq(`Mutation createUser: The selected field invalidField doesn't exists`)
+      expect(error.message).to.be.eq('Variable "$input" got invalid value { email: "test@test.com", username: "test", fullName: "test", password: "test" }; Field value.dob of required type DateTime! was not provided.')
     })
   })
 
@@ -99,7 +99,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('username argument is not type String')
+      expect(error.message).to.be.eq('Variable "$input" got invalid value { email: "test@test.com", username: 1, fullName: "test", password: "test" }; Expected type String at value.username; String cannot represent a non string value: 1')
     })
 
     it('Should throw an error if the input is boolean and it must be a string', () => {
@@ -125,7 +125,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('username argument is not type String')
+      expect(error.message).to.be.eq('Variable "$input" got invalid value { email: "test@test.com", username: true, fullName: "test", password: "test" }; Expected type String at value.username; String cannot represent a non string value: true')
     })
 
     it('Should throw an error if the input is not an array of values', () => {
@@ -143,7 +143,8 @@ describe('Mutation', () => {
             email: 'test@test.com',
             username: 'test',
             fullName: 'test',
-            password: 'test'
+            password: 'test',
+            dob: '10-10-2001'
           }
         })
       } catch (err) {
@@ -151,7 +152,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('The input value on createUsers must be an array')
+      expect(error.message).to.be.eq('Variable "$input" of type "UserInput!" used in position expecting type "[UserInput]!".')
     })
 
     it('Should throw an error if the input is an array and it must be an obj', () => {
@@ -169,7 +170,8 @@ describe('Mutation', () => {
             email: 'test@test.com',
             username: 'test',
             fullName: 'test',
-            password: 'test'
+            password: 'test',
+            dob: '10-10-2001'
           }]
         })
       } catch (err) {
@@ -177,7 +179,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('The input value on createUser is an array and it must be an object')
+      expect(error.message).to.be.eq('Variable "$input" got invalid value [{ email: "test@test.com", username: "test", fullName: "test", password: "test", dob: "10-10-2001" }]; Field value.email of required type String! was not provided.')
     })
 
     it('Should throw an error if the input is string and it must be a number', () => {
@@ -201,7 +203,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('age argument is not type Int')
+      expect(error.message).to.be.eq('Variable "$input" got invalid value { id: "123", age: "10" }; Expected type Int at value.age; Int cannot represent non-integer value: "10"')
     })
 
     it('Should throw an error if the input is boolean and it must be a number', () => {
@@ -225,30 +227,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('age argument is not type Int')
-    })
-
-    it('Should throw an error if the input is not an array and it must be an array', () => {
-      let error
-      try {
-        const mutation = `
-          mutation UpdateUserScores($scores: UpdateUserScoresInput!){
-            updateUserScores(scores: $scores) {
-              scores
-            }
-          }
-        `
-        tester.mock(mutation, {
-          scores: {
-            scores: 1
-          }
-        })
-      } catch (err) {
-        error = err
-      }
-
-      expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('scores must be an Array on updateUserScores')
+      expect(error.message).to.be.eq('Variable "$input" got invalid value { id: "123", age: true }; Expected type Int at value.age; Int cannot represent non-integer value: true')
     })
 
     it('Should throw an error if the input value is invalid', () => {
@@ -271,7 +250,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('invalidField argument is not defined on updateUserScores Input')
+      expect(error.message).to.be.eq('Variable "$scores" got invalid value { invalidField: 1 }; Field value.scores of required type [Int]! was not provided.')
     })
   })
 
@@ -403,28 +382,6 @@ describe('Mutation', () => {
       expect(updateUserScores.email).to.be.a('string')
     })
 
-    it('Should return selected fields on createNewUser', () => {
-      const mutation = `
-          mutation CreateNewUser($demo: UserInput!){
-            createNewUser(input: [$demo]) {
-              email
-            }
-          }
-        `
-      const { data: { createNewUser } } = tester.mock(mutation, {
-        demo: [{
-          email: 'demo',
-          username: 'demo',
-          fullName: 'demo',
-          password: 'demo',
-          dob: '10-10-1999'
-        }]
-      })
-
-      expect(createNewUser).to.exist
-      expect(createNewUser.email).to.be.a('string')
-    })
-
     it('Should set fixtures and save it', () => {
       const mutation = `
         mutation UpdateUserScores($demo: UpdateUserScoresInput!){
@@ -460,7 +417,7 @@ describe('Mutation', () => {
       {
         const { data: { updateUserScores } } = tester.mock({
           query: mutation,
-          variables: { scores: { scores: [1] } }
+          variables: { demo: { scores: [1] } }
         })
 
         expect(updateUserScores).to.exist
@@ -537,7 +494,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('updateUserScores: username is not defined on the mock')
+      expect(error.message).to.be.eq('Cannot return null for non-nullable field Me.username.')
     })
 
     it('Should ignore extra data on the fixture', () => {
@@ -561,7 +518,7 @@ describe('Mutation', () => {
 
       const { data: { updateUserScores } } = tester.mock({
         query: mutation,
-        variables: { scores: { scores: [1] } },
+        variables: { input: { scores: [1] } },
         fixture,
         saveFixture: true
       })
@@ -581,29 +538,15 @@ describe('Mutation', () => {
         }
       `
 
-      const fixture = {
-        errors: [
-          {
-            'message': 'Cannot query field "invalidField" on type "updateUserScores".',
-            'locations': [
-              {
-                'line': 7,
-                'column': 5
-              }
-            ]
-          }
-        ]
-      }
-
       const { errors } = tester.mock({
         query: mutation,
-        variables: { scores: { scores: [1] } },
-        fixture
+        variables: { input: { scores: [1] } },
+        mockErrors: true
       })
 
       expect(errors).to.exist
       expect(errors).to.be.an('array')
-      expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "updateUserScores".')
+      expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "Me".')
     })
 
     it('Should return errors object if it is set on the fixture and data null', () => {
@@ -635,12 +578,14 @@ describe('Mutation', () => {
       const { data, errors } = tester.mock({
         query: mutation,
         variables: { scores: { scores: [1] } },
-        fixture
+        fixture,
+        mockErrors: true
       })
 
       expect(data).to.be.null
       expect(errors).to.exist
       expect(errors).to.be.an('array')
+      expect(errors).to.have.length.gte(1)
       expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "updateUserScores".')
     })
 
@@ -667,7 +612,7 @@ describe('Mutation', () => {
 
         tester.mock({
           query: mutation,
-          variables: { scores: { scores: [1] } },
+          variables: { input: { scores: [1] } },
           fixture
         })
       } catch (err) {
@@ -675,40 +620,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('scores fixture is not an array and it should be one.')
-    })
-
-    it('Should fail if the fixture has a different data type', () => {
-      let error
-      try {
-        const mutation = `
-          mutation UpdateUserScores($input: UpdateUserScoresInput!){
-            updateUserScores(scores: $input) {
-              email
-              scores
-            }
-          }
-        `
-
-        const fixture = {
-          data: {
-            updateUserScores: {
-              email: true
-            }
-          }
-        }
-
-        tester.mock({
-          query: mutation,
-          variables: { scores: { scores: [1] } },
-          fixture
-        })
-      } catch (err) {
-        error = err
-      }
-
-      expect(error).to.exist
-      expect(error.message).to.be.eq('email is not the same type as the document.')
+      expect(error.message).to.be.eq('Expected Iterable, but did not find one for field Me.scores.')
     })
 
     it('Should fail if the mutations has any extra argument', () => {
@@ -725,14 +637,14 @@ describe('Mutation', () => {
 
         tester.mock({
           query: mutation,
-          variables: { scores: { scores: [1] } }
+          variables: { input: { scores: [1] } }
         })
       } catch (err) {
         error = err
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq("name argument is defined on the mutation and it's missing on the document updateUserScores")
+      expect(error.message).to.be.eq('Unknown argument "name" on field "updateUserScores" of type "Mutation".')
     })
 
     it('Should fail if the mutations has no argument', () => {
@@ -756,7 +668,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('scores argument is missing on updateUserScores')
+      expect(error.message).to.be.eq('Argument "scores" of required type "UpdateUserScoresInput!" was not provided.')
     })
 
     it('Should fail if the mutations has no argument', () => {
@@ -779,7 +691,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq("isAdmin is an Array and it shouldn't be one isAdmin")
+      expect(error.message).to.be.eq('Variable "$input" got invalid value { isAdmin: [true] }; Expected type Boolean at value.isAdmin; Boolean cannot represent a non boolean value: [true]')
     })
   })
 
@@ -792,21 +704,7 @@ describe('Mutation', () => {
 
     it('Should support a custom name for the root mutation type', () => {
       const mutation = `
-        mutation addPost($content: String!) {
-          appendPost(post: $content) {
-            content
-          }
-        }
-      `
-
-      const { data: { appendPost } } = tester.mock(mutation, { post: { content: 'Hello, world!' } })
-      expect(appendPost).to.exist
-      expect(appendPost.content).to.be.a('string')
-    })
-
-    it('Should support mock with graphql-tag', () => {
-      const mutation = gql`
-        mutation addPost($content: String!) {
+        mutation addPost($content: PostInput!) {
           appendPost(post: $content) {
             content
           }
@@ -816,7 +714,28 @@ describe('Mutation', () => {
       const { data: { appendPost } } = tester.mock({
         query: mutation,
         variables: {
-          post: {
+          content: {
+            content: 'Hello, world!'
+          }
+        }
+      })
+      expect(appendPost).to.exist
+      expect(appendPost.content).to.be.a('string')
+    })
+
+    it('Should support mock with graphql-tag', () => {
+      const mutation = gql`
+        mutation addPost($content: PostInput!) {
+          appendPost(post: $content) {
+            content
+          }
+        }
+      `
+
+      const { data: { appendPost } } = tester.mock({
+        query: mutation,
+        variables: {
+          content: {
             content: 'Hello, world!'
           }
         }

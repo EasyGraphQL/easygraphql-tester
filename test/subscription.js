@@ -47,7 +47,7 @@ describe('Subscription', () => {
       const subscription = `
         subscription ($isAdmin: Boolean!) {
           createdUser (where: {
-            isAdmin: isAdmin
+            isAdmin: $isAdmin
           }){
             id
             username
@@ -55,32 +55,16 @@ describe('Subscription', () => {
         }
       `
 
-      const { data: { createdUser } } = tester.mock(subscription)
+      const { data: { createdUser } } = tester.mock({
+        query: subscription,
+        variables: {
+          isAdmin: true
+        }
+      })
 
       expect(createdUser).to.exist
       expect(createdUser.id).to.be.a('string')
       expect(createdUser.username).to.be.a('string')
-    })
-
-    it('Should support multiples subscriptions', () => {
-      const subscription = `
-        subscription {
-          createdUser (where: { isAdmin: true }){
-            id
-            username
-          }
-          newUser {
-            id
-            username
-            email
-          }
-        }
-      `
-
-      const { data: { createdUser, newUser } } = tester.mock(subscription)
-
-      expect(createdUser).to.exist
-      expect(newUser).to.exist
     })
 
     it('Should set fixture to a subscription', () => {
@@ -117,7 +101,7 @@ describe('Subscription', () => {
       expect(newUser.email).to.be.a('string')
     })
 
-    it('Should return errors if it is set on the fixture', () => {
+    it('Should return errors if it is set mockErrors true', () => {
       const subscription = `
         subscription {
           newUser {
@@ -129,28 +113,14 @@ describe('Subscription', () => {
         }
       `
 
-      const fixture = {
-        errors: [
-          {
-            'message': 'Cannot query field "invalidField" on type "newUser".',
-            'locations': [
-              {
-                'line': 7,
-                'column': 5
-              }
-            ]
-          }
-        ]
-      }
-
       const { errors } = tester.mock({
         query: subscription,
-        fixture
+        mockErrors: true
       })
 
       expect(errors).to.exist
       expect(errors).to.be.an('array')
-      expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "newUser".')
+      expect(errors[0].message).to.be.eq('Cannot query field "invalidField" on type "User".')
     })
 
     it('Should errors if it is set on the fixture and data null', () => {
@@ -182,7 +152,8 @@ describe('Subscription', () => {
 
       const { data, errors } = tester.mock({
         query: subscription,
-        fixture
+        fixture,
+        mockErrors: true
       })
 
       expect(data).to.be.null
@@ -223,7 +194,8 @@ describe('Subscription', () => {
 
       tester.setFixture(fixture, { autoMock: false })
       const { data: { newUser }, errors } = tester.mock({
-        query: subscription
+        query: subscription,
+        mockErrors: true
       })
 
       expect(newUser).to.exist
@@ -275,7 +247,7 @@ describe('Subscription', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('newUser: email is not defined on the mock')
+      expect(error.message).to.be.eq('Cannot return null for non-nullable field User.email.')
     })
 
     it('Should return saved fixture', () => {
@@ -318,7 +290,7 @@ describe('Subscription', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq("Subscription newUser: The selected field invalidField doesn't exists")
+      expect(error.message).to.be.eq('Cannot query field "invalidField" on type "User".')
     })
 
     it('Should return an error if an argument is invaild on a subscription', () => {
@@ -340,7 +312,7 @@ describe('Subscription', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('invalidArg argument is not defined on newUsers arguments')
+      expect(error.message).to.be.eq('Unknown argument "invalidArg" on field "newUsers" of type "Subscription".')
     })
 
     it('Should return an error if an argument type is invaild on a subscription', () => {
@@ -362,7 +334,7 @@ describe('Subscription', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('limit argument is not type Int')
+      expect(error.message).to.be.eq('Argument "limit" has invalid value true.')
     })
   })
 
@@ -381,7 +353,6 @@ describe('Subscription', () => {
           }
         }
       `
-
       const { data: { newPost } } = tester.mock(subscription)
       expect(newPost).to.exist
       expect(newPost.content).to.be.a('string')

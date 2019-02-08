@@ -46,7 +46,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('There is no query called getUser on the Schema')
+      expect(error.message).to.be.eq('Cannot query field "getUser" on type "Query". Did you mean "getUsers" or "getMe"?')
     })
   })
 
@@ -65,13 +65,18 @@ describe('Query', () => {
             }
           }
         `
-        tester.mock(query)
+        tester.mock({
+          query,
+          variables: {
+            username: 'easygraphql'
+          }
+        })
       } catch (err) {
         error = err
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('name argument is missing on getUserByUsername')
+      expect(error.message).to.be.eq('Argument "name" of required type "String!" was not provided.')
     })
   })
 
@@ -159,11 +164,11 @@ describe('Query', () => {
       const multiplesFragments = gql`
         query UserQuery {
           getMe {
-            ...family_info
+            ...me_info
           }
         }
 
-        fragment family_info on FamilyInfo {
+        fragment me_info on Me {
           id
           email
           scores

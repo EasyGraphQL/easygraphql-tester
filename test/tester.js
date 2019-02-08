@@ -39,14 +39,16 @@ describe('Assert test', () => {
 
     it('Should pass if the query is valid', () => {
       const validQuery = `
-        {
-          getMeByTestResult(result: 4.9) {
+        query GET_ME($result: Float!){
+          getMeByTestResult(result: $result) {
             email
             createdAt
           }
         }
       `
-      tester.test(true, validQuery)
+      tester.test(true, validQuery, {
+        result: 4.9
+      })
     })
 
     it('Should not pass if the query arg is invalid', () => {
@@ -282,7 +284,7 @@ describe('Assert test', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('The input value on createTest is an array and it must be an object')
+      expect(error.message).to.be.eq('Argument "name" has invalid value ["Test"].')
     })
 
     it('Should receive scalar boolean (false) argument', () => {
@@ -329,19 +331,6 @@ describe('Assert test', () => {
       tester.test(true, subscription)
     })
 
-    it('Should test nested arguments on array', () => {
-      const SEARCH_ITEMS_QUERY = `
-        query SEARCH_ITEMS_QUERY($searchTerm: String!) {
-          items(where: { OR: [{ title_contains: $searchTerm }, { description_contains: "yes" }, { name_contains: [true, false] }, { id_contains: 1 }] }) {
-            id
-            image
-            title
-          }
-        }
-      `
-      tester.test(true, SEARCH_ITEMS_QUERY)
-    })
-
     it('Should fail if a field on the variables is missing', () => {
       let error
       try {
@@ -363,7 +352,7 @@ describe('Assert test', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('password values are missing on resetPassword')
+      expect(error.message).to.be.eq('Variable "$password" of required type "String!" was not provided.')
     })
   })
 })

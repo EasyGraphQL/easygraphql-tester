@@ -43,7 +43,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('There is no query called getUser on the Schema')
+      expect(error.message).to.be.eq('Cannot query field "getUser" on type "Query". Did you mean "getUsers" or "getMe"?')
     })
 
     it('Should throw an error with the invalid field', () => {
@@ -69,7 +69,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq(`Query getMe: The selected field invalidField doesn't exists`)
+      expect(error.message).to.be.eq('Cannot query field "invalidField" on type "Me".')
     })
 
     it('Should throw an error with the invalid field on getMe -> father', () => {
@@ -95,7 +95,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq(`Query getMe: The selected field invalidField doesn't exists`)
+      expect(error.message).to.be.eq('Cannot query field "invalidField" on type "User".')
     })
 
     it('Should throw an error with the invalid field on getMe', () => {
@@ -115,7 +115,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('Query getMe: There should be a selected field on familyInfo')
+      expect(error.message).to.be.eq('Field "familyInfo" of type "[FamilyInfo]!" must have a selection of subfields. Did you mean "familyInfo { ... }"?')
     })
 
     it('Should throw an error with the invalid field on getFamilyInfo', () => {
@@ -134,7 +134,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('Query getFamilyInfo: There should be a selected field on father')
+      expect(error.message).to.be.eq('Field "father" of type "User!" must have a selection of subfields. Did you mean "father { ... }"?')
     })
 
     it('Should fail if there is an invalid field on the query', () => {
@@ -155,12 +155,12 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq(`Query getUsers: The selected field invalidName doesn't exists`)
+      expect(error.message).to.be.eq('Cannot query field "invalidName" on type "User".')
     })
   })
 
   describe('Should throw an error with invalid arguments', () => {
-    it('Should throw an error if email argument is missing', () => {
+    it('Should throw an error if there is an invalid argument', () => {
       let error
       try {
         const query = `
@@ -176,26 +176,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('name argument is missing on getUserByUsername')
-    })
-
-    it('Should throw an error if username argument is missing', () => {
-      let error
-      try {
-        const query = `
-          {
-            getUserByUsername(name: test) {
-              email
-            }
-          }
-        `
-        tester.mock(query)
-      } catch (err) {
-        error = err
-      }
-
-      expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('username argument is missing on getUserByUsername')
+      expect(error.message).to.be.eq('Argument "username" has invalid value test.')
     })
 
     it('Should throw an error if argument is invalid', () => {
@@ -208,13 +189,18 @@ describe('Query', () => {
             }
           }
         `
-        tester.mock(query)
+        tester.mock({
+          query,
+          variables: {
+            username: 'easygraphql'
+          }
+        })
       } catch (err) {
         error = err
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('invalidArg argument is not defined on getUserByUsername arguments')
+      expect(error.message).to.be.eq('Argument "username" of required type "String!" was not provided.')
     })
 
     it('Should throw an error if argument type is invalid. Int', () => {
@@ -233,7 +219,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('username argument is not type String')
+      expect(error.message).to.be.eq('Argument "username" has invalid value 1.')
     })
 
     it('Should throw an error if argument type is invalid, Float', () => {
@@ -252,7 +238,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('username argument is not type String')
+      expect(error.message).to.be.eq('Argument "username" has invalid value 0.1.')
     })
 
     it('Should throw an error if argument type is invalid, Boolean', () => {
@@ -271,7 +257,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('username argument is not type String')
+      expect(error.message).to.be.eq('Argument "username" has invalid value 1.')
     })
 
     it('Should throw an error if the input is boolean and it must be a string', () => {
@@ -290,7 +276,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('username argument is not type String')
+      expect(error.message).to.be.eq('Argument "username" has invalid value true.')
     })
 
     it('Should throw an error if the input is string and it must be a boolean', () => {
@@ -311,26 +297,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('isLocal argument is not type Boolean')
-    })
-
-    it('Should throw an error if the input is int and it must be a array of int', () => {
-      let error
-      try {
-        const query = `
-          {
-            getMeByResults(results: 1) {
-              email
-            }
-          }
-        `
-        tester.mock(query)
-      } catch (err) {
-        error = err
-      }
-
-      expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('results must be an Array on getMeByResults')
+      expect(error.message).to.be.eq('Argument "isLocal" has invalid value yes.')
     })
 
     it('Should throw an error if the input variable is not used', () => {
@@ -343,13 +310,18 @@ describe('Query', () => {
             }
           }
         `
-        tester.mock(query)
+        tester.mock({
+          query,
+          variables: {
+            results: 1
+          }
+        })
       } catch (err) {
         error = err
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('results variable is not defined on getMeByResults arguments')
+      expect(error.message).to.be.eq('Argument "results" of required type "[Int]!" was provided the variable "$invalidVar" which was not provided a runtime value.')
     })
 
     it('Should throw an error if there is an extra input variable', () => {
@@ -362,19 +334,38 @@ describe('Query', () => {
             }
           }
         `
-        tester.mock(query)
+        tester.mock({
+          query,
+          variables: {
+            results: 1,
+            names: ['easygraphql']
+          }
+        })
       } catch (err) {
         error = err
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('names variable is not defined on getMeByResults arguments')
+      expect(error.message).to.be.eq('Variable "$names" is never used in operation "GetMeByResults".')
+    })
+
+    it('Should throw an pass if the input is int and the arg is an array of int', () => {
+      const query = `
+        {
+          getMeByResults(results: 1) {
+            email
+          }
+        }
+      `
+      const { data: { getMeByResults } } = tester.mock(query)
+      expect(getMeByResults).to.exist
+      expect(getMeByResults.email).to.be.a('string')
     })
 
     it('Should return selected fields on getUserByUsername', () => {
       const query = `
         {
-          getUserByUsername(username: test, name: test) {
+          getUserByUsername(username: "test", name: "test") {
             email
           }
         }
@@ -491,7 +482,7 @@ describe('Query', () => {
       expect(getUsers[0].fullName).to.be.a('string')
     })
 
-    it('Should throw on invalid fixture for arrays ', () => {
+    it('Should throw on invalid fixture for arrays', () => {
       {
         let error
         try {
@@ -519,7 +510,7 @@ describe('Query', () => {
         }
 
         expect(error).to.exist
-        expect(error.message).to.be.eq('getUsers fixture is not an array and it should be one.')
+        expect(error.message).to.be.eq('Expected Iterable, but did not find one for field Query.getUsers.')
       }
 
       {
@@ -549,7 +540,7 @@ describe('Query', () => {
         }
 
         expect(error).to.exist
-        expect(error.message).to.be.eq('getUsers is not the same type as the document.')
+        expect(error.message).to.be.eq('Cannot return null for non-nullable field User.email.')
       }
 
       {
@@ -588,45 +579,7 @@ describe('Query', () => {
         }
 
         expect(error).to.exist
-        expect(error.message).to.be.eq('getMe is not the same type as the document.')
-      }
-
-      {
-        let error
-        try {
-          const query = `
-            {
-              getMe {
-                familyInfo {
-                  brothers {
-                    username
-                  }
-                }
-              }
-            }
-          `
-          const fixture = {
-            data: {
-              getMe: {
-                familyInfo: [{
-                  brothers: [
-                    { username: 'brother1', invalid: true }
-                  ]
-                }]
-              }
-            }
-          }
-
-          tester.mock({
-            query,
-            fixture
-          })
-        } catch (err) {
-          error = err
-        }
-
-        expect(error).to.exist
-        expect(error.message).to.be.eq('getMe fixture is not the same type as the document.')
+        expect(error.message).to.be.eq('Cannot return null for non-nullable field User.username.')
       }
     })
 
@@ -634,6 +587,7 @@ describe('Query', () => {
       const query = `
         {
           getUsers {
+            id
             email
             username
           }
@@ -786,7 +740,7 @@ describe('Query', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('isAdmin is not the same type as the document.')
+      expect(error.message).to.be.eq('Boolean cannot represent a non boolean value: "true"')
     })
 
     it('Should throw an error if the fixture value is not a int', () => {
@@ -805,7 +759,7 @@ describe('Query', () => {
           fixture: {
             data: {
               getMe: {
-                age: '27'
+                age: 'age'
               }
             }
           }
@@ -815,7 +769,7 @@ describe('Query', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('age is not the same type as the document.')
+      expect(error.message).to.be.eq('Int cannot represent non-integer value: "age"')
     })
 
     it('Should return errors mock if it is set on the fixture', () => {
@@ -845,7 +799,8 @@ describe('Query', () => {
 
       const { errors } = tester.mock({
         query,
-        fixture
+        fixture,
+        mockErrors: true
       })
 
       expect(errors).to.exist
@@ -875,7 +830,7 @@ describe('Query', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('The selected field id is deprecated')
+      expect(error.message).to.be.eq('The field User.id is deprecated. Use `newField`.')
     })
 
     it('Should throw an error if fixture error is not an array', () => {
@@ -886,7 +841,6 @@ describe('Query', () => {
             getUsers {
               email
               username
-              invalidField
             }
           }
         `
@@ -945,7 +899,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('Query search: There should be a selected field on father')
+      expect(error.message).to.be.eq('Field "father" of type "User!" must have a selection of subfields. Did you mean "father { ... }"?')
     })
 
     it('Should throw an error with there is an invalid type', () => {
@@ -976,7 +930,7 @@ describe('Query', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('There is no type InvalidType on the Schema')
+      expect(error.message).to.be.eq('Unknown type "InvalidType".')
     })
 
     it('Should return selected fields on search with union', () => {
@@ -1007,14 +961,19 @@ describe('Query', () => {
 
     it('Should return selected data', () => {
       const query = `
-        query GetMeByResults($results: Int!) {
+        query GetMeByResults($results: [Int]!) {
           getMeByResults(results: $results){
             email
           }
         }
       `
 
-      const { data: { getMeByResults } } = tester.mock(query)
+      const { data: { getMeByResults } } = tester.mock({
+        query,
+        variables: {
+          results: [1]
+        }
+      })
       expect(getMeByResults).to.exist
       expect(getMeByResults.email).to.be.a('string')
     })
@@ -1045,30 +1004,6 @@ describe('Query', () => {
       expect(getMultiplesStrings[0]).to.be.a('string')
     })
 
-    it('Should throw an error if the fixture is not String', () => {
-      let error
-      try {
-        const query = `
-          {
-            getString
-          }
-        `
-
-        const fixture = {
-          data: {
-            getString: 1
-          }
-        }
-
-        tester.mock({ query, fixture })
-      } catch (err) {
-        error = err
-      }
-
-      expect(error).to.exist
-      expect(error.message).to.be.eq('getString is not the same type as the document.')
-    })
-
     it('Should throw an error if a value inside the array is null', () => {
       let error
       try {
@@ -1090,7 +1025,7 @@ describe('Query', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq("getMultiplesStrings inside an array can't be null.")
+      expect(error.message).to.be.eq('Cannot return null for non-nullable field Query.getMultiplesStrings.')
     })
 
     it('Should pass if it returns a Int', () => {
@@ -1154,7 +1089,7 @@ describe('Query', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq("getMultiplesInt can't be null.")
+      expect(error.message).to.be.eq('Cannot return null for non-nullable field Query.getMultiplesInt.')
     })
 
     it('Should set fixtures for scalars', () => {
@@ -1187,7 +1122,13 @@ describe('Query', () => {
         }
       `
 
-      const { data: { getUserByUsername } } = tester.mock(query)
+      const { data: { getUserByUsername } } = tester.mock({
+        query: query,
+        variables: {
+          username: 'easygraphql',
+          name: 'easygraphql'
+        }
+      })
       expect(getUserByUsername).to.exist
       expect(getUserByUsername.email).to.be.a('string')
     })
@@ -1201,7 +1142,13 @@ describe('Query', () => {
         }
       `
 
-      const { data: { aliasTest } } = tester.mock(query)
+      const { data: { aliasTest } } = tester.mock({
+        query: query,
+        variables: {
+          username: 'easygraphql',
+          name: 'easygraphql'
+        }
+      })
       expect(aliasTest).to.exist
       expect(aliasTest.email).to.be.a('string')
     })
@@ -1225,7 +1172,11 @@ describe('Query', () => {
       {
         const { data: { aliasTest } } = tester.mock({
           query: query,
-          fixture
+          fixture,
+          variables: {
+            username: 'easygraphql',
+            name: 'easygraphql'
+          }
         })
         expect(aliasTest).to.exist
         expect(aliasTest.email).to.be.a('string')
@@ -1234,7 +1185,11 @@ describe('Query', () => {
 
       {
         const { data: { aliasTest } } = tester.mock({
-          query: query
+          query: query,
+          variables: {
+            username: 'easygraphql',
+            name: 'easygraphql'
+          }
         })
         expect(aliasTest).to.exist
         expect(aliasTest.email).to.be.a('string')
@@ -1372,13 +1327,13 @@ describe('Query', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('getMe: fullName is not defined on the mock')
+      expect(error.message).to.be.eq('Cannot return null for non-nullable field User.fullName.')
     })
 
     it('Should support multiples queries', () => {
       const query = gql`
         query MULTIPLES_QUERIES {
-          aliasTest: getUserByUsername(username: $username, name: $name){
+          aliasTest: getUserByUsername(username: "Username", name: "Full name"){
             email
           }
           getString

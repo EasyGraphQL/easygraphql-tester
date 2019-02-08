@@ -8,12 +8,16 @@ type Post {
   content: String!
 }
 
+input PostInput {
+  content: String!
+}
+
 type RootQuery {
   posts: [Post!]!
 }
 
 type RootMutation {
-  appendPost(post: Post!): Post!
+  appendPost(post: PostInput!): Post!
 }
 
 type RootSubscription {

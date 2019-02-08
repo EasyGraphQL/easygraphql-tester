@@ -1,27 +1,34 @@
 const isObject = require('lodash.isobject')
 
-function setFixture (mock, fixture, name, selectedType, schema) {
-  fixture = fixture !== undefined ? fixture[name] : undefined
+function setFixture (mock, operation, parsedQuery, parsedSchema, opts) {
+  const mockedFixture = Object.assign({}, mock[operation])
 
-  if (fixture === undefined) {
-    return mock
+  if (Array.isArray(parsedQuery)) {
+    parsedQuery.forEach(name => {
+      const { fixture, saveFixture = false, autoMock = true } = opts
+
+      const operationSchema = parsedSchema[operation].fields.filter(el => el.name === name)[0]
+      if (!autoMock && fixture.data && fixture.data[name] !== undefined) {
+        mockedFixture[name] = validateFixture({}, fixture.data[name], operationSchema, parsedSchema)
+      } else {
+        if (fixture && fixture.data && fixture.data[name] !== undefined) {
+          mockedFixture[name] = validateFixture(mock[operation][name], fixture.data[name], operationSchema, parsedSchema)
+          if (saveFixture) {
+            mock[operation][name] = mockedFixture[name]
+          }
+        }
+      }
+    })
   }
 
-  return validateFixture(mock, fixture, selectedType, schema, name)
+  return mockedFixture
 }
 
 function validateFixture (usedMock, fixture, selectedType, schema, name) {
   const mock = Object.assign({}, usedMock)
-  if (selectedType.noNull && fixture === null) {
-    throw new Error(`${selectedType.name} can't be null.`)
-  }
 
   if (fixture === null) {
     return null
-  }
-
-  if (selectedType.isArray && !Array.isArray(fixture)) {
-    throw new Error(`${selectedType.name} fixture is not an array and it should be one.`)
   }
 
   if (schema[selectedType.type]) {
@@ -50,9 +57,9 @@ function validateFixture (usedMock, fixture, selectedType, schema, name) {
       return mock
     }
 
-    return validateType(fixture, schema[selectedType.type], name)
+    return fixture
   } else if (Array.isArray(fixture)) {
-    fixture.forEach(val => validateType(val, selectedType, name))
+    fixture.forEach(val => val)
     return fixture
   } else if (isObject(fixture)) {
     const fields = selectedType.fields
@@ -61,59 +68,12 @@ function validateFixture (usedMock, fixture, selectedType, schema, name) {
       const mockedVal = mock[val] || {}
       const selectedField = fields.filter(field => field.name === val)
 
-      if (!selectedField.length) {
-        throw new Error(`${name} fixture is not the same type as the document.`)
-      }
       mock[val] = validateFixture(mockedVal, fixture[val], selectedField[0], schema, name)
     }
     return mock
   }
 
-  validateType(fixture, selectedType, name)
-
   return fixture !== undefined ? fixture : mock
-}
-
-function validateType (fixture, selectedType, name) {
-  name = selectedType.name || name
-
-  if (selectedType.isArray && selectedType.noNullArrayValues && fixture === null) {
-    throw new Error(`${name} inside an array can't be null.`)
-  }
-
-  switch (selectedType.type) {
-    case 'Int':
-    case 'Float':
-      if (typeof fixture !== 'number') {
-        throw new Error(`${name} is not the same type as the document.`)
-      }
-      return fixture
-
-    case 'String':
-    case 'ID':
-      if (typeof fixture !== 'string') {
-        throw new Error(`${name} is not the same type as the document.`)
-      }
-      return fixture
-
-    case 'Boolean':
-      if (typeof fixture !== 'boolean') {
-        throw new Error(`${name} is not the same type as the document.`)
-      }
-      return fixture
-
-    case 'ScalarTypeDefinition':
-      return fixture
-
-    case 'EnumTypeDefinition':
-      if (!selectedType.values.includes(fixture)) {
-        throw new Error(`${selectedType.name} fixture enum is not the same type as the document.`)
-      }
-      return fixture
-
-    default:
-      throw new Error(`${name} is not the same type as the document.`)
-  }
 }
 
 function setFixtureError (fixtureErrors) {
