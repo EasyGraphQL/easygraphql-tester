@@ -1,6 +1,6 @@
 'use strict'
 
-const { parse, validate, findDeprecatedUsages, getOperationAST, defaultTypeResolver } = require('graphql')
+const { parse, validate, findDeprecatedUsages, getOperationAST } = require('graphql')
 const {
   UniqueOperationNamesRule,
   LoneAnonymousOperationRule,
@@ -64,8 +64,7 @@ function mock (schema, doc, variableValues, mock, opts, parsedSchema) {
     schema,
     document: doc,
     variableValues,
-    rootValue,
-    typeResolver: defaultTypeResolver
+    rootValue
   })
 
   if (opts.validateDeprecated) {
