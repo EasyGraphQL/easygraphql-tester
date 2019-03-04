@@ -6,10 +6,27 @@
 </tr>
 <tr>
 <td>
+<a href="#5.0.1">5.0.1</a><br/>
 <a href="#5.0.0">5.0.0</a><br/>
 </td>
 </tr>
 </table>
+
+<a id="5.0.1"></a>
+## Version 5.0.1
+
+### Notable Changes
+
+* **Remove Field Resolver**: Remove field resolver method.
+* **mocha**:
+  - Bump version of mocha.
+
+
+### Commits
+
+* [[`1f9dc2f885`](https://github.com/EasyGraphQL/easygraphql-tester/commit/1f9dc2f885)] - Remove typresolver.
+* [[`dbfb163c24`](https://github.com/EasyGraphQL/easygraphql-tester/commit/dbfb163c24)] - Greenkeeper/default/mocha 6.0.2.
+
 
 <a id="5.0.0"></a>
 ## Version 5.0.0
