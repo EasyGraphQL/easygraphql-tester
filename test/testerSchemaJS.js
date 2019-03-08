@@ -94,4 +94,21 @@ describe('Assert test', () => {
       expect(getUser.fullName).to.be.a('string')
     })
   })
+
+  describe('Should test GraphQL', () => {
+    it('Should pass if the resolver return expected data', () => {
+      const query = `
+        {
+          getUser {
+            email
+            fullName
+          }
+        }
+      `
+
+      const { data: { getUser } } = tester.graphql(query)
+      expect(getUser.email).to.be.eq('demo@demo.com')
+      expect(getUser.fullName).to.be.eq('demo')
+    })
+  })
 })

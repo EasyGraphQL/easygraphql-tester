@@ -16,7 +16,18 @@ describe('Query', () => {
   let tester
 
   before(() => {
-    tester = new EasyGraphQLTester([userSchema, familySchema])
+    const resolvers = {
+      Query: {
+        getMe: (root, args, ctx) => {
+          return {
+            id: '1',
+            email: 'demo@demo.com',
+            username: 'demo'
+          }
+        }
+      }
+    }
+    tester = new EasyGraphQLTester([userSchema, familySchema], resolvers)
   })
 
   describe('Should throw an error if a field is missing', () => {
@@ -1369,6 +1380,24 @@ describe('Query', () => {
       expect(search).to.exist
       expect(search).to.be.a('array')
       expect(search[0].id).to.be.a('string')
+    })
+
+    it('Should pass if the resolver return expected data', () => {
+      const query = `
+        {
+          getMe {
+            id
+            email
+            username
+          }
+        }
+      `
+
+      const { data: { getMe } } = tester.graphql(query)
+
+      expect(getMe.id).to.be.eq('1')
+      expect(getMe.email).to.be.eq('demo@demo.com')
+      expect(getMe.username).to.be.eq('demo')
     })
   })
 

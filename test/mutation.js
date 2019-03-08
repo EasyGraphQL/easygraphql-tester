@@ -16,7 +16,16 @@ describe('Mutation', () => {
   let tester
 
   before(() => {
-    tester = new EasyGraphQLTester([userSchema, familySchema])
+    const resolver = {
+      Mutation: {
+        updateUserAge: (__, args, ctx) => {
+          const { id, age } = args.input
+
+          return { id, age }
+        }
+      }
+    }
+    tester = new EasyGraphQLTester([userSchema, familySchema], resolver)
   })
 
   describe('Should throw an error if variables are missing', () => {
@@ -251,6 +260,28 @@ describe('Mutation', () => {
 
       expect(error).to.be.an.instanceOf(Error)
       expect(error.message).to.be.eq('Variable "$scores" got invalid value { invalidField: 1 }; Field value.scores of required type [Int]! was not provided.')
+    })
+
+    it('should test GraphQL mutation', () => {
+      const mutation = `
+        mutation UpdateUserAge($input: UpdateUserAgeInput!) {
+          updateUserAge(input: $input) {
+            id
+            age
+          }
+        } 
+      `
+
+      const args = {
+        input: {
+          id: '1',
+          age: 27
+        }
+      }
+      const { data: { updateUserAge } } = tester.graphql(mutation, undefined, undefined, args)
+
+      expect(updateUserAge.id).to.be.eq(args.input.id)
+      expect(updateUserAge.age).to.be.eq(args.input.age)
     })
   })
 
