@@ -96,7 +96,7 @@ describe('Assert test', () => {
   })
 
   describe('Should test GraphQL', () => {
-    it('Should pass if the resolver return expected data', () => {
+    it('Should pass if the resolver return expected data', async () => {
       const query = `
         {
           getUser {
@@ -106,7 +106,7 @@ describe('Assert test', () => {
         }
       `
 
-      const { data: { getUser } } = tester.graphql(query)
+      const { data: { getUser } } = await tester.graphql(query)
       expect(getUser.email).to.be.eq('demo@demo.com')
       expect(getUser.fullName).to.be.eq('demo')
     })

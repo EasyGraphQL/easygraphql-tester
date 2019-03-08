@@ -91,7 +91,7 @@ const tester = new EasyGraphQLTester(schema)
 ## Resolvers
 
 To test GraphQL resolvers, there is something extra to do in case you are not using graphql-js.
-This is going to be `sync`.
+This is going to be `async`.
 
 ### Without graphql-js
 If you are not using graphql-js, you might pass the resolvers as second argument to the
@@ -160,7 +160,9 @@ const resolvers = {
 
 const tester = new EasyGraphQLTester(schema, resolvers)
 
-const result = tester.graphql(query, undefined, undefined, { isLocal: false })
+tester.graphql(query, undefined, undefined, { isLocal: false })
+  .then(result => console.log(result))
+  .catch(err => console.log(err))
 
 // result
 // {
