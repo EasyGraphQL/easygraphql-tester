@@ -20,10 +20,13 @@
 ### Notable Changes
 
 * **Replace graphqlSync**: Replace graphqlSync for graphql.
-
+* **easygraphql-parser**:
+  - Bump version of easygraphql-parser.
 
 ### Commits
 
+* [[`f69ece5141`](https://github.com/EasyGraphQL/easygraphql-tester/commit/f69ece5141)] - Replace graphqlSync for graphql.
+* [[`c4f5b9681c`](https://github.com/EasyGraphQL/easygraphql-tester/commit/c4f5b9681c)] - Update easygraphql-parser to the latest version .
 
 
 <a id="5.1.0"></a>
