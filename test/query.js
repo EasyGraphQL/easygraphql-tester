@@ -1382,7 +1382,7 @@ describe('Query', () => {
       expect(search[0].id).to.be.a('string')
     })
 
-    it('Should pass if the resolver return expected data', () => {
+    it('Should pass if the resolver return expected data', async () => {
       const query = `
         {
           getMe {
@@ -1393,7 +1393,7 @@ describe('Query', () => {
         }
       `
 
-      const { data: { getMe } } = tester.graphql(query)
+      const { data: { getMe } } = await tester.graphql(query)
 
       expect(getMe.id).to.be.eq('1')
       expect(getMe.email).to.be.eq('demo@demo.com')

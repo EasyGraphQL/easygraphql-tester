@@ -6,12 +6,25 @@
 </tr>
 <tr>
 <td>
+<a href="#5.1.1">5.1.1</a><br/>
 <a href="#5.1.0">5.1.0</a><br/>
 <a href="#5.0.1">5.0.1</a><br/>
 <a href="#5.0.0">5.0.0</a><br/>
 </td>
 </tr>
 </table>
+
+<a id="5.1.1"></a>
+## Version 5.1.1
+
+### Notable Changes
+
+* **Replace graphqlSync**: Replace graphqlSync for graphql.
+
+
+### Commits
+
+
 
 <a id="5.1.0"></a>
 ## Version 5.1.0
