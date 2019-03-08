@@ -3,7 +3,7 @@
 const { mergeTypes } = require('merge-graphql-schemas')
 const { buildSchema, printSchema, buildClientSchema, GraphQLSchema } = require('graphql')
 
-function buildGraphQLSchema (source) {
+function buildGraphQLSchema (source, shouldBuildSchema) {
   let schema = source
   if (Array.isArray(source)) {
     schema = mergeTypes(source, { all: true })
@@ -16,7 +16,10 @@ function buildGraphQLSchema (source) {
     }
   }
 
-  return buildSchema(schema)
+  if (shouldBuildSchema) {
+    return buildSchema(schema)
+  }
+  return schema
 }
 
 module.exports = buildGraphQLSchema

@@ -38,18 +38,18 @@ type user_mutation_response {
   returning: [User!]!
 }
 
+type Item {
+  id: String!
+  image: String!
+  title: String!
+}
+
 input UserInput {
   email: String!
   username: String!
   fullName: String!
   password: String!
   dob: DateTime!
-}
-
-type Item {
-  id: String!
-  image: String!
-  title: String!
 }
 
 input IsAdminInput {
