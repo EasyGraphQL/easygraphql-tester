@@ -6,11 +6,24 @@
 </tr>
 <tr>
 <td>
+<a href="#5.1.0">5.1.0</a><br/>
 <a href="#5.0.1">5.0.1</a><br/>
 <a href="#5.0.0">5.0.0</a><br/>
 </td>
 </tr>
 </table>
+
+<a id="5.1.0"></a>
+## Version 5.1.0
+
+### Notable Changes
+
+* **Test resolvers**: Add new method to test the resolvers.
+
+
+### Commits
+
+
 
 <a id="5.0.1"></a>
 ## Version 5.0.1
