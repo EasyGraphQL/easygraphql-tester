@@ -23,7 +23,7 @@
 
 ### Commits
 
-
+* [[`476b35a75c`](https://github.com/EasyGraphQL/easygraphql-tester/commit/476b35a75c)] - Test resolvers.
 
 <a id="5.0.1"></a>
 ## Version 5.0.1
