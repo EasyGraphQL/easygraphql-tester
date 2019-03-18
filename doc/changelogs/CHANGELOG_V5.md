@@ -24,6 +24,7 @@
 
 ### Commits
 
+* [[`4184c907df`](https://github.com/EasyGraphQL/easygraphql-tester/commit/4184c907df)] - Support gql on resolvers.
 
 <a id="5.1.1"></a>
 ## Version 5.1.1
