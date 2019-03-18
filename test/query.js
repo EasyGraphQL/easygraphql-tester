@@ -1399,6 +1399,24 @@ describe('Query', () => {
       expect(getMe.email).to.be.eq('demo@demo.com')
       expect(getMe.username).to.be.eq('demo')
     })
+
+    it('Should pass if gql is used', async () => {
+      const query = gql`
+        {
+          getMe {
+            id
+            email
+            username
+          }
+        }
+      `
+
+      const { data: { getMe } } = await tester.graphql(query)
+
+      expect(getMe.id).to.be.eq('1')
+      expect(getMe.email).to.be.eq('demo@demo.com')
+      expect(getMe.username).to.be.eq('demo')
+    })
   })
 
   describe('Should support custom names for root types', () => {
