@@ -6,6 +6,7 @@
 </tr>
 <tr>
 <td>
+<a href="#5.1.2">5.1.2</a><br/>
 <a href="#5.1.1">5.1.1</a><br/>
 <a href="#5.1.0">5.1.0</a><br/>
 <a href="#5.0.1">5.0.1</a><br/>
@@ -13,6 +14,16 @@
 </td>
 </tr>
 </table>
+
+<a id="5.1.2"></a>
+## Version 5.1.2
+
+### Notable Changes
+
+* **Support gql on resolvers**: Use operations with gql.
+
+### Commits
+
 
 <a id="5.1.1"></a>
 ## Version 5.1.1
