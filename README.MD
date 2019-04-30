@@ -12,7 +12,7 @@
 to test the queries, mutations and schema on the easiest way possible.
 
 It will check:
-+ If the operation name is defined on the schema.
++ If the  query/mutation/subscription is defined on the schema.
 + If the requested fields are defined.
 + If the arguments are valid.
 + If the input on a mutation is valid.
