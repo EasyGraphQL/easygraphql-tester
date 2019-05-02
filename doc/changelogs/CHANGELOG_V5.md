@@ -6,6 +6,7 @@
 </tr>
 <tr>
 <td>
+<a href="#5.1.3">5.1.3</a><br/>
 <a href="#5.1.2">5.1.2</a><br/>
 <a href="#5.1.1">5.1.1</a><br/>
 <a href="#5.1.0">5.1.0</a><br/>
@@ -14,6 +15,27 @@
 </td>
 </tr>
 </table>
+
+<a id="5.1.3"></a>
+## Version 5.1.3
+
+### Notable Changes
+
+* **Update Readme**: Remove confusing part about operation name.
+* **easygraphql-parser**:
+  - Bump version of easygraphql-parser.
+* **easygraphql-mock**:
+  - Bump version of easygraphql-mock.
+* **mocha**:
+  - Bump version of mocha.
+* **nyc**:
+  - Bump version of nyc.
+
+### Commits
+
+* [[`8877b58af2`](https://github.com/EasyGraphQL/easygraphql-tester/commit/8877b58af2)] - Update readme, remove confusing part.
+* [[`5c16aa13e7`](https://github.com/EasyGraphQL/easygraphql-tester/commit/5c16aa13e7)] - Update easygraphql-parser to the latest version 🚀
+* [[`1cea8c2336`](https://github.com/EasyGraphQL/easygraphql-tester/commit/1cea8c2336)] - Update dependencies 
 
 <a id="5.1.2"></a>
 ## Version 5.1.2
