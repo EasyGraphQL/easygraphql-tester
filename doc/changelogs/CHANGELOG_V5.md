@@ -6,6 +6,7 @@
 </tr>
 <tr>
 <td>
+<a href="#5.1.4">5.1.4</a><br/>
 <a href="#5.1.3">5.1.3</a><br/>
 <a href="#5.1.2">5.1.2</a><br/>
 <a href="#5.1.1">5.1.1</a><br/>
@@ -15,6 +16,20 @@
 </td>
 </tr>
 </table>
+
+<a id="5.1.4"></a>
+## Version 5.1.4
+
+### Notable Changes
+
+* **easygraphql-parser**:
+  - Bump version of easygraphql-parser.
+* **easygraphql-mock**:
+  - Bump version of easygraphql-mock.
+* **husky**:
+  - Bump version of husky.
+
+### Commits
 
 <a id="5.1.3"></a>
 ## Version 5.1.3
