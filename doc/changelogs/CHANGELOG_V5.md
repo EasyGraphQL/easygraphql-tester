@@ -31,6 +31,8 @@
 
 ### Commits
 
+* [[`ff9a7aa047`](https://github.com/EasyGraphQL/easygraphql-tester/commit/ff9a7aa047)] - Update latest dependencies
+
 <a id="5.1.3"></a>
 ## Version 5.1.3
 
