@@ -1,7 +1,7 @@
 'use strict'
 
 const { mergeTypes } = require('merge-graphql-schemas')
-const { buildSchema, printSchema, buildClientSchema, GraphQLSchema } = require('graphql')
+const { buildSchema, printSchema, buildClientSchema, GraphQLSchema, buildASTSchema } = require('graphql')
 
 function buildGraphQLSchema (source, shouldBuildSchema) {
   let schema = source
@@ -10,9 +10,10 @@ function buildGraphQLSchema (source, shouldBuildSchema) {
   } else if (typeof source === 'object') {
     if (source instanceof GraphQLSchema) {
       schema = printSchema(source)
+    } else if (source.kind === 'Document') {
+      schema = printSchema(buildASTSchema(source))
     } else {
-      source = source.data ? source.data : source
-      schema = printSchema(buildClientSchema(source))
+      schema = printSchema(buildClientSchema(source.data))
     }
   }
 
