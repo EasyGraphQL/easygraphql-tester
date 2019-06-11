@@ -31,6 +31,7 @@
 
 ### Commits
 
+* [[`c2662b5711`](https://github.com/EasyGraphQL/easygraphql-tester/commit/c2662b5711)] - Support gql-tag
 
 <a id="5.1.4"></a>
 ## Version 5.1.4
