@@ -36,7 +36,7 @@
   "dependencies": {
     "easygraphql-mock": "^0.1.14",
     "easygraphql-parser": "^0.0.11",
-    "graphql": "^14.1.1",
+    "graphql": "14.3.1",
     "graphql-tools": "^4.0.4",
     "lodash.isempty": "^4.4.0",
     "lodash.isobject": "^3.0.2",
