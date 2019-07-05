@@ -108,7 +108,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('Variable "$input" got invalid value { email: "test@test.com", username: 1, fullName: "test", password: "test" }; Expected type String at value.username; String cannot represent a non string value: 1')
+      expect(error.message).to.be.eq('Variable "$input" got invalid value { email: "test@test.com", username: 1, fullName: "test", password: "test" }; Expected type String at value.username. String cannot represent a non string value: 1')
     })
 
     it('Should throw an error if the input is boolean and it must be a string', () => {
@@ -134,7 +134,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('Variable "$input" got invalid value { email: "test@test.com", username: true, fullName: "test", password: "test" }; Expected type String at value.username; String cannot represent a non string value: true')
+      expect(error.message).to.be.eq('Variable "$input" got invalid value { email: "test@test.com", username: true, fullName: "test", password: "test" }; Expected type String at value.username. String cannot represent a non string value: true')
     })
 
     it('Should throw an error if the input is not an array of values', () => {
@@ -212,7 +212,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('Variable "$input" got invalid value { id: "123", age: "10" }; Expected type Int at value.age; Int cannot represent non-integer value: "10"')
+      expect(error.message).to.be.eq('Variable "$input" got invalid value { id: "123", age: "10" }; Expected type Int at value.age. Int cannot represent non-integer value: "10"')
     })
 
     it('Should throw an error if the input is boolean and it must be a number', () => {
@@ -236,7 +236,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.be.an.instanceOf(Error)
-      expect(error.message).to.be.eq('Variable "$input" got invalid value { id: "123", age: true }; Expected type Int at value.age; Int cannot represent non-integer value: true')
+      expect(error.message).to.be.eq('Variable "$input" got invalid value { id: "123", age: true }; Expected type Int at value.age. Int cannot represent non-integer value: true')
     })
 
     it('Should throw an error if the input value is invalid', () => {
@@ -722,7 +722,7 @@ describe('Mutation', () => {
       }
 
       expect(error).to.exist
-      expect(error.message).to.be.eq('Variable "$input" got invalid value { isAdmin: [true] }; Expected type Boolean at value.isAdmin; Boolean cannot represent a non boolean value: [true]')
+      expect(error.message).to.be.eq('Variable "$input" got invalid value { isAdmin: [true] }; Expected type Boolean at value.isAdmin. Boolean cannot represent a non boolean value: [true]')
     })
   })
 
