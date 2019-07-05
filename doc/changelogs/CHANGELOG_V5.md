@@ -6,6 +6,7 @@
 </tr>
 <tr>
 <td>
+<a href="#5.1.6">5.1.6</a><br/>
 <a href="#5.1.5">5.1.5</a><br/>
 <a href="#5.1.4">5.1.4</a><br/>
 <a href="#5.1.3">5.1.3</a><br/>
@@ -18,12 +19,31 @@
 </tr>
 </table>
 
+<a id="5.1.6"></a>
+## Version 5.1.6
+
+### Notable Changes
+
+* **graphql**:
+  - Bump version of graphql.
+* **easygraphql-parser**:
+  - Bump version of easygraphql-parser.
+* **easygraphql-mock**:
+  - Bump version of easygraphql-mock.
+* **husky**:
+  - Bump version of husky.
+
+### Commits
+
+* [[`f78109ffbb`](https://github.com/EasyGraphQL/easygraphql-tester/commit/f78109ffbb)] - Update husky to the latest version 🚀
+* [[`4c787796b7`](https://github.com/EasyGraphQL/easygraphql-tester/commit/4c787796b7)] - Update versions
+
 <a id="5.1.5"></a>
 ## Version 5.1.5
 
 ### Notable Changes
 
-* **Graphql-tag**: Suppor schemas made with Graphql-tag.
+* **Graphql-tag**: Support schemas made with Graphql-tag.
 * **easygraphql-parser**:
   - Bump version of easygraphql-parser.
 * **easygraphql-mock**:
