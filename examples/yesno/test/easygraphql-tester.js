@@ -1,70 +1,72 @@
-'use strict'
+"use strict";
 
-const fs = require('fs')
-const path = require('path')
-const { yesno } = require('yesno-http');
-const { expect } = require('chai');
-const EasyGraphQLTester = require('../../../lib')
+const fs = require("fs");
+const path = require("path");
+const { yesno } = require("yesno-http");
+const { expect } = require("chai");
+const EasyGraphQLTester = require("../../../lib");
 
-const { getMe, getUsers } = require('../src/api-client');
-const { getMeQuery, getUsersQuery } = require('../src/queries')
+const { getMe, getUsers } = require("../src/api-client");
+const { getMeQuery, getUsersQuery } = require("../src/queries");
 
+const schema = fs.readFileSync(
+  path.join(__dirname, "..", "src", "schema.gql"),
+  "utf8"
+);
+const easyGraphQLTester = new EasyGraphQLTester(schema);
 
-const schema = fs.readFileSync(path.join(__dirname, '..', 'src', 'schema.gql'), 'utf8')
-const easyGraphQLTester = new EasyGraphQLTester(schema)
-
-describe('User', () => {
+describe("User", () => {
   before(() => {
-    yesno.restore()
-  })
+    yesno.restore();
+  });
 
   beforeEach(() => {
-    yesno.restore()
-  })
+    yesno.restore();
+  });
 
-  it('should get GetMe', async () => {
+  it("should get GetMe", async () => {
     yesno.mock([
       {
         request: {
-          host: 'localhost',
-          method: 'POST',
-          path: '/',
+          host: "localhost",
+          method: "POST",
+          path: "/",
           port: 3000,
-          protocol: 'http',
+          protocol: "http"
         },
         response: {
           body: easyGraphQLTester.mock(getMeQuery),
-          statusCode: 200,
-        },
+          statusCode: 200
+        }
       }
     ]);
     await getMe();
-    const response = yesno.matching(/\//).response()
+    const response = yesno.matching(/\//).response();
 
-    expect(response.body.data.getMe).to.be.a('object')
-    expect(response.body.data.getMe.email).to.be.a('string')
-    expect(response.body.data.getMe.apiKey).not.to.exist
+    expect(response.body.data.getMe).to.be.a("object");
+    expect(response.body.data.getMe.email).to.be.a("string");
+    expect(response.body.data.getMe.apiKey).not.to.exist;
   });
 
-  it('should get GetUsers', async () => {
+  it("should get GetUsers", async () => {
     yesno.mock([
       {
         request: {
-          host: 'localhost',
-          method: 'POST',
-          path: '/',
+          host: "localhost",
+          method: "POST",
+          path: "/",
           port: 3000,
-          protocol: 'http',
+          protocol: "http"
         },
         response: {
           body: easyGraphQLTester.mock(getUsersQuery),
-          statusCode: 200,
-        },
+          statusCode: 200
+        }
       }
     ]);
     await getUsers();
-    const response = yesno.matching(/\//).response()
+    const response = yesno.matching(/\//).response();
 
-    expect(response.body.data.getUsers).to.be.a('array')
+    expect(response.body.data.getUsers).to.be.a("array");
   });
 });

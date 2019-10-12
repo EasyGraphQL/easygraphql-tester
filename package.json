@@ -5,20 +5,15 @@
   "main": "index.js",
   "scripts": {
     "test": "nyc --check-coverage --lines 98 mocha",
-    "standard": "standard",
-    "standard-fix": "standard --fix",
+    "prettier:check": "prettier --write './{lib,test,utils}/**/*.{js,graphql}'",
+    "prettier:format": "prettier --write './{lib,test,utils}/**/*.{js,graphql}'",
     "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run standard",
+      "pre-commit": "npm run prettier:format && git add .",
       "pre-push": "npm run test"
     }
-  },
-  "standard": {
-    "ignore": [
-      "examples"
-    ]
   },
   "homepage": "https://github.com/EasyGraphQL/easygraphql-tester",
   "author": {
@@ -49,6 +44,7 @@
     "husky": "^3.0.0",
     "mocha": "^6.1.4",
     "nyc": "^14.0.1",
+    "prettier": "^1.18.2",
     "standard": "^12.0.0"
   },
   "peerDependencies": {
