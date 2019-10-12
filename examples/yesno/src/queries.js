@@ -6,7 +6,7 @@ const getMeQuery = `
       fullName
     }
   }
-`
+`;
 const getUsersQuery = `
   query GetUsers {
     getUsers {
@@ -14,6 +14,6 @@ const getUsersQuery = `
       age
     }
   }
-`
+`;
 
-module.exports = { getMeQuery, getUsersQuery }
+module.exports = { getMeQuery, getUsersQuery };

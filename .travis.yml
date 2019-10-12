@@ -4,11 +4,11 @@ node_js:
   - 8
 
 clean-cache:
-  - npm cache clean 
+  - npm cache clean
 install:
   - npm install
 script:
-  - npm run standard
+  - npm run prettier:check
   - npm test
-after_success: 
+after_success:
   - npm run coveralls
