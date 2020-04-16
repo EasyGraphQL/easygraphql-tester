@@ -35,7 +35,7 @@
     "graphql-tools": "^4.0.4",
     "lodash.isempty": "^4.4.0",
     "lodash.isobject": "^3.0.2",
-    "merge-graphql-schemas": "^1.5.8"
+    "merge-graphql-schemas": "^1.7.8"
   },
   "devDependencies": {
     "chai": "^4.1.2",
