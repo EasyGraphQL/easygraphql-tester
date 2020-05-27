@@ -32,7 +32,7 @@
     "easygraphql-mock": "^0.1.15",
     "easygraphql-parser": "^0.0.12",
     "graphql": "^14.4.0",
-    "graphql-tools": "^4.0.4",
+    "graphql-tools": "^6.0.3",
     "lodash.isempty": "^4.4.0",
     "lodash.isobject": "^3.0.2",
     "merge-graphql-schemas": "^1.5.8"
