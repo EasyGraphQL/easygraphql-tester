@@ -61,7 +61,7 @@ describe("Mutation", () => {
 
       expect(error).to.be.an.instanceOf(Error);
       expect(error.message).to.be.eq(
-        'Variable "$input" got invalid value { email: "test@test.com", fullName: "test", password: "test" }; Field value.username of required type String! was not provided.'
+        'Variable "$input" got invalid value { email: "test@test.com", fullName: "test", password: "test" }; Field username of required type String! was not provided.'
       );
     });
   });
@@ -92,7 +92,7 @@ describe("Mutation", () => {
 
       expect(error).to.be.an.instanceOf(Error);
       expect(error.message).to.be.eq(
-        'Variable "$input" got invalid value { email: "test@test.com", username: "test", fullName: "test", password: "test" }; Field value.dob of required type DateTime! was not provided.'
+        'Variable "$input" got invalid value { email: "test@test.com", username: "test", fullName: "test", password: "test" }; Field dob of required type DateTime! was not provided.'
       );
     });
   });
@@ -122,7 +122,7 @@ describe("Mutation", () => {
 
       expect(error).to.be.an.instanceOf(Error);
       expect(error.message).to.be.eq(
-        'Variable "$input" got invalid value { email: "test@test.com", username: 1, fullName: "test", password: "test" }; Expected type String at value.username. String cannot represent a non string value: 1'
+        'Variable "$input" got invalid value 1 at "input.username"; Expected type String. String cannot represent a non string value: 1'
       );
     });
 
@@ -150,7 +150,7 @@ describe("Mutation", () => {
 
       expect(error).to.be.an.instanceOf(Error);
       expect(error.message).to.be.eq(
-        'Variable "$input" got invalid value { email: "test@test.com", username: true, fullName: "test", password: "test" }; Expected type String at value.username. String cannot represent a non string value: true'
+        'Variable "$input" got invalid value true at "input.username"; Expected type String. String cannot represent a non string value: true'
       );
     });
 
@@ -210,7 +210,7 @@ describe("Mutation", () => {
 
       expect(error).to.be.an.instanceOf(Error);
       expect(error.message).to.be.eq(
-        'Variable "$input" got invalid value [{ email: "test@test.com", username: "test", fullName: "test", password: "test", dob: "10-10-2001" }]; Field value.email of required type String! was not provided.'
+        'Variable "$input" got invalid value [{ email: "test@test.com", username: "test", fullName: "test", password: "test", dob: "10-10-2001" }]; Field email of required type String! was not provided.'
       );
     });
 
@@ -236,7 +236,7 @@ describe("Mutation", () => {
 
       expect(error).to.be.an.instanceOf(Error);
       expect(error.message).to.be.eq(
-        'Variable "$input" got invalid value { id: "123", age: "10" }; Expected type Int at value.age. Int cannot represent non-integer value: "10"'
+        'Variable "$input" got invalid value "10" at "input.age"; Expected type Int. Int cannot represent non-integer value: "10"'
       );
     });
 
@@ -262,7 +262,7 @@ describe("Mutation", () => {
 
       expect(error).to.be.an.instanceOf(Error);
       expect(error.message).to.be.eq(
-        'Variable "$input" got invalid value { id: "123", age: true }; Expected type Int at value.age. Int cannot represent non-integer value: true'
+        'Variable "$input" got invalid value true at "input.age"; Expected type Int. Int cannot represent non-integer value: true'
       );
     });
 
@@ -287,7 +287,7 @@ describe("Mutation", () => {
 
       expect(error).to.be.an.instanceOf(Error);
       expect(error.message).to.be.eq(
-        'Variable "$scores" got invalid value { invalidField: 1 }; Field value.scores of required type [Int]! was not provided.'
+        'Variable "$scores" got invalid value { invalidField: 1 }; Field scores of required type [Int]! was not provided.'
       );
     });
 
@@ -789,7 +789,7 @@ describe("Mutation", () => {
 
       expect(error).to.exist;
       expect(error.message).to.be.eq(
-        'Variable "$input" got invalid value { isAdmin: [true] }; Expected type Boolean at value.isAdmin. Boolean cannot represent a non boolean value: [true]'
+        'Variable "$input" got invalid value [true] at "input.isAdmin"; Expected type Boolean. Boolean cannot represent a non boolean value: [true]'
       );
     });
   });

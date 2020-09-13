@@ -29,8 +29,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "easygraphql-mock": "^0.1.15",
-    "easygraphql-parser": "^0.0.12",
+    "easygraphql-mock": "^0.1.17",
+    "easygraphql-parser": "^0.0.15",
     "graphql": "^14.4.0",
     "graphql-tools": "^4.0.4",
     "lodash.isempty": "^4.4.0",
@@ -48,6 +48,6 @@
     "standard": "^12.0.0"
   },
   "peerDependencies": {
-    "graphql": "^0.13.0 || ^14.0.0"
+    "graphql": "^0.13.0 || ^14.0.0 || ^15.0.0"
   }
 }
