@@ -343,7 +343,7 @@ describe("Subscription", () => {
 
       expect(error).to.exist;
       expect(error.message).to.be.eq(
-        'Unknown argument "invalidArg" on field "newUsers" of type "Subscription".'
+        'Unknown argument "invalidArg" on field "Subscription.newUsers".'
       );
     });
 
