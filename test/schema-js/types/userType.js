@@ -1,14 +1,14 @@
-const { GraphQLObjectType, GraphQLString, GraphQLNonNull } = require("graphql");
+const { GraphQLObjectType, GraphQLString, GraphQLNonNull } = require('graphql')
 
 const UserType = new GraphQLObjectType({
-  name: "User",
+  name: 'User',
   fields: () => {
     return {
       email: { type: GraphQLNonNull(GraphQLString) },
       username: { type: GraphQLNonNull(GraphQLString) },
-      fullName: { type: GraphQLNonNull(GraphQLString) }
-    };
-  }
-});
+      fullName: { type: GraphQLNonNull(GraphQLString) },
+    }
+  },
+})
 
-module.exports = UserType;
+module.exports = UserType
