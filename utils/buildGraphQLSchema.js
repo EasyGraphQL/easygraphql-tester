@@ -1,19 +1,19 @@
-"use strict";
+'use strict'
 
-const { mergeTypeDefs } = require("@graphql-tools/merge");
+const { mergeTypeDefs } = require('@graphql-tools/merge')
 const {
   buildSchema,
   printSchema,
   buildClientSchema,
   GraphQLSchema,
-  buildASTSchema
-} = require("graphql");
+  buildASTSchema,
+} = require('graphql')
 
 function mergeTypes(types, options) {
   const schemaDefinition =
-    options && typeof options.schemaDefinition === "boolean"
+    options && typeof options.schemaDefinition === 'boolean'
       ? options.schemaDefinition
-      : true;
+      : true
 
   return mergeTypeDefs(types, {
     useSchemaDefinition: schemaDefinition,
@@ -21,28 +21,28 @@ function mergeTypes(types, options) {
     throwOnConflict: true,
     commentDescriptions: true,
     reverseDirectives: true,
-    ...options
-  });
+    ...options,
+  })
 }
 
 function buildGraphQLSchema(source, shouldBuildSchema) {
-  let schema = source;
+  let schema = source
   if (Array.isArray(source)) {
-    schema = mergeTypes(source, { all: true });
-  } else if (typeof source === "object") {
+    schema = mergeTypes(source, { all: true })
+  } else if (typeof source === 'object') {
     if (source instanceof GraphQLSchema) {
-      schema = printSchema(source);
-    } else if (source.kind === "Document") {
-      schema = printSchema(buildASTSchema(source));
+      schema = printSchema(source)
+    } else if (source.kind === 'Document') {
+      schema = printSchema(buildASTSchema(source))
     } else {
-      schema = printSchema(buildClientSchema(source.data));
+      schema = printSchema(buildClientSchema(source.data))
     }
   }
 
   if (shouldBuildSchema) {
-    return buildSchema(schema);
+    return buildSchema(schema)
   }
-  return schema;
+  return schema
 }
 
-module.exports = buildGraphQLSchema;
+module.exports = buildGraphQLSchema
