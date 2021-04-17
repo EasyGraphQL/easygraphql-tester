@@ -575,7 +575,7 @@ describe("Query", () => {
 
         expect(error).to.exist;
         expect(error.message).to.be.eq(
-          "Expected Iterable, but did not find one for field Query.getUsers."
+          'Expected Iterable, but did not find one for field "Query.getUsers".'
         );
       }
 

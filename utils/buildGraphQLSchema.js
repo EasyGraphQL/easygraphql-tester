@@ -1,6 +1,6 @@
 "use strict";
 
-const { mergeTypes } = require("merge-graphql-schemas");
+const { mergeTypeDefs } = require("@graphql-tools/merge");
 const {
   buildSchema,
   printSchema,
@@ -8,6 +8,22 @@ const {
   GraphQLSchema,
   buildASTSchema
 } = require("graphql");
+
+function mergeTypes(types, options) {
+  const schemaDefinition =
+    options && typeof options.schemaDefinition === "boolean"
+      ? options.schemaDefinition
+      : true;
+
+  return mergeTypeDefs(types, {
+    useSchemaDefinition: schemaDefinition,
+    forceSchemaDefinition: schemaDefinition,
+    throwOnConflict: true,
+    commentDescriptions: true,
+    reverseDirectives: true,
+    ...options
+  });
+}
 
 function buildGraphQLSchema(source, shouldBuildSchema) {
   let schema = source;
